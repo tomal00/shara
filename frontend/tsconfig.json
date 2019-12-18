@@ -5,7 +5,22 @@
         "removeComments": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "noImplicitThis": true
+        "noImplicitThis": true,
+        "baseUrl": "./",
+        "paths": {
+            "Root/*": [
+                "src/*"
+            ],
+            "Themes/*": [
+                "src/Themes/*"
+            ],
+            "Components/*": [
+                "src/Components/*"
+            ],
+            "Types/*": [
+                "src/Types/*"
+            ]
+        }
     },
     "include": [
         "src/**/*"

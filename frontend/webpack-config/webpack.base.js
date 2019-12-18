@@ -54,6 +54,12 @@ module.exports = {
         },
     },
     resolve: {
-        extensions: ['.ts', '.js', '.json', '.tsx']
+        extensions: ['.ts', '.js', '.json', '.tsx'],
+        alias: {
+            Root: path.resolve(__dirname, '../src'),
+            Components: path.resolve(__dirname, '../src/Components'),
+            Themes: path.resolve(__dirname, '../src/Themes'),
+            Types: path.resolve(__dirname, '../src/Types'),
+        }
     },
 }

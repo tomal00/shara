@@ -7,7 +7,8 @@ const config = {
     devtool: 'inline-source-map',
     devServer: {
         contentBase: '../dist',
-        hot: true
+        hot: true,
+        historyApiFallback: true
     },
     output: {
         filename: '[name].[hash].js',

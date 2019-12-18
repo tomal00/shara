@@ -6,42 +6,42 @@ import {
     Redirect
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
-import styled from 'styled-components'
+import styled, { ThemeProvider } from 'styled-components'
 
-import Navigation from './navigation'
-import Library from './library'
-import Account from './account'
-import About from './about'
-import Upload from './upload'
+import Topbar from 'Components/topbar'
+import Library from 'Components/library'
+import Account from 'Components/account'
+import About from 'Components/about'
+import Upload from 'Components/upload'
+import { lightTheme } from 'Themes/LightTheme'
 
-interface AppProps {
-    className?: string
-}
+const App = hot(({ className }: { className?: string }) => (
+    <ThemeProvider theme={lightTheme}>
+        <div className={className}>
+            <BrowserRouter>
+                <Topbar />
+                <div>
+                    <Switch>
+                        <Route exact path='/account'>
+                            <Account />
+                        </Route>
+                        <Route exact path='/upload'>
+                            <Upload />
+                        </Route>
+                        <Route exact path='/library'>
+                            <Library />
+                        </Route>
+                        <Route exact path='/about'>
+                            <About />
+                        </Route>
+                        <Redirect from='/' to='/upload' />
+                    </Switch>
+                </div>
+            </BrowserRouter>
+        </div>
+    </ThemeProvider>
+))
 
-export default hot(styled(({ className }: AppProps) => (
-    <div className={className}>
-        <BrowserRouter>
-            <Navigation />
-            <div>
-                <Switch>
-                    <Route path='/account'>
-                        <Account />
-                    </Route>
-                    <Route path='/upload'>
-                        <Upload />
-                    </Route>
-                    <Route path='/library'>
-                        <Library />
-                    </Route>
-                    <Route path='/about'>
-                        <About />
-                    </Route>
-                    <Redirect from='/' to='/upload' />
-                </Switch>
-            </div>
-        </BrowserRouter>
-    </div>
-))`
-font-family: 'Roboto', sans-serif;
+export default styled(App)`
+    font-family: 'Roboto', sans-serif;
 `
-)
