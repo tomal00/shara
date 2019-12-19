@@ -20,23 +20,21 @@ const App = hot(({ className }: { className?: string }) => (
         <div className={className}>
             <BrowserRouter>
                 <Topbar />
-                <div>
-                    <Switch>
-                        <Route exact path='/account'>
-                            <Account />
-                        </Route>
-                        <Route exact path='/upload'>
-                            <Upload />
-                        </Route>
-                        <Route exact path='/library'>
-                            <Library />
-                        </Route>
-                        <Route exact path='/about'>
-                            <About />
-                        </Route>
-                        <Redirect from='/' to='/upload' />
-                    </Switch>
-                </div>
+                <Switch>
+                    <Route exact path='/account'>
+                        <Account />
+                    </Route>
+                    <Route exact path='/upload'>
+                        <Upload />
+                    </Route>
+                    <Route exact path='/library'>
+                        <Library />
+                    </Route>
+                    <Route exact path='/about'>
+                        <About />
+                    </Route>
+                    <Redirect from='/' to='/upload' />
+                </Switch>
             </BrowserRouter>
         </div>
     </ThemeProvider>

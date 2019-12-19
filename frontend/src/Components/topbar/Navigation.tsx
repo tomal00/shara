@@ -13,7 +13,7 @@ const List = styled.ul`
 `
 
 const Navigation = styled.nav`
-    color:  ${p => p.theme.colors.secondary.text};
+    color:  ${p => p.theme.colors.primary.text};
 `
 
 const navItems: Array<Object> = [

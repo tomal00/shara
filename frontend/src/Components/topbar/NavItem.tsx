@@ -9,7 +9,7 @@ interface NavItemProps {
 }
 
 const StyledLink = styled(NavLink)`
-    color: ${p => p.theme.colors.secondary.text};
+    color: ${p => p.theme.colors.primary.text};
     text-decoration: none;
     font-weight: bold;
     font-size: 18px;
@@ -17,11 +17,11 @@ const StyledLink = styled(NavLink)`
     transition: color 0.2s ease-out;
 
     &:hover:not(.active) {
-        color: ${p => p.theme.colors.secondary.light};
+        color: ${p => p.theme.colors.primary.light};
     }
 
     &.active {
-        color: ${p => p.theme.colors.secondary.dark};
+        color: ${p => p.theme.colors.primary.dark};
         pointer: default;
     }
 `

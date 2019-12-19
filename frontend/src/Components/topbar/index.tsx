@@ -8,7 +8,7 @@ import Logo from 'Components/topbar/Logo'
 const TopbarWrapper = styled.div`
     position: relative;
     height: 50px;
-    background-color: ${p => p.theme.colors.secondary.base};
+    background-color: ${p => p.theme.colors.primary.base};
     display: flex;
     justify-content: space-between;
     align-items: center;

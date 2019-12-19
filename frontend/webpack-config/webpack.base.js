@@ -4,7 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 
 module.exports = {
     entry: {
-        main: './src/index.tsx',
+        main: ['babel-polyfill', './src/index.tsx'],
     },
     output: {
         filename: '[name].[hash].js',
