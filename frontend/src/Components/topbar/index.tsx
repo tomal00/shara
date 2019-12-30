@@ -6,13 +6,15 @@ import SearchInput from 'Components/topbar/SearchInput'
 import Logo from 'Components/topbar/Logo'
 
 const TopbarWrapper = styled.div`
-    position: relative;
     height: 50px;
     background-color: ${p => p.theme.colors.primary.base};
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 10px 0 20px;
+    position: fixed;
+    width: calc(100% - 30px);
+    z-index: 9999;
 `
 
 const SearchInputAbsoluteWrapper = styled.div`
