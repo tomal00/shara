@@ -90,3 +90,37 @@ export const ExpandableTextArea = (props: any) => {
     return <textarea {...props} ref={textAreaRef} />
 }
 
+export const Description = styled(ExpandableTextArea)`
+    align-self: stretch;
+    margin: 20px 0;
+    word-wrap: break-word;
+    border: 0;
+    outline: none!important;
+    resize: none!important;
+    padding: 5px;
+    background-color: ${p => p.theme.colors.secondary.light};
+    border: 2px solid;
+    border-color: ${p => p.theme.colors.secondary.dark};
+    transition: border-color 0.2s ease-out;
+    border-radius: ${p => p.theme.borderRadius}px;
+    max-height: 176px;
+    font-size: 16px;
+
+    &:hover:not(:focus) {
+        border-color: ${p => p.theme.colors.primary.light};
+    }
+
+    &:focus {
+        outline-width: 0;
+    }
+
+    ${p => p.readOnly ? `
+        &:hover {
+            border-color: ${p.theme.colors.primary.light};
+        }
+    ` : `
+        &:focus {
+            border-color: ${p.theme.colors.primary.base};
+        }
+    `}
+`

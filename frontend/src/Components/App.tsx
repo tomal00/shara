@@ -13,6 +13,7 @@ import Library from 'Components/library'
 import Account from 'Components/account'
 import About from 'Components/about'
 import Upload from 'Components/upload'
+import Image from 'Components/image'
 import { lightTheme } from 'Themes/LightTheme'
 
 const App = hot(({ className }: { className?: string }) => (
@@ -32,6 +33,9 @@ const App = hot(({ className }: { className?: string }) => (
                     </Route>
                     <Route exact path='/about'>
                         <About />
+                    </Route>
+                    <Route path='/image'>
+                        <Image />
                     </Route>
                     <Redirect from='/' to='/upload' />
                 </Switch>
