@@ -2,11 +2,15 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { UploadedFile } from 'Types/file'
 import { ExpandableTextArea, NameInput, Button, Description } from 'Components/Common'
+import { StateSetter } from 'Types/etc'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const { useState } = React
 
 interface FileViewProps {
-    file: UploadedFile
+    file: UploadedFile,
+    onCancel: () => void,
+    onUpload: (file: UploadedFile) => void
 }
 
 const ViewWrapper = styled.div`
@@ -27,6 +31,7 @@ const ImagePreview = styled.img`
     background-color: white;
     padding: 10px;
     border-radius: ${p => p.theme.borderRadius}px;
+    max-height: 40vh;
 `
 
 const UploadControls = styled.div`
@@ -61,20 +66,32 @@ const CancelButton = styled(Button)`
 
 const FileName = styled(NameInput)`
     margin: 20px;
+    text-align: left;
+`
+
+const StyledIcon = styled(FontAwesomeIcon)`
+    cursor: pointer;
+    width: 20px!important;
 `
 
 
-export default ({ file }: FileViewProps) => {
-    const [description, setDescription] = useState('')
-    const [fileName, setFileName] = useState(file.name)
+export default ({ file, onCancel, onUpload }: FileViewProps) => {
+    const [description, setDescription]: [string, StateSetter<string>] = useState('')
+    const [fileName, setFileName]: [string, StateSetter<string>] = useState(file.name)
+    const [isPrivate, setPrivate]: [boolean, StateSetter<boolean>] = useState(file.isPrivate)
 
     return <ViewWrapper>
-        <FileName
-            value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
-            placeholder={file.name}
-            minLength={1}
-            maxLength={128} />
+        <div>
+            <StyledIcon
+                icon={isPrivate ? 'lock' : 'lock-open'}
+                onClick={() => setPrivate(!isPrivate)} />
+            <FileName
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+                placeholder={file.name}
+                minLength={1}
+                maxLength={128} />
+        </div>
         <ImagePreview src={file.objectUrl} />
         <Description
             value={description}
@@ -87,8 +104,21 @@ export default ({ file }: FileViewProps) => {
                     setDescription(target.value)
                 }} />
         <UploadControls>
-            <CancelButton>Cancel</CancelButton>
-            <UploadButton>Upload</UploadButton>
+            <CancelButton onClick={onCancel}>Cancel</CancelButton>
+            <UploadButton
+                onClick={() => {
+                    onUpload({
+                        ...file,
+                        name: fileName,
+                        meta: {
+                            ...file.meta,
+                            description: description
+                        },
+                        isPrivate
+                    })
+                }}>
+                Upload
+            </UploadButton>
         </UploadControls>
     </ViewWrapper>
 }

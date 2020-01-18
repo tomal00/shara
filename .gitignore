@@ -1,4 +1,13 @@
 # Add any directories, files, or patterns you don't want to be tracked by version control
 frontend/node_modules
-backend/node_modules
 electron-app/node_modules
+
+# package directories
+backend/node_modules
+backend/jspm_packages
+
+# Serverless directories
+backend/.serverless
+
+# Webpack directories
+backend/.webpack

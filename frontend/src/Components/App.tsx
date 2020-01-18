@@ -15,35 +15,40 @@ import About from 'Components/about'
 import Upload from 'Components/upload'
 import Image from 'Components/image'
 import { lightTheme } from 'Themes/LightTheme'
+import { Provider as ContextProvider } from 'Root/AppContext'
+import { Api } from 'Root/api'
 
-const App = hot(({ className }: { className?: string }) => (
-    <ThemeProvider theme={lightTheme}>
-        <div className={className}>
-            <BrowserRouter>
-                <Topbar />
-                <Switch>
-                    <Route exact path='/account'>
-                        <Account />
-                    </Route>
-                    <Route exact path='/upload'>
-                        <Upload />
-                    </Route>
-                    <Route exact path='/library'>
-                        <Library />
-                    </Route>
-                    <Route exact path='/about'>
-                        <About />
-                    </Route>
-                    <Route path='/image'>
-                        <Image />
-                    </Route>
-                    <Redirect from='/' to='/upload' />
-                </Switch>
-            </BrowserRouter>
-        </div>
-    </ThemeProvider>
+const App = hot(({ className, api, accountHash }: { className?: string, api: Api, accountHash?: string }) => (
+    <ContextProvider api={api} accountHash={accountHash}>
+        <ThemeProvider theme={lightTheme}>
+            <div className={className}>
+                <BrowserRouter>
+                    <Topbar />
+                    <Switch>
+                        <Route exact path='/account'>
+                            <Account />
+                        </Route>
+                        <Route exact path='/upload'>
+                            <Upload />
+                        </Route>
+                        <Route exact path='/library'>
+                            <Library />
+                        </Route>
+                        <Route exact path='/about'>
+                            <About />
+                        </Route>
+                        <Route path='/image/:imageId'>
+                            <Image />
+                        </Route>
+                        <Redirect from='/' to='/upload' />
+                    </Switch>
+                </BrowserRouter>
+            </div>
+        </ThemeProvider>
+    </ContextProvider>
 ))
 
 export default styled(App)`
     font-family: 'Roboto', sans-serif;
+    min-width: 300px;
 `

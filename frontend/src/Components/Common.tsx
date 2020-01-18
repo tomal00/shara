@@ -1,8 +1,10 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import * as autosize from 'autosize'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { StateSetter } from 'Types/etc'
 
-const { useEffect, useRef } = React
+const { useEffect, useRef, useState } = React
 
 export const Button = styled.button`
     background: none;
@@ -85,7 +87,12 @@ export const ExpandableTextArea = (props: any) => {
     const textAreaRef = useRef(null)
     useEffect(() => {
         autosize(textAreaRef.current)
-    })
+
+        return () => autosize.destroy(textAreaRef.current)
+    }, [])
+    useEffect(() => {
+        autosize.update(textAreaRef.current)
+    }, [props.value])
 
     return <textarea {...props} ref={textAreaRef} />
 }
@@ -105,6 +112,7 @@ export const Description = styled(ExpandableTextArea)`
     border-radius: ${p => p.theme.borderRadius}px;
     max-height: 176px;
     font-size: 16px;
+    box-sizing: content-box;
 
     &:hover:not(:focus) {
         border-color: ${p => p.theme.colors.primary.light};
@@ -124,3 +132,101 @@ export const Description = styled(ExpandableTextArea)`
         }
     `}
 `
+
+const DropdownWrapper = styled.div`
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+`
+
+const DropdownIcon = styled(FontAwesomeIcon)`
+    font-size: 12px;
+    margin-left: 5px;
+`
+
+const DropdownTitle = styled.div`
+    font-size: 18px;
+    cursor: pointer;
+    padding: 10px 0;
+    user-select: none;
+
+    &.with-placeholder {
+        
+    }
+`
+
+const DropdownItems = styled.ul`
+    position: absolute;
+    list-style-type: none;
+    margin: 0;
+    background-color: ${p => p.theme.colors.secondary.light};
+    border: 2px solid ${p => p.theme.colors.secondary.dark};
+    border-radius: ${p => p.theme.borderRadius}px;
+    width: calc(100% - 4px);
+    padding: 5px 0;
+`
+
+const DropdownItem = styled.li`
+    transition: color 0.2s ease-out;
+    cursor: pointer;
+    padding: 5px 10px;
+
+    &:hover {
+        color: ${p => p.theme.colors.primary.base};
+    }
+`
+
+interface DropdownItemType {
+    name: string,
+    value: any,
+    key?: any
+}
+
+export const Dropdown = (
+    {
+        placeholder,
+        items,
+        onSelect,
+        initiallySelectedItem,
+        emptyDropdownText
+    }: {
+        placeholder: string,
+        items: DropdownItemType[],
+        initiallySelectedItem?: DropdownItemType
+        onSelect: (item: DropdownItemType) => void,
+        emptyDropdownText: string
+    }
+) => {
+    const [selectedItem, selectItem]: [DropdownItemType, StateSetter<DropdownItemType>] = useState(initiallySelectedItem)
+    const [isExpanded, setIsExpanded]: [boolean, StateSetter<boolean>] = useState(false)
+
+    return <DropdownWrapper>
+        <DropdownTitle
+            className={!initiallySelectedItem ? 'with-placeholder' : ''}
+            onClick={() => setIsExpanded(!isExpanded)} >
+            {selectedItem ? selectedItem.name : placeholder}
+            <DropdownIcon icon='chevron-down' />
+        </DropdownTitle>
+        {
+            isExpanded && <DropdownItems>
+                {
+                    items.length ? (items.map((i) => (
+                        <DropdownItem
+                            key={i.key || i.value}
+                            onClick={() => {
+                                selectItem(i)
+                                setIsExpanded(false)
+                                onSelect(i)
+                            }}>
+                            {i.name}
+                        </DropdownItem>
+                    ))) : (
+                            <DropdownItem style={{ color: 'inherit', cursor: 'unset' }} >
+                                {emptyDropdownText}
+                            </DropdownItem>
+                        )
+                }
+            </DropdownItems>
+        }
+    </DropdownWrapper>
+}

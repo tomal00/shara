@@ -1,8 +1,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { Collection } from 'Types/collection'
-import SidebarItem from 'Root/Components/library/SidebarItem'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import SidebarItem, { DefaultCollection } from 'Root/Components/library/SidebarItem'
 
 const Wrapper = styled.div`
     height: 100%;
@@ -29,31 +28,42 @@ const CreateCollectionButton = styled.div`
     transition: background-color 0.2s ease-out;
     border-radius: ${p => p.theme.borderRadius}px;
     font-size: 20px;
+    user-select: none;
 
     &:hover {
         background-color: ${p => p.theme.colors.secondary.dark};
     }
 `
 
-export default () => {
-    const collections: Collection[] = [
-        { name: 'Collection 1', id: 1, items: [] }, { name: 'Collection 2', id: 2, items: [] }, { name: 'Collection 3', id: 3, items: [] }
-    ]
+interface SideBarProps {
+    collections: Collection[],
+    selectedCollection: Collection,
+    onSelectCollection: (id: string) => void,
+    onCreateCollection: () => void,
+    onDeleteCollection: (id: string) => void
+}
+
+export default React.memo(({ collections, selectedCollection, onSelectCollection, onCreateCollection, onDeleteCollection }: SideBarProps) => {
 
     return (
         <Wrapper>
-            <CreateCollectionButton>
+            <CreateCollectionButton onClick={onCreateCollection}>
                 + Create a collection
             </CreateCollectionButton>
             <List>
+                <DefaultCollection
+                    onSelect={() => onSelectCollection(null)}
+                    isActive={!selectedCollection} />
                 {collections.map(c => (
                     <SidebarItem
                         key={c.id}
                         name={c.name}
-                        itemCount={c.items.length}
-                        isActive={c.id === 1} />
+                        /*itemCount={c.items.length}*/
+                        isActive={c === selectedCollection}
+                        onSelect={() => onSelectCollection(c.id)}
+                        onDelete={() => onDeleteCollection(c.id)} />
                 ))}
             </List>
         </Wrapper>
     )
-}
+})

@@ -2,7 +2,8 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { Collection } from 'Types/collection'
 import { NameInput } from 'Components/Common'
-import { UploadedFile } from 'Types/file'
+import { Image as ImageType } from 'Types/file'
+import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`
     position: relative;
@@ -39,14 +40,24 @@ const ImageWrapper = styled.div`
 
 const FileName = styled.div`
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `
 
-export default ({ file }: { file: UploadedFile }) => {
+const StyledLink = styled(Link)`
+    text-decoration: none;
+    color: inherit;
+`
+
+export default ({ image }: { image: ImageType, key?: any }) => {
 
     return <Wrapper>
-        <ImageWrapper>
-            <Image imageUrl={file.objectUrl} />
-        </ImageWrapper>
-        <FileName>{file.name}</FileName>
+        <StyledLink to={`/image/${image.id}`}>
+            <ImageWrapper>
+                <Image imageUrl={image.url} />
+            </ImageWrapper>
+            <FileName>{image.name}</FileName>
+        </StyledLink>
     </Wrapper>
 }

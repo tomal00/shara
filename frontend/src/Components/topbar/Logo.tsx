@@ -5,4 +5,4 @@ const Logo = styled.div`
     justify-self: flex-start;
 `
 
-export default () => <Logo>LOGO</Logo>
+export default () => <Logo>Screenshot-App</Logo>

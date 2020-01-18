@@ -23,3 +23,14 @@ export async function selectFileFromExplorer(): Promise<File> {
         }
     })
 }
+
+export async function getFileArray(file: File): Promise<number[]> {
+    return new Promise((res, rej) => {
+        const r = new FileReader()
+        r.onload = function (e) {
+            const uInt8Arr = new Uint8Array(e.target.result as Iterable<number>)
+            res([...uInt8Arr])
+        };
+        r.readAsArrayBuffer(file)
+    })
+} 

@@ -5,8 +5,18 @@ export interface MetaData {
 }
 
 export interface UploadedFile {
-    blob: Blob,
+    file: File,
     objectUrl?: string,
     meta: MetaData,
-    name: string
+    name: string,
+    isPrivate: boolean
+}
+
+export interface Image {
+    id: string,
+    name: string,
+    description?: string,
+    url: string,
+    collectionId?: string,
+    isOwner: boolean
 }

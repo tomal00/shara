@@ -2,10 +2,11 @@ import * as React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled from 'styled-components'
 import { selectFileFromExplorer } from 'Root/files'
+import { StateSetter } from 'Types/etc'
+import { UploadedFile } from 'Types/file'
 
 const IconWrapper = styled.div`
     position: relative;
-    height: 400px;
     width: 400px;
     max-width: 100%;
     //border: 100px solid;
@@ -23,13 +24,15 @@ const StyledIcon = styled(FontAwesomeIcon)`
     transition: color 0.2s ease-out;
     cursor: pointer;
 
-    ${IconWrapper}:hover & {
+    ${IconWrapper}:hover &, ${IconWrapper}.drag-over & {
         color: ${p => p.theme.colors.primary.base};
     }
 `
 
 const TopText = styled.div`
     color: ${p => p.theme.colors.primary.light};
+    user-select: none;
+    cursor: pointer;
     opacity: 0;
     position: absolute;
     font-size: 40px;
@@ -37,25 +40,83 @@ const TopText = styled.div`
     transition: color 0.2s ease-out, transform 0.2s ease-out, opacity 0.1s ease-out;
     transform: translateY(-100px);
 
-    ${IconWrapper}:hover & {
+    ${IconWrapper}:hover &, ${IconWrapper}.drag-over & {
         color: ${p => p.theme.colors.primary.base};
         transform: translateY(-200px);
         opacity: 1;
     }
 `
 
-export default () => (
-    <IconWrapper onClick={async (e) => {
-        e.persist()
+const formatFileObject = (file: File): UploadedFile => ({
+    file,
+    objectUrl: URL.createObjectURL(file),
+    name: file.name.split('.').slice(0, -1).join('.'),
+    meta: {
+        size: file.size,
+        mime: file.type,
+        description: ''
+    },
+    isPrivate: false
+})
 
-        try {
-            const file = await selectFileFromExplorer()
+export default ({ onSelectFile }: { onSelectFile: React.Dispatch<any> }) => {
+    const [isDraggingOver, setIsDraggingOver]: [boolean, StateSetter<boolean>] = React.useState(false)
+
+    React.useEffect(() => {
+        let counter = 0
+        const dragOverHandler = (e: DragEvent) => e.preventDefault()
+        const dragLeaveHandler = () => {
+            counter--
+            if (counter <= 0) {
+                setIsDraggingOver(false)
+            }
         }
-        catch (e) {
-            console.error(e)
+        const dragEnterHandler = () => {
+            counter++
+            setIsDraggingOver(true)
         }
-    }} >
-        <TopText>Click to upload</TopText>
-        <StyledIcon icon='cloud-upload-alt' />
-    </IconWrapper>
-)
+        const dropHandler = (e: DragEvent) => {
+            e.preventDefault()
+            const item = e.dataTransfer.items[0]
+            if (item.kind === 'file' && item.type.match(/image/g)) {
+                onSelectFile(formatFileObject(item.getAsFile()))
+            }
+            else setIsDraggingOver(false)
+        }
+
+        window.addEventListener("dragover", dragOverHandler);
+        window.addEventListener("drop", dropHandler);
+        window.addEventListener('dragleave', dragLeaveHandler)
+        window.addEventListener('dragenter', dragEnterHandler)
+
+        return () => {
+            window.removeEventListener("dragover", dragOverHandler);
+            window.removeEventListener("drop", dropHandler);
+            window.removeEventListener("dragLeave", dragLeaveHandler);
+            window.removeEventListener('dragenter', dragEnterHandler)
+        }
+    }, [])
+
+    return (
+        <IconWrapper
+            className={isDraggingOver ? 'drag-over' : ''}
+            onClick={async (e) => {
+                e.persist()
+
+                try {
+                    const file = await selectFileFromExplorer()
+                    if (file && file.type.match(/image/g)) {
+                        onSelectFile(formatFileObject(file))
+                    }
+                }
+                catch (e) {
+                    console.error(e)
+                }
+            }} >
+            <TopText>
+                {isDraggingOver ? 'Drop to upload' : 'Click to upload'}
+            </TopText>
+            <StyledIcon icon='cloud-upload-alt' />
+        </IconWrapper>
+    )
+}

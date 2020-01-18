@@ -2,13 +2,20 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { Collection } from 'Types/collection'
 import { NameInput } from 'Components/Common'
-import { UploadedFile } from 'Types/file'
+import { Image } from 'Types/file'
 import CollectionItem from 'Components/library/CollectionItem'
+import { StateSetter } from 'Types/etc'
 
 const Wrapper = styled.div`
+    ${(p: { isReduced: boolean }) => p.isReduced ? `
+    width: 100%;
+    ` :
+        `
     width: calc(100% - 250px);
     position: relative;
     left: 250px;
+    `
+    }
 `
 
 const CollectionTitle = styled.div`
@@ -26,111 +33,39 @@ const CollectionWrapper = styled.div`
     padding: 0 20px;
 `
 
-export default () => {
-    const chosenCollection: Collection = {
-        name: 'ebin',
-        id: 1,
-        items: [
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            },
-            {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            }, {
-                name: 'haha',
-                objectUrl: 'https://www.isic.cz/wp-content/uploads/2019/06/logo_isic.png',
-                blob: new Blob(),
-                meta: {
-                    size: 1,
-                    mime: 'image/png'
-                }
-            }
-        ]
-    }
+interface CollectionViewProps {
+    selectedCollection: Collection,
+    images: Image[],
+    onChangeCollectionName: (name: string, collectionId: string) => void,
+    isReduced: boolean
+}
 
-    return <Wrapper>
+export default React.memo(({ selectedCollection, images, onChangeCollectionName, isReduced }: CollectionViewProps) => {
+    const [collectionName, setCollectionName]: [string, StateSetter<string>]
+        = React.useState(!!selectedCollection ? selectedCollection.name : 'All images')
+
+    React.useEffect(() => {
+        setCollectionName(!!selectedCollection ? selectedCollection.name : 'All images')
+    }, [selectedCollection && selectedCollection.id])
+
+    return <Wrapper isReduced={isReduced} >
         <CollectionTitle>
-            <StyledNameInput value={chosenCollection.name} />
+            <StyledNameInput
+                value={collectionName}
+                onChange={(e) => setCollectionName(e.target.value)}
+                readOnly={!selectedCollection}
+                onBlur={() => {
+                    if (!selectedCollection) return
+                    if (collectionName && collectionName !== selectedCollection.name) {
+                        onChangeCollectionName(collectionName, selectedCollection.id)
+                    }
+                    else setCollectionName(selectedCollection.name)
+                }} />
         </CollectionTitle>
         <CollectionWrapper>
-            {chosenCollection.items.map((item: UploadedFile) => (
-                <CollectionItem file={item} />
+            {images.map((item: Image) => (
+                <CollectionItem image={item} key={item.id} />
             ))}
         </CollectionWrapper>
     </Wrapper>
-}
+})

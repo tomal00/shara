@@ -1,9 +1,10 @@
 import styled from 'styled-components'
 import * as React from 'react'
-
 import Navigation from 'Components/topbar/Navigation'
-import SearchInput from 'Components/topbar/SearchInput'
+import SearchInput from 'Root/Components/topbar/SearchBar'
 import Logo from 'Components/topbar/Logo'
+import { AppContext } from 'Root/AppContext'
+import { useWidth } from 'Root/hooks'
 
 const TopbarWrapper = styled.div`
     height: 50px;
@@ -14,6 +15,7 @@ const TopbarWrapper = styled.div`
     padding: 0 10px 0 20px;
     position: fixed;
     width: calc(100% - 30px);
+    min-width: 270px;
     z-index: 9999;
 `
 
@@ -24,10 +26,17 @@ const SearchInputAbsoluteWrapper = styled.div`
     height: 100%;
 `
 
-export default () => <TopbarWrapper>
-    <Logo />
-    <SearchInputAbsoluteWrapper>
-        <SearchInput />
-    </SearchInputAbsoluteWrapper>
-    <Navigation />
-</TopbarWrapper>
+export default () => {
+    const { accountHash } = React.useContext(AppContext)
+    const width = useWidth()
+
+    return <TopbarWrapper>
+        <Logo />
+        {
+            (width > 768 && accountHash) && <SearchInputAbsoluteWrapper>
+                <SearchInput />
+            </SearchInputAbsoluteWrapper>
+        }
+        <Navigation />
+    </TopbarWrapper>
+}

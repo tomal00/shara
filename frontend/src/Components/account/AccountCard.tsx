@@ -1,6 +1,8 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { Button, Input, NameInput } from 'Components/Common'
+import { AppContext } from 'Root/AppContext'
+import { StateSetter } from 'Types/etc'
 
 const AccountCard = styled.div`
     padding: 20px;
@@ -58,13 +60,35 @@ const Avatar = styled.div`
     }
 `
 
-export default () => (
-    <AccountCard>
-        <NameInput placeholder='Nickname' />
+export default () => {
+    const { accountHash, api, setAccountHash } = React.useContext(AppContext)
+    const [name, setName]: [string, StateSetter<string>] = React.useState('')
+
+    React.useEffect(() => {
+        api.getAccountInfo()
+            .then((res) => setName(res.name))
+            .catch(err => console.error(err))
+    }, [accountHash])
+
+    return <AccountCard>
+        <NameInput
+            placeholder='Nickname'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={() => {
+                api.updateAccountInfo({ name })
+                    .catch(err => console.error(err))
+            }} />
         <Avatar />
-        <CustomInput value='some hash' readOnly />
-        <Button>Logout</Button>
+        <CustomInput value={accountHash} readOnly />
+        <Button
+            onClick={() => {
+                api.logOut()
+                setAccountHash(null)
+            }}>
+            Logout
+        </Button>
         <CustomInput placeholder='Enter e-mail address here...' />
         <Button>Send hash</Button>
     </AccountCard>
-)
+}

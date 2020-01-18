@@ -19,7 +19,7 @@ const Navigation = styled.nav`
 const navItems: Array<Object> = [
     { name: 'Upload', icon: (<FontAwesomeIcon icon='cloud-upload-alt' />) },
     { name: 'Library', icon: (<FontAwesomeIcon icon='images' />) },
-    { name: 'About', icon: (<FontAwesomeIcon icon='info' />) },
+    //{ name: 'About', icon: (<FontAwesomeIcon icon='info' />) },
     { name: 'Account', icon: (<FontAwesomeIcon icon='user' />) }
 ]
 

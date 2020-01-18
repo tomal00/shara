@@ -1,6 +1,16 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import { NameInput, Description } from 'Components/Common'
+import { NameInput, Description, Dropdown } from 'Components/Common'
+import { useParams, useHistory } from 'react-router-dom'
+import { AppContext } from 'Root/AppContext'
+import { Image as ImageType } from 'Types/file'
+import { makeCancelable } from 'Root/helpers'
+import { Cancelable } from 'Root/Types/cancelable'
+import { useCancelableCleanup, useWidth } from 'Root/hooks'
+import { StateSetter } from 'Types/etc'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Collection } from 'Types/collection'
+
 
 const Wrapper = styled.div`
     box-sizing: border-box;
@@ -27,7 +37,7 @@ const FileInfo = styled.div`
 
 const ImageWrapper = styled.div`
     background: white;
-    height: 100%;
+    height: calc(100% - 20px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -36,17 +46,161 @@ const ImageWrapper = styled.div`
     flex-grow: 999;
 `
 
-export default () => {
+const StyledDeleteIcon = styled(FontAwesomeIcon)`
+    padding: 0 5px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease-out;
+    margin-bottom: 5px;
 
+    &:hover {
+        color: #e53935;
+    }
+`
+
+const StyledNameInput = styled(NameInput)`
+    text-align: left;
+    width: 200px;
+    padding: 0;
+`
+
+const StyledDescription = styled(Description)`
+    max-height: 300px;
+`
+
+const activePromises: Cancelable<any>[] = []
+
+export default () => {
+    const { imageId } = useParams()
+    const history = useHistory()
+    const { api } = React.useContext(AppContext)
+    const [image, setImage]: [ImageType, StateSetter<ImageType>] = React.useState(null)
+    const [imageName, setImageName]: [string, StateSetter<string>] = React.useState('')
+    const [imageDescription, setImageDescription]: [string, StateSetter<string>] = React.useState('')
+    const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState([])
+    const width = useWidth()
+
+    useCancelableCleanup(activePromises)
+
+    React.useEffect(() => {
+        const cancelable = makeCancelable(
+            api.getImage(imageId)
+                .then(({ image }) => {
+                    setImage(image)
+                    setImageName(image.name)
+                    setImageDescription(image.description || '')
+
+                    return image.isOwner
+                })
+                .catch(e => {
+                    history.push('/account')
+                    alert('Unable to access this image')
+                })
+                .then((shouldFetchCollections: boolean) => {
+                    if (!shouldFetchCollections) return null
+                    else return api.getCollections()
+                        .then((res) => {
+                            setCollections(res.collections)
+                        })
+                })
+        )
+
+        cancelable
+            .promise
+            .catch(e => {
+                if (!e.isCanceled) console.error(e)
+            })
+
+        activePromises.push(cancelable)
+    }, [imageId])
 
     return (
         <Wrapper>
-            <FileInfo>
-                <NameInput value='ebin' />
-                <Description rows={1} />
-            </FileInfo>
+            {width > 768 && <FileInfo>
+                {
+                    !!image && <React.Fragment>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <StyledNameInput
+                                readOnly={!image.isOwner}
+                                value={imageName}
+                                onChange={(e) => setImageName(e.target.value)}
+                                onBlur={() => {
+                                    if (imageName == image.name || !image.isOwner) return
+                                    if (!imageName) {
+                                        setImageName(image.name)
+                                        return
+                                    }
+
+                                    api.updateImageInfo(image.id, imageName, image.description, image.collectionId)
+                                        .catch(err => console.error(err))
+                                    setImage({
+                                        ...image,
+                                        name: imageName
+                                    })
+                                }} />
+                            {image.isOwner && <StyledDeleteIcon
+                                icon='trash-alt'
+                                onClick={() => {
+                                    const cancelable = makeCancelable(api.deleteFile(image.id))
+                                    cancelable
+                                        .promise
+                                        .then(({ success }) => {
+                                            if (success) {
+                                                history.push('/library')
+                                            }
+                                        })
+                                        .catch(e => {
+                                            if (!e.isCanceled) console.error(e)
+                                        })
+
+                                    activePromises.push(cancelable)
+                                }} />}
+                        </div>
+                        {image.isOwner && <Dropdown
+                            placeholder='No collection'
+                            emptyDropdownText='You have no collections'
+                            items={collections.map(c => ({ name: c.name, value: c, key: c.id }))}
+                            initiallySelectedItem={
+                                image.collectionId ?
+                                    (() => {
+                                        const collection = collections.find((c) => c.id === image.collectionId)
+                                        return {
+                                            name: collection.name,
+                                            value: collection,
+                                            key: collection.id
+                                        }
+                                    })()
+                                    : null
+                            }
+                            onSelect={({ value }) => {
+                                api.updateImageInfo(image.id, image.name, image.description, value.id)
+                                    .catch(err => console.error(err))
+                            }} />}
+                        <StyledDescription
+                            rows={1}
+                            value={imageDescription}
+                            readOnly={!image.isOwner}
+                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                                setImageDescription(e.target.value)
+                            }}
+                            onBlur={() => {
+                                if (image.description == imageDescription || !image.isOwner) return
+
+                                api.updateImageInfo(image.id, image.name, imageDescription, image.collectionId)
+                                    .catch(err => console.error(err))
+
+                                setImage({
+                                    ...image,
+                                    description: imageDescription
+                                })
+                            }} />
+                    </React.Fragment>
+                }
+            </FileInfo>}
             <ImageWrapper>
-                <Image src='http://hdwarena.com/wp-content/uploads/2018/10/Natural-Full-HD-Imag.jpg' />
+                {
+                    !!image && <Image src={image.url} />
+                }
             </ImageWrapper>
         </Wrapper>
     )

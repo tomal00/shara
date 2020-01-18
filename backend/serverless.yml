@@ -1,0 +1,294 @@
+service:
+  name: screenshot-app
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  bucket: screenshot-app-files
+  accountsTable: Accounts-${self:service.name}
+  imagesTable: Images-${self:service.name}
+  collectionsTable: Collections-${self:service.name}
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-central-1
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  iamRoleStatements: # permissions for all of your functions can be set here
+    - Effect: Allow
+      Action: # Gives permission to DynamoDB tables in a specific region
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
+        - dynamodb:Scan
+        - dynamodb:Query
+      Resource: 
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.accountsTable}"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.accountsTable}/index/*"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.imagesTable}"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.imagesTable}/index/*"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.collectionsTable}"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.collectionsTable}/index/*"
+    - Effect: "Allow"
+      Action: 
+        - s3:PutObject
+        - s3:PutObjectAcl
+        - s3:DeleteObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+
+functions:
+  createAccount:
+    handler: src/Lambdas/createAccount.handler
+    events:
+      - http:
+          method: get
+          path: createAccount
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  updateAccountInfo:
+    handler: src/Lambdas/updateAccountInfo.handler
+    events:
+      - http:
+          method: post
+          path: updateAccountInfo
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+      - http:
+          path: updateAccountInfo
+          method: options
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  logIn:
+    handler: src/Lambdas/logIn.handler
+    events:
+      - http:
+          method: post
+          path: logIn
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  logOut:
+    handler: src/Lambdas/logOut.handler
+    events:
+      - http:
+          method: get
+          path: logOut
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  verifyHash:
+    handler: src/Lambdas/verifyHash.handler
+    events:
+      - http:
+          method: get
+          path: verifyHash
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  getAccountInfo:
+    handler: src/Lambdas/getAccountInfo.handler
+    events:
+      - http:
+          method: get
+          path: getAccountInfo
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  uploadFile:
+    handler: src/Lambdas/uploadFile.handler
+    events:
+      - http:
+          method: post
+          path: uploadFile
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  deleteFile:
+    handler: src/Lambdas/deleteFile.handler
+    events:
+      - http:
+          method: delete
+          path: deleteFile
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  updateFileInfo:
+    handler: src/Lambdas/updateFileInfo.handler
+    events:
+      - http:
+          method: post
+          path: updateFileInfo
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  searchForImage:
+    handler: src/Lambdas/searchForImage.handler
+    events:
+      - http:
+          method: get
+          path: searchForImage
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  getImageFile:
+    handler: src/Lambdas/getImageFile.handler
+    events:
+      - http:
+          method: get
+          path: image/{imageId}
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  getImage:
+    handler: src/Lambdas/getImage.handler
+    events:
+      - http:
+          method: get
+          path: getImage
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  createCollection:
+    handler: src/Lambdas/createCollection.handler
+    events:
+      - http:
+          method: post
+          path: createCollection
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  deleteCollection:
+    handler: src/Lambdas/deleteCollection.handler
+    events:
+      - http:
+          method: delete
+          path: deleteCollection
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  getCollections:
+    handler: src/Lambdas/getCollections.handler
+    events:
+      - http:
+          method: get
+          path: getCollections
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+  getImages:
+    handler: src/Lambdas/getImages.handler
+    events:
+      - http:
+          method: get
+          path: getImages
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+  updateCollectionInfo:
+    handler: src/Lambdas/updateCollectionInfo.handler
+    events:
+      - http:
+          method: post
+          path: updateCollectionInfo
+          cors:
+            origin: 'http://localhost:8080'
+            allowCredentials: true
+
+resources:
+  Resources:
+    AccountsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.accountsTable}
+        AttributeDefinitions:
+          - AttributeName: hash
+            AttributeType: S
+        KeySchema:
+          - AttributeName: hash
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    CollectionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.collectionsTable}
+        AttributeDefinitions:
+          - AttributeName: collectionId
+            AttributeType: S
+          - AttributeName: ownerHash
+            AttributeType: S
+        KeySchema:
+          - AttributeName: collectionId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ownerHash-collectionId
+            KeySchema:
+            - AttributeName: ownerHash
+              KeyType: HASH
+            - AttributeName: collectionId
+              KeyType: RANGE
+            Projection: 
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+    ImagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.imagesTable}
+        AttributeDefinitions:
+          - AttributeName: ownerHash
+            AttributeType: S
+          - AttributeName: collectionId
+            AttributeType: S
+          - AttributeName: imageId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: imageId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ownerHash-imageId
+            KeySchema:
+            - AttributeName: ownerHash
+              KeyType: HASH
+            - AttributeName: imageId
+              KeyType: RANGE
+            Projection: 
+              ProjectionType: ALL
+          - IndexName: collectionId-imageId
+            KeySchema:
+            - AttributeName: collectionId
+              KeyType: HASH
+            - AttributeName: imageId
+              KeyType: RANGE
+            Projection: 
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST

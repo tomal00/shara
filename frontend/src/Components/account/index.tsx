@@ -2,6 +2,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import AccountCard from 'Components/account/AccountCard'
 import LogInCard from 'Components/account/LogInCard'
+import { AppContext } from 'Root/AppContext'
 
 const Wrapper = styled.div`
     height: calc(100% - 50px);
@@ -13,12 +14,12 @@ const Wrapper = styled.div`
 `
 
 export default () => {
-    const isLogged = false
+    const { accountHash } = React.useContext(AppContext)
 
     return (
         <Wrapper>
             {
-                isLogged ?
+                !!accountHash ?
                     <AccountCard /> :
                     <LogInCard />
             }
