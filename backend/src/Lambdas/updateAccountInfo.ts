@@ -4,6 +4,7 @@ import '@babel/polyfill';
 import { getCookies, accountExists, getAccountInfo, mapDataTypesToAttrValues, withCors } from '../helpers'
 import { DynamoDB, config as awsConfig } from 'aws-sdk';
 import due from 'dynamo-update-expression'
+import { accountsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -39,7 +40,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                     }
                 },
                 ReturnValues: "NONE",
-                TableName: "Accounts-screenshot-app",
+                TableName: accountsTableName,
                 UpdateExpression,
                 ExpressionAttributeNames,
                 ExpressionAttributeValues: Object.keys(mappedValues).length ? mappedValues : undefined

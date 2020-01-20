@@ -59,7 +59,7 @@ module.exports = {
             Root: path.resolve(__dirname, '../src'),
             Components: path.resolve(__dirname, '../src/Components'),
             Themes: path.resolve(__dirname, '../src/Themes'),
-            Types: path.resolve(__dirname, '../src/Types'),
+            Types: path.resolve(__dirname, '../src/Types')
         }
     },
 }

@@ -3,6 +3,7 @@ import { AccountInfo } from './Types/account'
 import { DynamoDB } from 'aws-sdk';
 import { FullFileInfo } from './Types/file'
 import { CollectionInfo } from './Types/collection'
+import { websiteUrl, accountsTableName, imagesTableName, collectionsTableName } from '../config.json'
 
 export const getCookies = ({ headers }: APIGatewayProxyEvent): any => {
     if (!headers.Cookie) return {}
@@ -27,7 +28,7 @@ export const accountExists = async (hash: string): Promise<boolean> => {
 
     return new Promise((res, rej) => {
         dynamo.getItem({
-            TableName: 'Accounts-screenshot-app',
+            TableName: accountsTableName,
             Key: {
                 hash: {
                     S: hash
@@ -45,7 +46,7 @@ export const getAccountInfo = async (hash: string): Promise<AccountInfo> => {
 
     return new Promise((res, rej) => {
         dynamo.getItem({
-            TableName: 'Accounts-screenshot-app',
+            TableName: accountsTableName,
             Key: {
                 hash: {
                     S: hash
@@ -69,7 +70,7 @@ export const getCollectionInfo = async (collectionId: string): Promise<Collectio
 
     return new Promise((res, rej) => {
         dynamo.getItem({
-            TableName: 'Collections-screenshot-app',
+            TableName: collectionsTableName,
             Key: {
                 collectionId: {
                     S: collectionId
@@ -100,7 +101,7 @@ export const getFileInfo = async (imageId: string): Promise<FullFileInfo> => {
 
     return new Promise<FullFileInfo>((res, rej) => {
         dynamo.getItem({
-            TableName: 'Images-screenshot-app',
+            TableName: imagesTableName,
             Key: {
                 imageId: {
                     S: `${imageId}`
@@ -145,7 +146,7 @@ export const withCors = (result: any): any => ({
     ...result,
     headers: {
         ...(result.headers ? result.headers : {}),
-        "Access-Control-Allow-Origin": "http://localhost:8080",
+        "Access-Control-Allow-Origin": websiteUrl,
         "Access-Control-Allow-Credentials": true
     }
 })

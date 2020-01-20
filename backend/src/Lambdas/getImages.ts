@@ -4,6 +4,7 @@ import '@babel/polyfill';
 import { getCookies, accountExists, withCors, extractProperties } from '../helpers'
 import { config as awsConfig, DynamoDB } from 'aws-sdk';
 import { FullFileInfo } from '../Types/file'
+import { imagesTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -29,7 +30,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     try {
         const images: FullFileInfo[] = await new Promise<FullFileInfo[]>((res, rej) => {
             dynamo.query({
-                TableName: 'Images-screenshot-app',
+                TableName: imagesTableName,
                 ExpressionAttributeValues: {
                     ":h": {
                         S: accountHash

@@ -164,7 +164,8 @@ export default () => {
                                 image.collectionId ?
                                     (() => {
                                         const collection = collections.find((c) => c.id === image.collectionId)
-                                        return {
+                                        if (!collection) return null
+                                        else return {
                                             name: collection.name,
                                             value: collection,
                                             key: collection.id

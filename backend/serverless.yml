@@ -5,13 +5,14 @@ service:
 #org: your-org-name
 
 custom:
+  config: ${file(./config.json)}
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
-  bucket: screenshot-app-files
-  accountsTable: Accounts-${self:service.name}
-  imagesTable: Images-${self:service.name}
-  collectionsTable: Collections-${self:service.name}
+  bucket: ${self:custom.config.S3fileBucketName}
+  accountsTable: ${self:custom.config.accountsTableName}
+  imagesTable: ${self:custom.config.imagesTableName}
+  collectionsTable: ${self:custom.config.collectionsTableName}
 
 # Add the serverless-webpack plugin
 plugins:
@@ -57,7 +58,7 @@ functions:
           method: get
           path: createAccount
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   updateAccountInfo:
@@ -67,13 +68,13 @@ functions:
           method: post
           path: updateAccountInfo
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
       - http:
           path: updateAccountInfo
           method: options
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   logIn:
@@ -83,7 +84,7 @@ functions:
           method: post
           path: logIn
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   logOut:
@@ -93,7 +94,7 @@ functions:
           method: get
           path: logOut
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   verifyHash:
@@ -103,7 +104,7 @@ functions:
           method: get
           path: verifyHash
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   getAccountInfo:
@@ -113,7 +114,7 @@ functions:
           method: get
           path: getAccountInfo
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   uploadFile:
@@ -123,7 +124,7 @@ functions:
           method: post
           path: uploadFile
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   deleteFile:
@@ -133,7 +134,7 @@ functions:
           method: delete
           path: deleteFile
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   updateFileInfo:
@@ -143,7 +144,7 @@ functions:
           method: post
           path: updateFileInfo
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   searchForImage:
@@ -153,7 +154,7 @@ functions:
           method: get
           path: searchForImage
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   getImageFile:
@@ -163,7 +164,7 @@ functions:
           method: get
           path: image/{imageId}
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   getImage:
@@ -173,7 +174,7 @@ functions:
           method: get
           path: getImage
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   createCollection:
@@ -183,7 +184,7 @@ functions:
           method: post
           path: createCollection
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   deleteCollection:
@@ -193,7 +194,7 @@ functions:
           method: delete
           path: deleteCollection
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   getCollections:
@@ -203,7 +204,7 @@ functions:
           method: get
           path: getCollections
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
   getImages:
@@ -213,7 +214,7 @@ functions:
           method: get
           path: getImages
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
   updateCollectionInfo:
     handler: src/Lambdas/updateCollectionInfo.handler
@@ -222,7 +223,7 @@ functions:
           method: post
           path: updateCollectionInfo
           cors:
-            origin: 'http://localhost:8080'
+            origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
 resources:

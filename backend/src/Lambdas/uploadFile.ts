@@ -4,6 +4,7 @@ import '@babel/polyfill';
 import { DynamoDB, S3, config as awsConfig } from 'aws-sdk';
 import { getCookies, accountExists, withCors } from '../helpers'
 import { UploadedFile } from '../Types/file'
+import { imagesTableName, S3fileBucketName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -30,7 +31,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await new Promise<string>((res, rej) => {
             s3.putObject({
-                Bucket: 'screenshot-app-files',
+                Bucket: S3fileBucketName,
                 Key: `${hash}/images/${imageId}`,
                 Body: file.buffer,
                 ContentType: file.meta.mime
@@ -42,7 +43,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await new Promise((res, rej) => {
             dynamo.putItem({
-                TableName: 'Images-screenshot-app',
+                TableName: imagesTableName,
                 Item: {
                     ownerHash: {
                         S: hash
@@ -55,7 +56,12 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                     },
                     isPrivate: {
                         BOOL: file.isPrivate
-                    }
+                    },
+                    ...(file.meta.description ? {
+                        description: {
+                            S: file.meta.description
+                        }
+                    } : {})
                 }
             }, (err) => {
                 if (err) rej(err)

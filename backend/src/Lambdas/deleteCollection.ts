@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { DynamoDB, config as awsConfig } from 'aws-sdk';
 import { getCookies, accountExists, withCors } from '../helpers'
+import { collectionsTableName, imagesTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -22,7 +23,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await new Promise((res, rej) => {
             dynamo.deleteItem({
-                TableName: 'Collections-screenshot-app',
+                TableName: collectionsTableName,
                 Key: {
                     collectionId: {
                         S: `${collectionId}`
@@ -51,7 +52,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const imageIdsOfCollection: string[] = await new Promise((res, rej) => {
             dynamo.query({
-                TableName: 'Images-screenshot-app',
+                TableName: imagesTableName,
                 ExpressionAttributeValues: {
                     ":c": {
                         S: collectionId
@@ -71,7 +72,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await Promise.all(imageIdsOfCollection.map(i => new Promise((res, rej) => {
             dynamo.updateItem({
-                TableName: 'Images-screenshot-app',
+                TableName: imagesTableName,
                 ReturnValues: "NONE",
                 Key: {
                     imageId: {

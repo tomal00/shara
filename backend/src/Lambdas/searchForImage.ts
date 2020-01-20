@@ -5,6 +5,7 @@ import { getCookies, accountExists, withCors, extractProperties } from '../helpe
 import { DynamoDB, config as awsConfig } from 'aws-sdk';
 import { FullFileInfo } from '../Types/file'
 import * as Fuse from 'fuse.js'
+import { imagesTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -31,7 +32,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     try {
         const results = await new Promise<FullFileInfo[]>((res, rej) => {
             dynamo.query({
-                TableName: 'Images-screenshot-app',
+                TableName: imagesTableName,
                 ExpressionAttributeValues: {
                     ":h": {
                         S: hash

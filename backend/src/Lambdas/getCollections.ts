@@ -4,6 +4,7 @@ import '@babel/polyfill';
 import { getCookies, accountExists, withCors, extractProperties } from '../helpers'
 import { config as awsConfig, DynamoDB } from 'aws-sdk';
 import { CollectionInfo } from '../Types/collection'
+import { collectionsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -23,7 +24,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     try {
         const collections: CollectionInfo[] = await new Promise<CollectionInfo[]>((res, rej) => {
             dynamo.query({
-                TableName: 'Collections-screenshot-app',
+                TableName: collectionsTableName,
                 ExpressionAttributeValues: {
                     ":h": {
                         S: accountHash

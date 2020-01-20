@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { DynamoDB, config as awsConfig } from 'aws-sdk';
 import { withCors } from '../helpers'
+import { accountsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -16,7 +17,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await new Promise((res, rej) => {
             dynamo.getItem({
-                TableName: 'Accounts-screenshot-app',
+                TableName: accountsTableName,
                 Key: {
                     hash: {
                         S: accountHash

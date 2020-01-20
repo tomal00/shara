@@ -4,6 +4,7 @@ import { createHash } from 'crypto';
 import { DynamoDB, config as awsConfig } from 'aws-sdk';
 import '@babel/polyfill';
 import { withCors } from '../helpers'
+import { accountsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -18,7 +19,7 @@ export const handler: APIGatewayProxyHandler = async (_, _context) => {
 
         await new Promise((res, rej) => {
             dynamo.putItem({
-                TableName: 'Accounts-screenshot-app',
+                TableName: accountsTableName,
                 Item: {
                     hash: {
                         S: hashString

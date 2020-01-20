@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { DynamoDB, S3, config as awsConfig } from 'aws-sdk';
 import { getCookies, accountExists, withCors } from '../helpers'
+import { imagesTableName, S3fileBucketName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
@@ -23,7 +24,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await new Promise((res, rej) => {
             dynamo.deleteItem({
-                TableName: 'Images-screenshot-app',
+                TableName: imagesTableName,
                 Key: {
                     imageId: {
                         S: `${imageId}`
@@ -52,7 +53,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await new Promise((res, rej) => {
             s3.deleteObject({
-                Bucket: 'screenshot-app-files',
+                Bucket: S3fileBucketName,
                 Key: `${hash}/images/${imageId}`,
             }, (err) => {
                 if (err) rej(err)

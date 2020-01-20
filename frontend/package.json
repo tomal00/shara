@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server --open --config ./webpack-config/webpack.dev.js",
-    "build": "webpack --config ./webpack-config/webpack.prod.js"
+    "build": "webpack --config ./webpack-config/webpack.prod.js",
+    "createConfig": "node createConfig.js"
   },
   "author": "",
   "license": "ISC",
@@ -43,6 +44,7 @@
     "babel-core": "^6.26.3",
     "babel-polyfill": "^6.26.0",
     "clean-webpack-plugin": "^3.0.0",
+    "colors": "^1.4.0",
     "html-webpack-plugin": "^3.2.0",
     "react-hot-loader": "^4.12.18",
     "tslint": "^5.20.1",

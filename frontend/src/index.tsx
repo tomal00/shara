@@ -4,9 +4,16 @@ import 'normalize.css'
 import { Api } from 'Root/api'
 import App from 'Components/App'
 import icons from 'Root/icons'
+import { createBrowserHistory } from 'history';
+import { apiUrl } from '../config.json'
 
-const apiUrl = 'https://qlxwd19sx6.execute-api.eu-central-1.amazonaws.com/dev'
 const api = new Api(apiUrl)
+const history = createBrowserHistory();
+
+const path = (/#!(\/.*)$/.exec(location.hash) || [])[1];
+if (path) {
+    history.replace(path);
+}
 
 icons.init()
 
