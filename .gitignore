@@ -1,6 +1,7 @@
 # Add any directories, files, or patterns you don't want to be tracked by version control
 frontend/node_modules
 frontend/config.json
+frontend/dist
 electron-app/node_modules
 backend/config.json
 
