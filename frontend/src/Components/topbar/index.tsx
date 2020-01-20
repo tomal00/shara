@@ -16,7 +16,7 @@ const TopbarWrapper = styled.div`
     position: fixed;
     width: calc(100% - 30px);
     min-width: 270px;
-    z-index: 9999;
+    z-index: 999;
 `
 
 const SearchInputAbsoluteWrapper = styled.div`

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled from 'styled-components'
 import { selectFileFromExplorer } from 'Root/files'
-import { StateSetter } from 'Types/etc'
+import { StateSetter, NotificationSetter } from 'Types/etc'
 import { UploadedFile } from 'Types/file'
 
 const IconWrapper = styled.div`
@@ -59,7 +59,7 @@ const formatFileObject = (file: File): UploadedFile => ({
     isPrivate: false
 })
 
-export default ({ onSelectFile }: { onSelectFile: React.Dispatch<any> }) => {
+export default ({ onSelectFile, addNotification }: { onSelectFile: React.Dispatch<any>, addNotification: NotificationSetter }) => {
     const [isDraggingOver, setIsDraggingOver]: [boolean, StateSetter<boolean>] = React.useState(false)
 
     React.useEffect(() => {
@@ -81,7 +81,18 @@ export default ({ onSelectFile }: { onSelectFile: React.Dispatch<any> }) => {
             if (item.kind === 'file' && item.type.match(/image/g)) {
                 onSelectFile(formatFileObject(item.getAsFile()))
             }
-            else setIsDraggingOver(false)
+            else {
+                setIsDraggingOver(false)
+                addNotification({
+                    clearPrevious: true,
+                    notification: {
+                        level: 'error',
+                        title: 'Invalid type of file',
+                        message: 'Please, select a file of image type',
+                        autoDismiss: 10
+                    }
+                })
+            }
         }
 
         window.addEventListener("dragover", dragOverHandler);
@@ -107,6 +118,17 @@ export default ({ onSelectFile }: { onSelectFile: React.Dispatch<any> }) => {
                     const file = await selectFileFromExplorer()
                     if (file && file.type.match(/image/g)) {
                         onSelectFile(formatFileObject(file))
+                    }
+                    else {
+                        addNotification({
+                            clearPrevious: true,
+                            notification: {
+                                level: 'error',
+                                title: 'Invalid type of file',
+                                message: 'Please, select a file of image type',
+                                autoDismiss: 10
+                            }
+                        })
                     }
                 }
                 catch (e) {

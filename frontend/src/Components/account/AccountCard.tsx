@@ -3,11 +3,15 @@ import styled from 'styled-components'
 import { Button, Input, NameInput } from 'Components/Common'
 import { AppContext } from 'Root/AppContext'
 import { StateSetter } from 'Types/etc'
+import { makeCancelable } from 'Root/helpers'
+import { Cancelable } from 'Root/Types/cancelable'
+import { useCancelableCleanup } from 'Root/hooks'
 
 const AccountCard = styled.div`
     padding: 20px;
     width: 400px;
-    height: 300px;
+    /*height: 300px;*/
+    height: 220px;
     border-radius: ${p => p.theme.borderRadius}px;
     background: ${p => p.theme.colors.secondary.base};
     display: grid;
@@ -60,14 +64,25 @@ const Avatar = styled.div`
     }
 `
 
-export default () => {
+const activePromises: Cancelable<any>[] = []
+
+export default ({ onLoad }: { onLoad: () => void }) => {
     const { accountHash, api, setAccountHash } = React.useContext(AppContext)
     const [name, setName]: [string, StateSetter<string>] = React.useState('')
 
+    useCancelableCleanup(activePromises)
+
     React.useEffect(() => {
-        api.getAccountInfo()
-            .then((res) => setName(res.name))
-            .catch(err => console.error(err))
+        const cancelable = makeCancelable(api.getAccountInfo())
+        cancelable
+            .promise
+            .then((res) => {
+                setName(res.name);
+                onLoad()
+            })
+            .catch(err => { if (!err.isCanceled) console.error(err) })
+        activePromises.push(cancelable)
+
     }, [accountHash])
 
     return <AccountCard>
@@ -88,7 +103,7 @@ export default () => {
             }}>
             Logout
         </Button>
-        <CustomInput placeholder='Enter e-mail address here...' />
-        <Button>Send hash</Button>
+        {/*<CustomInput placeholder='Enter e-mail address here...' />
+        <Button>Send hash</Button>*/}
     </AccountCard>
 }

@@ -12,7 +12,7 @@ import { useHistory, Redirect } from 'react-router-dom'
 
 const Wrapper = styled.div`
     height: calc(100% - 50px);
-    padding-top: 50px;
+    top: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,7 +22,7 @@ const Wrapper = styled.div`
 const activePromises: Cancelable<any>[] = []
 
 export default () => {
-    const { api, accountHash } = React.useContext(AppContext)
+    const { api, accountHash, addNotification } = React.useContext(AppContext)
 
     if (!accountHash) {
         return <Redirect to='/account' />
@@ -54,6 +54,7 @@ export default () => {
                     activePromises.push(cancelable)
                 }} />)
             : (<UploadView
-                onSelectFile={setFile} />)}
+                onSelectFile={setFile}
+                addNotification={addNotification} />)}
     </Wrapper>
 }

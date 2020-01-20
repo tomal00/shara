@@ -1,26 +1,40 @@
 import * as React from 'react'
 import { Api } from 'Root/api'
-
+import { NotificationSetter } from 'Types/etc'
 
 interface InitialContext {
     api?: Api,
     accountHash?: string,
-    setAccountHash: any
+    setAccountHash: (hash: string) => void,
+    addNotification: NotificationSetter
 }
 
 const InitialContext: InitialContext = {
-    setAccountHash: () => { }
+    setAccountHash: () => { },
+    addNotification: () => { }
 }
 
 export const AppContext = React.createContext(InitialContext)
 
-export const Provider = ({ children, api, accountHash }: { children: React.ReactNode, api: Api, accountHash?: string }) => {
+export const Provider = (
+    {
+        children,
+        api,
+        accountHash,
+        addNotification
+    }: {
+        children: React.ReactNode,
+        api: Api,
+        accountHash?: string,
+        addNotification: NotificationSetter
+    }) => {
     const [hash, setAccountHash] = React.useState(accountHash)
 
     return <AppContext.Provider value={{
         api,
         accountHash: hash,
-        setAccountHash
+        setAccountHash,
+        addNotification
     }}>
         {children}
     </AppContext.Provider>

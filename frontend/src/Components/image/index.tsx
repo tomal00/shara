@@ -10,12 +10,12 @@ import { useCancelableCleanup, useWidth } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collection } from 'Types/collection'
-
+import Loading from 'Components/Loading'
 
 const Wrapper = styled.div`
     box-sizing: border-box;
-    padding-top: 50px;
-    height: 100%;
+    top: 50px;
+    height: calc(100% - 50px);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -73,11 +73,12 @@ const activePromises: Cancelable<any>[] = []
 export default () => {
     const { imageId } = useParams()
     const history = useHistory()
-    const { api } = React.useContext(AppContext)
+    const { api, addNotification } = React.useContext(AppContext)
     const [image, setImage]: [ImageType, StateSetter<ImageType>] = React.useState(null)
     const [imageName, setImageName]: [string, StateSetter<string>] = React.useState('')
     const [imageDescription, setImageDescription]: [string, StateSetter<string>] = React.useState('')
-    const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState([])
+    const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
+
     const width = useWidth()
 
     useCancelableCleanup(activePromises)
@@ -94,7 +95,15 @@ export default () => {
                 })
                 .catch(e => {
                     history.push('/account')
-                    alert('Unable to access this image')
+                    addNotification({
+                        clearPrevious: true,
+                        notification: {
+                            level: 'error',
+                            title: 'Unable to show image',
+                            message: 'This image is either private or doesn\'t exist',
+                            autoDismiss: 10
+                        }
+                    })
                 })
                 .then((shouldFetchCollections: boolean) => {
                     if (!shouldFetchCollections) return null
@@ -113,6 +122,12 @@ export default () => {
 
         activePromises.push(cancelable)
     }, [imageId])
+
+    if (!image || (image.isOwner && !collections)) {
+        return <Wrapper>
+            <Loading />
+        </Wrapper>
+    }
 
     return (
         <Wrapper>

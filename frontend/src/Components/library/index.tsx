@@ -10,12 +10,14 @@ import { useCancelableCleanup, useWidth } from 'Root/hooks'
 import { Image } from 'Types/file'
 import { StateSetter } from 'Types/etc'
 import { Redirect } from 'react-router-dom'
+import Loading from 'Components/Loading'
 
 const Wrapper = styled.div`
     position: relative;
     display: flex;
     justify-content: stretch;
-    padding-top: 50px;
+    top: 50px;
+    min-height: calc(100% - 50px);
 `
 
 const activePromises: Cancelable<any>[] = []
@@ -30,9 +32,9 @@ export default () => {
     }
 
     const [selectedCollectionId, selectCollection]: [string, StateSetter<string>] = React.useState(null)
-    const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState([])
-    const [images, setImages]: [Image[], StateSetter<Image[]>] = React.useState([])
-    const selectedCollection = collections.find(c => c.id === selectedCollectionId)
+    const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
+    const [images, setImages]: [Image[], StateSetter<Image[]>] = React.useState(null)
+    const selectedCollection = collections && collections.find(c => c.id === selectedCollectionId)
 
     useCancelableCleanup(activePromises)
 
@@ -62,6 +64,12 @@ export default () => {
 
     const currentCollectionImages = selectedCollection ?
         images.filter(i => i.collectionId === selectedCollectionId) : images
+
+    if (!images || !collections) {
+        return <Wrapper>
+            <Loading />
+        </Wrapper>
+    }
 
     return (
         <Wrapper>

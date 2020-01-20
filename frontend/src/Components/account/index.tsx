@@ -3,10 +3,12 @@ import styled from 'styled-components'
 import AccountCard from 'Components/account/AccountCard'
 import LogInCard from 'Components/account/LogInCard'
 import { AppContext } from 'Root/AppContext'
+import { StateSetter } from 'Types/etc'
+import Loading from 'Components/Loading'
 
 const Wrapper = styled.div`
     height: calc(100% - 50px);
-    padding-top: 50px;
+    top: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -15,12 +17,16 @@ const Wrapper = styled.div`
 
 export default () => {
     const { accountHash } = React.useContext(AppContext)
+    const [isLoaded, setIsLoaded]: [boolean, StateSetter<boolean>] = React.useState(!accountHash)
 
     return (
         <Wrapper>
             {
+                !isLoaded && <Loading />
+            }
+            {
                 !!accountHash ?
-                    <AccountCard /> :
+                    <AccountCard onLoad={() => setIsLoaded(true)} /> :
                     <LogInCard />
             }
         </Wrapper>
