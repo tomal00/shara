@@ -28,6 +28,24 @@ const App = hot(({ className, api, accountHash }: { className?: string, api: Api
         }
         notificationSystem.current.addNotification(notification)
     }, [])
+    React.useEffect(() => {
+        if (!JSON.parse(localStorage.getItem('cookies'))) {
+            addNotification({
+                clearPrevious: false, notification: {
+                    level: 'info',
+                    title: 'Cookies',
+                    message: 'This web application utilizes cookies in order to function properly.',
+                    autoDismiss: 0,
+                    action: {
+                        label: 'I understand',
+                        callback: () => {
+                            localStorage.setItem('cookies', 'true')
+                        }
+                    }
+                }
+            })
+        }
+    }, [])
 
     return (
         <ContextProvider addNotification={addNotification} api={api} accountHash={accountHash}>
