@@ -63,8 +63,8 @@ interface CollectionItemProps {
 
 export default ({ name, /*itemCount,*/ isActive, onSelect, onDelete }: CollectionItemProps) => {
 
-    return <ListItem className={isActive ? 'active' : ''} >
-        <CollectionName onClick={onSelect}>{name}</CollectionName>
+    return <ListItem onClick={onSelect} className={isActive ? 'active' : ''} >
+        <CollectionName>{name}</CollectionName>
         <StyledIcon icon='trash-alt' onClick={onDelete} />
         {/*<ItemCount>{itemCount}</ItemCount>*/}
     </ListItem>
@@ -78,8 +78,8 @@ interface DefaultCollectionProps {
 }
 
 export const DefaultCollection = ({ onSelect, isActive }: DefaultCollectionProps) => {
-    return <ListItem className={isActive ? 'active' : ''} >
-        <CollectionName onClick={onSelect}>All images</CollectionName>
+    return <ListItem onClick={onSelect} className={isActive ? 'active' : ''} >
+        <CollectionName>All images</CollectionName>
         {/*<ItemCount>{itemCount}</ItemCount>*/}
     </ListItem>
 }
