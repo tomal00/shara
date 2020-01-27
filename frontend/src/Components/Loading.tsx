@@ -11,6 +11,7 @@ const Wrapper = styled.div`
     justify-content: center;
     position: absolute;
     z-index: 997;
+    background: ${p => p.theme.colors.grey.light};
 `
 
 const StyledIcon = styled(FontAwesomeIcon)`

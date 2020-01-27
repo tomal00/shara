@@ -22,11 +22,17 @@ const CollectionTitle = styled.div`
     width: calc(100% - 80px);
     margin: 40px 40px 20px 40px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
 `
 
 const StyledNameInput = styled(NameInput)`
     font-size: 25px;
+    text-align: left;
+    width: 100%;
+
+    ${p => p.readOnly ? `
+        border: none!important;
+    ` : ``}
 `
 
 const CollectionWrapper = styled.div`

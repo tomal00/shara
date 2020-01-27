@@ -1,6 +1,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 module.exports = {
     entry: {
@@ -33,7 +34,13 @@ module.exports = {
                     { loader: 'style-loader' },
                     { loader: 'css-loader' }
                 ]
-            }
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    { loader: 'file-loader' },
+                ],
+            },
         ]
     },
     plugins: [
@@ -41,6 +48,8 @@ module.exports = {
             template: './src/template.html'
         }),
         new CleanWebpackPlugin(),
+        new FaviconsWebpackPlugin('./assets/favicon.png') // svg works too!
+
     ],
     optimization: {
         splitChunks: {
@@ -59,7 +68,8 @@ module.exports = {
             Root: path.resolve(__dirname, '../src'),
             Components: path.resolve(__dirname, '../src/Components'),
             Themes: path.resolve(__dirname, '../src/Themes'),
-            Types: path.resolve(__dirname, '../src/Types')
+            Types: path.resolve(__dirname, '../src/Types'),
+            Assets: path.resolve(__dirname, '../assets')
         }
     },
 }

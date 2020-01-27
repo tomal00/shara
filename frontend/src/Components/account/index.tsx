@@ -7,12 +7,13 @@ import { StateSetter } from 'Types/etc'
 import Loading from 'Components/Loading'
 
 const Wrapper = styled.div`
-    height: calc(100% - 50px);
+    height: calc(100% - 100px);
     top: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    background-color: ${p => p.theme.colors.grey.light};
 `
 
 export default () => {

@@ -8,23 +8,27 @@ import { Cancelable } from 'Root/Types/cancelable'
 import { useCancelableCleanup } from 'Root/hooks'
 
 const AccountCard = styled.div`
-    padding: 20px;
+    padding: 50px 80px;
     width: 400px;
     /*height: 300px;*/
-    height: 220px;
+    height: fit-content;
     border-radius: ${p => p.theme.borderRadius}px;
     background: ${p => p.theme.colors.secondary.base};
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-rows: 25px 120px 30px 30px 30px;
+    grid-template-rows: 25px 120px 43px 43px;
     grid-row-gap: 15px;
     align-items: center;
     grid-row-gap: 20px;
     grid-column-gap: 20px;
+    border: 1px solid ${p => p.theme.colors.grey.base};
+    background: ${p => p.theme.colors.white.base};
 `
 
 const CustomInput = styled(Input)`
-width: 100%;
+    width: 100%;
+    height: 100%;
+    grid-column: span 2;
 `
 
 const Avatar = styled.div`
@@ -34,14 +38,14 @@ const Avatar = styled.div`
     justify-self: center;
     border-radius: 50%;
     grid-column: span 2;
-    border: 3px solid ${p => p.theme.colors.primary.base};
+    border: 3px solid ${p => p.theme.colors.secondary.base};
     position: relative;
     overflow: hidden;
     transition: border-color 0.2s ease-out;
     align-self: start;
 
     &:hover {
-        border-color: ${p => p.theme.colors.primary.dark};
+        border-color: ${p => p.theme.colors.secondary.dark};
 
         &::after {
             opacity: 0.5;
@@ -62,6 +66,13 @@ const Avatar = styled.div`
         background-size: cover;
         background-image: url(https://images-na.ssl-images-amazon.com/images/I/51GfWevWFiL._SX425_.jpg);
     }
+`
+
+const StyledNameInput = styled(NameInput)`
+    grid-column: span 2;
+`
+const StyledButton = styled(Button)`
+    grid-column: span 2;
 `
 
 const activePromises: Cancelable<any>[] = []
@@ -86,7 +97,7 @@ export default ({ onLoad }: { onLoad: () => void }) => {
     }, [accountHash])
 
     return <AccountCard>
-        <NameInput
+        <StyledNameInput
             placeholder='Nickname'
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -96,13 +107,13 @@ export default ({ onLoad }: { onLoad: () => void }) => {
             }} />
         <Avatar />
         <CustomInput value={accountHash} readOnly />
-        <Button
+        <StyledButton
             onClick={() => {
                 api.logOut()
                 setAccountHash(null)
             }}>
             Logout
-        </Button>
+        </StyledButton>
         {/*<CustomInput placeholder='Enter e-mail address here...' />
         <Button>Send hash</Button>*/}
     </AccountCard>

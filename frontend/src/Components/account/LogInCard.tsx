@@ -8,14 +8,15 @@ import { useCancelableCleanup } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
 
 const LogInCard = styled.div`
-    padding: 20px;
+    padding: 50px 80px;
     width: 400px;
     height: fit-content;
     border-radius: ${p => p.theme.borderRadius}px;
-    background: ${p => p.theme.colors.secondary.base};
+    background: ${p => p.theme.colors.white.base};
+    border: 1px solid ${p => p.theme.colors.grey.base};
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-rows: auto 30px 30px;
+    grid-template-rows: auto auto 43px 43px;
     grid-row-gap: 15px;
     align-items: center;
     grid-row-gap: 20px;
@@ -24,12 +25,25 @@ const LogInCard = styled.div`
 
 const RegisterButton = styled(Button)`
     grid-column: span 2;
-    justify-self: center;
-    padding: 0 15px;
+    padding: 10px 15px;
+    justify-self: stretch;
+`
+
+const LogInButton = styled(Button)`
 `
 
 const TextWrapper = styled.div`
     grid-column: span 2;
+`
+
+const StyledInput = styled(Input)`
+    height: 100%;
+`
+
+const Title = styled.div`
+    grid-column: span 2;
+    font-size: 26px;
+    text-align: center;
 `
 
 const activePromises: Cancelable<any>[] = []
@@ -41,15 +55,16 @@ export default () => {
     useCancelableCleanup(activePromises)
 
     return <LogInCard>
+        <Title>Not logged in</Title>
         <TextWrapper>
             You are currently not logged into any account. You can either log into an account by
             entering it's hash and clicking the "Log in" button or you can generate a new account.
         </TextWrapper>
-        <Input
+        <StyledInput
             value={hash}
             onChange={(e) => setHash(e.target.value)}
             placeholder='account hash' />
-        <Button
+        <LogInButton
             onClick={() => {
                 const cancelable = makeCancelable(api.logIn(hash))
                 cancelable
@@ -65,7 +80,7 @@ export default () => {
                 activePromises.push(cancelable)
             }}>
             Log in
-        </Button>
+        </LogInButton>
         <RegisterButton onClick={() => {
             const cancelable = makeCancelable(api.createAccount())
 

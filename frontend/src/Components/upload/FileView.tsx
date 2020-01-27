@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { UploadedFile } from 'Types/file'
-import { ExpandableTextArea, NameInput, Button, Description } from 'Components/Common'
+import { NameInput, Button, Description } from 'Components/Common'
 import { StateSetter } from 'Types/etc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
@@ -17,33 +17,38 @@ const ViewWrapper = styled.div`
     width: 600px;
     max-width: 90%;
     position: relative;
-    background: ${p => p.theme.colors.secondary.base};
+    background: ${p => p.theme.colors.white.base};
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
     box-sizing: border-box;
     border-radius: ${p => p.theme.borderRadius}px;
+    border: 1px solid ${p => p.theme.colors.grey.base};
 `
 
 const ImagePreview = styled.img`
     max-width: 100%;
-    background-color: white;
-    padding: 10px;
+    background-color: ${p => p.theme.colors.white.base};
     border-radius: ${p => p.theme.borderRadius}px;
     max-height: 40vh;
+    border: 2px solid ${p => p.theme.colors.grey.light};
+    overflow: hidden;
 `
 
 const UploadControls = styled.div`
-
+    align-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `
 
 
 const UploadButton = styled(Button)`
-    height: 40px;
+    height: 43px;
     padding: 0 15px;
-    margin-left: 20px;
-    background-color: ${p => p.theme.colors.primary.light};
+    margin-left: 10px;
+    background-color: ${p => p.theme.colors.primary.base};
     color: ${p => p.theme.colors.primary.text};
 
     &:hover {
@@ -54,24 +59,37 @@ const UploadButton = styled(Button)`
 const CancelButton = styled(Button)`
     height: 40px;
     padding: 0 15px;
-    margin-right: 20px;
-    color: ${p => p.theme.colors.secondary.text};
+    margin-right: 10px;
+    background-color: ${p => p.theme.colors.secondary.base};
 
     &:hover {
-        opacity: 0.6;
-        color: white;
         background-color: ${p => p.theme.colors.secondary.dark};
     }
 `
 
 const FileName = styled(NameInput)`
     margin: 20px;
-    text-align: left;
+`
+
+const AccessControlsWrapper = styled.div`
+    font-size: 18px;
+    cursor: pointer;
+    user-select: none;
 `
 
 const StyledIcon = styled(FontAwesomeIcon)`
-    cursor: pointer;
     width: 20px!important;
+    margin-right: 5px;
+    transition: color 0.2s ease-out;
+    position: relative;
+
+    ${AccessControlsWrapper}:hover & {
+        color: ${p => p.theme.colors.secondary.base};
+    }
+
+    &.public {
+        left: 2px;
+    }
 `
 
 
@@ -82,9 +100,6 @@ export default ({ file, onCancel, onUpload }: FileViewProps) => {
 
     return <ViewWrapper>
         <div>
-            <StyledIcon
-                icon={isPrivate ? 'lock' : 'lock-open'}
-                onClick={() => setPrivate(!isPrivate)} />
             <FileName
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
@@ -104,21 +119,29 @@ export default ({ file, onCancel, onUpload }: FileViewProps) => {
                     setDescription(target.value)
                 }} />
         <UploadControls>
-            <CancelButton onClick={onCancel}>Cancel</CancelButton>
-            <UploadButton
-                onClick={() => {
-                    onUpload({
-                        ...file,
-                        name: fileName,
-                        meta: {
-                            ...file.meta,
-                            description: description
-                        },
-                        isPrivate
-                    })
-                }}>
-                Upload
+            <AccessControlsWrapper onClick={() => setPrivate(!isPrivate)} >
+                <StyledIcon
+                    className={isPrivate ? 'private' : 'public'}
+                    icon={isPrivate ? 'lock' : 'lock-open'} />
+                <span>{isPrivate ? 'This image will be private' : 'This image will be public'}</span>
+            </AccessControlsWrapper>
+            <div>
+                <CancelButton onClick={onCancel}>Cancel</CancelButton>
+                <UploadButton
+                    onClick={() => {
+                        onUpload({
+                            ...file,
+                            name: fileName,
+                            meta: {
+                                ...file.meta,
+                                description: description
+                            },
+                            isPrivate
+                        })
+                    }}>
+                    Upload
             </UploadButton>
+            </div>
         </UploadControls>
     </ViewWrapper>
 }

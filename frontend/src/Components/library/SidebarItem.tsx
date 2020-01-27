@@ -7,19 +7,23 @@ const ListItem = styled.li`
     padding: 5px 10px;
     margin: 10px;
     background-color: inherit;
-    transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: ${p => p.theme.borderRadius}px;
+    border: 2px solid transparent;
+    cursor: pointer;
 
     &:hover {
-        background-color: ${p => p.theme.colors.secondary.dark};
+        background-color: ${p => p.theme.colors.grey.base};
+        border-color: ${p => p.theme.colors.grey.base};
     }
 
     &.active {
-        background-color: ${p => p.theme.colors.primary.light};
-        color: ${p => p.theme.colors.primary.text};
+        background-color: ${p => p.theme.colors.grey.base};
+        border-color: ${p => p.theme.colors.grey.dark};
+        cursor: default;
     }
 `
 
@@ -30,11 +34,6 @@ const CollectionName = styled.div`
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-right: 15px;
-    cursor: pointer;
-
-    ${ListItem}.active & {
-        cursor: default;
-    }
 `
 
 const ItemCount = styled.div`

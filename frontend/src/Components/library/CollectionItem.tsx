@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`
     position: relative;
-    background-color: ${p => p.theme.colors.secondary.base};
+    background-color: ${p => p.theme.colors.grey.base};
     border-radius: ${p => p.theme.borderRadius}px;
     padding: 10px;
     height: 180px;
@@ -18,9 +18,16 @@ const Wrapper = styled.div`
     display: inline-block;
 
     &:hover {
-        background-color: ${p => p.theme.colors.primary.light};
+        &:nth-child(even) {
+            background-color: ${p => p.theme.colors.primary.dark};
+        }
+        &:nth-child(odd) {
+            background-color: ${p => p.theme.colors.secondary.dark};
+        }
         color: ${p => p.theme.colors.primary.text};
     }
+
+    &:
 `
 const Image = styled.div`
     background-image: url(${(p: { imageUrl: string }) => p.imageUrl});

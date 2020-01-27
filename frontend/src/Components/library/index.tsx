@@ -18,6 +18,7 @@ const Wrapper = styled.div`
     justify-content: stretch;
     top: 50px;
     min-height: calc(100% - 50px);
+    background: ${p => p.theme.colors.grey.light};
 `
 
 const activePromises: Cancelable<any>[] = []

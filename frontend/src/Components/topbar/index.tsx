@@ -7,8 +7,8 @@ import { AppContext } from 'Root/AppContext'
 import { useWidth } from 'Root/hooks'
 
 const TopbarWrapper = styled.div`
-    height: 50px;
-    background-color: ${p => p.theme.colors.primary.base};
+    height: 48px;
+    background-color: ${p => p.theme.colors.white.base};
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,6 +17,7 @@ const TopbarWrapper = styled.div`
     width: calc(100% - 30px);
     min-width: 270px;
     z-index: 999;
+    border-bottom: 2px solid ${p => p.theme.colors.grey.base}; 
 `
 
 const SearchInputAbsoluteWrapper = styled.div`

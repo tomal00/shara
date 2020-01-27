@@ -15,17 +15,20 @@ import Loading from 'Components/Loading'
 const Wrapper = styled.div`
     box-sizing: border-box;
     top: 50px;
-    height: calc(100% - 50px);
+    height: calc(100% - 100px);
     position: relative;
     overflow: hidden;
     display: flex;
     border-radius: ${p => p.theme.borderRadius}px;
-    background: ${p => p.theme.colors.secondary.base};
+    background: ${p => p.theme.colors.grey.light};
 `
 
 const Image = styled.img`
     max-width: 100%;
     max-height: calc(100% - 82px);
+    border: 2px solid ${p => p.theme.colors.grey.base};
+    border-radius: ${p => p.theme.borderRadius}px;
+    background-color: ${p => p.theme.colors.white.base};
 `
 
 const FileInfo = styled.div`
@@ -42,8 +45,8 @@ const ImageWrapper = styled.div`
     align-items: center;
     justify-content: center;
     padding: 10px;
-    border-radius: ${p => p.theme.borderRadius}px;
     flex-grow: 999;
+    background-color: inherit;
 `
 
 const StyledDeleteIcon = styled(FontAwesomeIcon)`
@@ -193,6 +196,7 @@ export default () => {
                                     .catch(err => console.error(err))
                             }} />}
                         <StyledDescription
+                            placeholder='description...'
                             rows={1}
                             value={imageDescription}
                             readOnly={!image.isOwner}

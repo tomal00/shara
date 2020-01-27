@@ -12,14 +12,14 @@ export const Button = styled.button`
     margin: 0;
     padding: 0;
     align-self: stretch;
-    background-color: ${p => p.theme.colors.secondary.dark};
+    background-color: ${p => p.theme.colors.primary.base};
+    color: ${p => p.theme.colors.primary.text};
     border-radius: ${p => p.theme.borderRadius}px;
     transition: background-color 0.2s ease-out, color 0.2s ease-out, opacity 0.2s ease-out;
     cursor: pointer;
 
     &:hover {
-        background-color: ${p => p.theme.colors.primary.base};
-        color: ${p => p.theme.colors.primary.text};
+        background-color: ${p => p.theme.colors.primary.dark};
     }
 
     &:focus {
@@ -31,16 +31,16 @@ export const Input = styled.input`
     border: none;
     margin: 0;
     height: 30px;
-    background-color: ${p => p.theme.colors.secondary.light};
+    background-color: ${p => p.theme.colors.white.base};
     border: 2px solid;
-    border-color: ${p => p.theme.colors.secondary.dark};
+    border-color: ${p => p.theme.colors.grey.dark};
     transition: border-color 0.2s ease-out;
     border-radius: ${p => p.theme.borderRadius}px;
     padding: 0 5px;
     text-overflow: ellipsis;
 
     &:hover:not(:focus) {
-        border-color: ${p => p.theme.colors.primary.light};
+        border-color: ${p => p.theme.colors.primary.base};
     }
 
     &:focus {
@@ -49,11 +49,11 @@ export const Input = styled.input`
 
     ${p => p.readOnly ? `
         &:hover {
-            border-color: ${p.theme.colors.primary.light};
+            border-color: ${p.theme.colors.primary.base};
         }
     ` : `
         &:focus {
-            border-color: ${p.theme.colors.primary.base};
+            border-color: ${p.theme.colors.primary.dark};
         }
     `}
 `
@@ -69,17 +69,16 @@ export const NameInput = styled.input`
     transition: border-color 0.2s ease-out;
     padding: 0 5px;
     text-overflow: ellipsis;
-    grid-column: span 2;
     background: transparent;
     border-bottom: 2px solid transparent;
 
     &:hover:not(:focus) {
-        border-color: ${p => p.theme.colors.primary.light};
+        border-color: ${p => p.theme.colors.primary.base};
     }
 
     &:focus {
         outline-width: 0;
-        border-color: ${p => p.theme.colors.primary.base};
+        border-color: ${p => p.theme.colors.primary.dark};
     }
 `
 
@@ -105,9 +104,9 @@ export const Description = styled(ExpandableTextArea)`
     outline: none!important;
     resize: none!important;
     padding: 5px;
-    background-color: ${p => p.theme.colors.secondary.light};
+    background-color: ${p => p.theme.colors.white.base};
     border: 2px solid;
-    border-color: ${p => p.theme.colors.secondary.dark};
+    border-color: ${p => p.theme.colors.grey.dark};
     transition: border-color 0.2s ease-out;
     border-radius: ${p => p.theme.borderRadius}px;
     max-height: 176px;
@@ -115,7 +114,7 @@ export const Description = styled(ExpandableTextArea)`
     box-sizing: content-box;
 
     &:hover:not(:focus) {
-        border-color: ${p => p.theme.colors.primary.light};
+        border-color: ${p => p.theme.colors.primary.base};
     }
 
     &:focus {
@@ -124,11 +123,11 @@ export const Description = styled(ExpandableTextArea)`
 
     ${p => p.readOnly ? `
         &:hover {
-            border-color: ${p.theme.colors.primary.light};
+            border-color: ${p.theme.colors.primary.base};
         }
     ` : `
         &:focus {
-            border-color: ${p.theme.colors.primary.base};
+            border-color: ${p.theme.colors.primary.dark};
         }
     `}
 `
@@ -159,20 +158,33 @@ const DropdownItems = styled.ul`
     position: absolute;
     list-style-type: none;
     margin: 0;
-    background-color: ${p => p.theme.colors.secondary.light};
-    border: 2px solid ${p => p.theme.colors.secondary.dark};
+    background-color: ${p => p.theme.colors.white.base};
+    border: 2px solid ${p => p.theme.colors.grey.dark};
     border-radius: ${p => p.theme.borderRadius}px;
     width: calc(100% - 4px);
-    padding: 5px 0;
+    padding: 0;
+    transition: background-color 0.2s ease-out;
+
+    &:hover {
+        border-color: ${p => p.theme.colors.primary.base};
+    }
 `
 
 const DropdownItem = styled.li`
-    transition: color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
     cursor: pointer;
     padding: 5px 10px;
 
-    &:hover {
-        color: ${p => p.theme.colors.primary.base};
+    &:first-child {
+        padding-top: 10px;
+    }
+
+    &:last-child {
+        padding-bottom: 10px;
+    }
+
+    &:hover:not(.empty) {
+        background-color: ${p => p.theme.colors.grey.base};
     }
 `
 
@@ -221,7 +233,7 @@ export const Dropdown = (
                             {i.name}
                         </DropdownItem>
                     ))) : (
-                            <DropdownItem style={{ color: 'inherit', cursor: 'unset' }} >
+                            <DropdownItem className='empty' style={{ color: 'inherit', cursor: 'unset' }} >
                                 {emptyDropdownText}
                             </DropdownItem>
                         )

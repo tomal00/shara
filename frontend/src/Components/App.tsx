@@ -14,7 +14,8 @@ import Account from 'Components/account'
 import About from 'Components/about'
 import Upload from 'Components/upload'
 import Image from 'Components/image'
-import { lightTheme } from 'Themes/LightTheme'
+import Footer from 'Components/footer'
+import { lightTheme } from 'Root/Themes/DefaultTheme'
 import { Provider as ContextProvider } from 'Root/AppContext'
 import { Api } from 'Root/api'
 import * as NotificationSystem from 'react-notification-system';
@@ -57,6 +58,7 @@ const App = hot(({ className, api, accountHash }: { className?: string, api: Api
                         <Switch>
                             <Route exact path='/account'>
                                 <Account />
+                                <Footer />
                             </Route>
                             <Route exact path='/upload'>
                                 <Upload />
@@ -66,9 +68,11 @@ const App = hot(({ className, api, accountHash }: { className?: string, api: Api
                             </Route>
                             <Route exact path='/about'>
                                 <About />
+                                <Footer />
                             </Route>
                             <Route path='/image/:imageId'>
                                 <Image />
+                                <Footer />
                             </Route>
                             <Redirect from='/' to='/upload' />
                         </Switch>

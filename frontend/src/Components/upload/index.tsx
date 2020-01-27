@@ -17,6 +17,7 @@ const Wrapper = styled.div`
     align-items: center;
     justify-content: center;
     position: relative;
+    background: ${p => p.theme.colors.grey.light};
 `
 
 const activePromises: Cancelable<any>[] = []

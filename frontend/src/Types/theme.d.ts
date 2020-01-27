@@ -9,7 +9,9 @@ export interface Theme {
     colors: {
         primary: ColorTheme
         secondary: ColorTheme
-        default?: ColorTheme
+        white: ColorTheme,
+        black: ColorTheme,
+        grey: ColorTheme
     },
     borderRadius: number
 }

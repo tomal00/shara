@@ -6,7 +6,6 @@ import SidebarItem, { DefaultCollection } from 'Root/Components/library/SidebarI
 const Wrapper = styled.div`
     height: 100%;
     width: 250px;
-    background-color: ${p => p.theme.colors.secondary.base};
     display: inline-block;
     position: fixed;
 `
@@ -31,7 +30,7 @@ const CreateCollectionButton = styled.div`
     user-select: none;
 
     &:hover {
-        background-color: ${p => p.theme.colors.secondary.dark};
+        background-color: ${p => p.theme.colors.grey.base};
     }
 `
 

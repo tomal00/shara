@@ -12,28 +12,31 @@ const Input = styled.input`
     padding: 0 5px 0 33px;
     height: 100%;
     border: none;
-    background-color: ${p => p.theme.colors.primary.light};
+    background-color: ${p => p.theme.colors.secondary.base};
     color: ${p => p.theme.colors.primary.text};
     border-radius: ${p => p.theme.borderRadius}px;
     text-overflow: ellipsis;
     width: inherit;
+    transition: background-color: 0.2s ease-out;
+    font-size: 16px;
 
     &:focus {
         outline-width: 0;
+        background-color: ${p => p.theme.colors.secondary.dark};
 
         &::placeholder {
-            color: ${p => p.theme.colors.primary.dark};
+            color: ${p => p.theme.colors.secondary.light};
         }
 
         &.empty {
-            color: ${p => p.theme.colors.primary.dark};
+            color: ${p => p.theme.colors.secondary.light};
         }
     }
 
     &::placeholder {
         font-size: 15px;
         transition: color 0.2s ease-out;
-        color: ${p => p.theme.colors.primary.text};
+        color: ${p => p.theme.colors.white.base};
     }
 
     &.has-results {
@@ -45,7 +48,7 @@ const Input = styled.input`
 const InputWrapper = styled.div`
     height: 100%;
     position: relative;
-    padding: 8px 0;
+    padding: 4px 0;
     box-sizing: border-box;
     font-size: 18px;
     margin-right: 20px;
@@ -56,11 +59,11 @@ const StyledIcon = styled(FontAwesomeIcon)`
     position: absolute;
     top: calc(50% - 9px);
     left: 10px;
-    color: ${p => p.theme.colors.primary.text};
+    color: ${p => p.theme.colors.white.base};
     transition: color 0.2s ease-out;
 
     ${InputWrapper}.input-focused & {
-        color: ${p => p.theme.colors.primary.dark};
+        color: ${p => p.theme.colors.secondary.light};
     }
 
     &.can-search {
@@ -73,30 +76,34 @@ const ResultList = styled.ul`
     padding: 0;
     margin: 0;
     position: absolute
-    background-color: ${p => p.theme.colors.secondary.light};
+    background-color: ${p => p.theme.colors.white.base};
     width: calc(100% - 4px);
-    border: 2px solid ${p => p.theme.colors.primary.light};
+    border: 2px solid ${p => p.theme.colors.secondary.base};
     border-bottom-left-radius: ${p => p.theme.borderRadius}px;
     border-bottom-right-radius: ${p => p.theme.borderRadius}px;
+
+    ${InputWrapper}.input-focused & {
+        border-color: ${p => p.theme.colors.secondary.dark};
+    }
 `
 
 const ResultItem = styled.li`
     font-size: medium;
     padding: 5px 10px;
     user-select: none;
-    transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
-    &:hover {
-        background-color: ${p => p.theme.colors.secondary.base};
-    }
 `
 
 const ItemName = styled.span`
     font-weight: bold;
+
+    ${ResultItem}:hover & {
+        color: ${p => p.theme.colors.secondary.light};
+    }
 `
 
 const ItemDescription = styled.span`
@@ -152,7 +159,7 @@ export default () => {
                 }}
                 className={`${searchResults.length ? 'has-results' : ''} ${isInputEmpty ? 'empty' : ''}`} />
             {
-                searchResults && <ResultList>
+                !!searchResults.length && <ResultList>
                     {
                         searchResults.map(r => (
                             <ResultItem
