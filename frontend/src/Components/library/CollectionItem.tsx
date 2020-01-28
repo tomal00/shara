@@ -34,9 +34,7 @@ const Image = styled.div`
     height: 150px;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: contain;
-    margin: 10px;
-    margin-top: 0;
+    background-size: cover;
     background-color: white;
 `
 

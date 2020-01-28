@@ -17,6 +17,7 @@ export const Button = styled.button`
     border-radius: ${p => p.theme.borderRadius}px;
     transition: background-color 0.2s ease-out, color 0.2s ease-out, opacity 0.2s ease-out;
     cursor: pointer;
+    outline: none!important;
 
     &:hover {
         background-color: ${p => p.theme.colors.primary.dark};
@@ -38,6 +39,7 @@ export const Input = styled.input`
     border-radius: ${p => p.theme.borderRadius}px;
     padding: 0 5px;
     text-overflow: ellipsis;
+    outline: none!important;
 
     &:hover:not(:focus) {
         border-color: ${p => p.theme.colors.primary.base};
@@ -71,6 +73,7 @@ export const NameInput = styled.input`
     text-overflow: ellipsis;
     background: transparent;
     border-bottom: 2px solid transparent;
+    outline: none!important;
 
     ${p => p.readOnly ? `
 
