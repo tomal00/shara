@@ -15,6 +15,7 @@ const StyledLink = styled(NavLink)`
     font-size: 24px;
     padding: 10px;
     transition: color 0.2s ease-out;
+    user-select: none;
 
     &:hover:not(.active) {
         color: ${p => p.theme.colors.secondary.base};

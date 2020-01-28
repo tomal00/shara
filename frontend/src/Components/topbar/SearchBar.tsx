@@ -17,7 +17,7 @@ const Input = styled.input`
     border-radius: ${p => p.theme.borderRadius}px;
     text-overflow: ellipsis;
     width: inherit;
-    transition: background-color: 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
     font-size: 16px;
 
     &:focus {
@@ -51,8 +51,8 @@ const InputWrapper = styled.div`
     padding: 4px 0;
     box-sizing: border-box;
     font-size: 18px;
-    margin-right: 20px;
     width: inherit;
+    width: 100%;
 `
 
 const StyledIcon = styled(FontAwesomeIcon)`

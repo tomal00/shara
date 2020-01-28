@@ -5,6 +5,8 @@ import SearchInput from 'Root/Components/topbar/SearchBar'
 import Logo from 'Components/topbar/Logo'
 import { AppContext } from 'Root/AppContext'
 import { useWidth } from 'Root/hooks'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { StateSetter } from 'Types/etc'
 
 const TopbarWrapper = styled.div`
     height: 48px;
@@ -20,24 +22,66 @@ const TopbarWrapper = styled.div`
     border-bottom: 2px solid ${p => p.theme.colors.grey.base}; 
 `
 
-const SearchInputAbsoluteWrapper = styled.div`
+const SearchInputWrapper = styled.div`
     position: absolute;
     width: 400px;
     left: calc(50% - 200px);
     height: 100%;
+
+    @media (max-width: 768px) {
+        position: relative;
+        left: 0;
+    }
+`
+
+const MobileSearchInputWrapper = styled.div`
+    margin-left: 20px;
+    width: inherit;
+`
+
+const SearchToggler = styled.a`
+    color: ${p => p.theme.colors.secondary.light};
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 10px;
+    transition: color 0.2s ease-out;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover:not(.active) {
+        color: ${p => p.theme.colors.secondary.base};
+    }
+
+    &.active {
+        color: ${p => p.theme.colors.secondary.dark};
+        pointer: default;
+    }
 `
 
 export default () => {
     const { accountHash } = React.useContext(AppContext)
     const width = useWidth()
+    const [isMobileSearchActive, setMobileSearchActive]: [boolean, StateSetter<boolean>] = React.useState(true)
+
+    if (width < 600) {
+        return <TopbarWrapper>
+            <SearchToggler onClick={() => setMobileSearchActive(!isMobileSearchActive)} >
+                <FontAwesomeIcon icon={isMobileSearchActive ? 'bars' : 'search'} />
+            </SearchToggler>
+            {isMobileSearchActive ? (
+                <MobileSearchInputWrapper>
+                    <SearchInput />
+                </MobileSearchInputWrapper>
+            ) : <Navigation />}
+        </TopbarWrapper>
+    }
 
     return <TopbarWrapper>
-        <Logo />
-        {
-            (width > 768 && accountHash) && <SearchInputAbsoluteWrapper>
-                <SearchInput />
-            </SearchInputAbsoluteWrapper>
-        }
+        {(width > 768 && accountHash) && <Logo />}
+        <SearchInputWrapper>
+            <SearchInput />
+        </SearchInputWrapper>
         <Navigation />
     </TopbarWrapper>
 }
