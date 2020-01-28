@@ -48,6 +48,7 @@ const FileName = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding: 10px 0;
 `
 
 const StyledLink = styled(Link)`

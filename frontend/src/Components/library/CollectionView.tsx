@@ -7,14 +7,18 @@ import CollectionItem from 'Components/library/CollectionItem'
 import { StateSetter } from 'Types/etc'
 
 const Wrapper = styled.div`
-    ${(p: { isReduced: boolean }) => p.isReduced ? `
-    width: 100%;
-    ` :
-        `
-    width: calc(100% - 250px);
     position: relative;
-    left: 250px;
-    `
+
+    &:not(.reduced) {
+        width: calc(100% - 250px);
+        left: 250px;
+    }
+    &.reduced {
+        width: 100%;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 `
 
@@ -29,10 +33,20 @@ const StyledNameInput = styled(NameInput)`
     font-size: 25px;
     text-align: left;
     width: 100%;
+
+    ${Wrapper}.reduced & {
+        text-align: center;
+    }
 `
 
 const CollectionWrapper = styled.div`
     padding: 0 20px;
+
+    ${Wrapper}.reduced & {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+    }    
 `
 
 interface CollectionViewProps {
@@ -50,7 +64,7 @@ export default React.memo(({ selectedCollection, images, onChangeCollectionName,
         setCollectionName(!!selectedCollection ? selectedCollection.name : 'All images')
     }, [selectedCollection && selectedCollection.id])
 
-    return <Wrapper isReduced={isReduced} >
+    return <Wrapper className={isReduced ? 'reduced' : ''} >
         <CollectionTitle>
             <StyledNameInput
                 value={collectionName}

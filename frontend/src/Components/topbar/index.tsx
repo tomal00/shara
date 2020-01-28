@@ -40,7 +40,7 @@ const MobileSearchInputWrapper = styled.div`
 `
 
 const SearchToggler = styled.a`
-    color: ${p => p.theme.colors.secondary.light};
+    color: ${p => p.theme.colors.primary.base};
     text-decoration: none;
     font-weight: bold;
     font-size: 24px;
@@ -49,14 +49,10 @@ const SearchToggler = styled.a`
     cursor: pointer;
     user-select: none;
 
-    &:hover:not(.active) {
-        color: ${p => p.theme.colors.secondary.base};
+    &:hover {
+        color:  ${p => p.theme.colors.primary.dark};
     }
 
-    &.active {
-        color: ${p => p.theme.colors.secondary.dark};
-        pointer: default;
-    }
 `
 
 export default () => {

@@ -74,7 +74,8 @@ export default () => {
 
     return (
         <Wrapper>
-            {!isReduced && <SideBar
+            {<SideBar
+                isReduced={isReduced}
                 collections={collections}
                 selectedCollection={selectedCollection}
                 onSelectCollection={(id: string) => selectCollection(id)}
