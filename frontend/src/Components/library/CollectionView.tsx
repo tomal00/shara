@@ -29,10 +29,6 @@ const StyledNameInput = styled(NameInput)`
     font-size: 25px;
     text-align: left;
     width: 100%;
-
-    ${p => p.readOnly ? `
-        border: none!important;
-    ` : ``}
 `
 
 const CollectionWrapper = styled.div`

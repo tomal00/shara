@@ -72,14 +72,18 @@ export const NameInput = styled.input`
     background: transparent;
     border-bottom: 2px solid transparent;
 
-    &:hover:not(:focus) {
-        border-color: ${p => p.theme.colors.primary.base};
-    }
+    ${p => p.readOnly ? `
 
-    &:focus {
-        outline-width: 0;
-        border-color: ${p => p.theme.colors.primary.dark};
-    }
+    ` : `
+        &:hover:not(:focus) {
+            border-color: ${p.theme.colors.primary.base};
+        }
+
+        &:focus {
+            outline-width: 0;
+            border-color: ${p.theme.colors.primary.dark};
+        }
+    `}
 `
 
 export const ExpandableTextArea = (props: any) => {
