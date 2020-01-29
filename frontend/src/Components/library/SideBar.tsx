@@ -117,9 +117,11 @@ export default React.memo(({ collections, isReduced, selectedCollection, onSelec
     return (
         <Wrapper className={isReduced ? 'reduced' : ''} >
             <ControlsWrapper className={isExpanded ? 'expanded' : ''}>
-                <StyledIcon
-                    icon='chevron-right'
-                    onClick={() => setIsExpanded(!isExpanded)} />
+                {
+                    isReduced && <StyledIcon
+                        icon='chevron-right'
+                        onClick={() => setIsExpanded(!isExpanded)} />
+                }
                 <CreateCollectionButton onClick={onCreateCollection}>
                     + Create a collection
                             </CreateCollectionButton>
