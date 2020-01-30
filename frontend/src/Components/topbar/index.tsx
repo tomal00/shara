@@ -58,7 +58,7 @@ const SearchToggler = styled.a`
 export default () => {
     const { accountHash } = React.useContext(AppContext)
     const width = useWidth()
-    const [isMobileSearchActive, setMobileSearchActive]: [boolean, StateSetter<boolean>] = React.useState(true)
+    const [isMobileSearchActive, setMobileSearchActive]: [boolean, StateSetter<boolean>] = React.useState(false)
 
     if (width < 600) {
         return <TopbarWrapper>

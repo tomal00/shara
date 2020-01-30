@@ -4,27 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const ListItem = styled.li`
     line-height: 30px;
-    padding: 5px 10px;
     margin: 10px;
     background-color: inherit;
-    transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: ${p => p.theme.borderRadius}px;
-    border: 2px solid transparent;
     cursor: pointer;
-
-    &:hover {
-        background-color: ${p => p.theme.colors.grey.base};
-        border-color: ${p => p.theme.colors.grey.base};
-    }
-
-    &.active {
-        background-color: ${p => p.theme.colors.grey.base};
-        border-color: ${p => p.theme.colors.grey.dark};
-        cursor: default;
-    }
+    position: relative;
 `
 
 const CollectionName = styled.div`
@@ -33,7 +16,24 @@ const CollectionName = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin-right: 15px;
+    box-sizing: content-box;
+    padding: 5px 20px 5px 10px;
+    width: calc(100% - 34px);
+
+    transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
+    border-radius: ${p => p.theme.borderRadius}px;
+    border: 2px solid transparent;
+    
+    &:hover {
+        background-color: ${p => p.theme.colors.grey.base};
+        border-color: ${p => p.theme.colors.grey.base};
+    }
+
+    ${ListItem}.active & {
+        background-color: ${p => p.theme.colors.grey.base};
+        border-color: ${p => p.theme.colors.grey.dark};
+        cursor: default;
+    }
 `
 
 const ItemCount = styled.div`
@@ -44,6 +44,11 @@ const StyledIcon = styled(FontAwesomeIcon)`
     cursor: pointer;
     transition: color 0.2s ease-out;
     font-size: 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    padding: 0 10px;
 
     &:hover {
         color: #e53935;
@@ -62,8 +67,8 @@ interface CollectionItemProps {
 
 export default ({ name, /*itemCount,*/ isActive, onSelect, onDelete }: CollectionItemProps) => {
 
-    return <ListItem onClick={onSelect} className={isActive ? 'active' : ''} >
-        <CollectionName>{name}</CollectionName>
+    return <ListItem className={isActive ? 'active' : ''} >
+        <CollectionName onClick={onSelect} >{name}</CollectionName>
         <StyledIcon icon='trash-alt' onClick={onDelete} />
         {/*<ItemCount>{itemCount}</ItemCount>*/}
     </ListItem>
@@ -77,8 +82,10 @@ interface DefaultCollectionProps {
 }
 
 export const DefaultCollection = ({ onSelect, isActive }: DefaultCollectionProps) => {
-    return <ListItem onClick={onSelect} className={isActive ? 'active' : ''} >
-        <CollectionName>All images</CollectionName>
+    return <ListItem className={isActive ? 'active' : ''} >
+        <CollectionName onClick={onSelect}>
+            All images
+        </CollectionName>
         {/*<ItemCount>{itemCount}</ItemCount>*/}
     </ListItem>
 }

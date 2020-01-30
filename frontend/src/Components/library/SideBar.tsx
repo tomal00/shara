@@ -22,7 +22,7 @@ const List = styled.ul`
 
 const CreateCollectionButton = styled.div`
     line-height: 30px;
-    padding: 5px 10px;
+    padding: 7px 12px;
     margin: 10px;
     cursor: pointer;
     background-color: inherit;
@@ -68,12 +68,15 @@ const ControlsWrapper = styled.div`
     height: 100%;
     display: inline-block;
     background: ${p => p.theme.colors.grey.light};
-    width: 220px;
     padding-right: 35px;
     transition: transform 0.25s linear;
+    width: 250px;
 
-    ${Wrapper}.reduced &:not(.expanded) {
-        transform: translateX(-220px);
+    ${Wrapper}.reduced & {
+        width: 230px;
+        &:not(.expanded) {
+            transform: translateX(-220px);
+        }
     }
 `
 
