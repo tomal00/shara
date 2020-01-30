@@ -41,6 +41,10 @@ const UploadControls = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    @media (max-width: 512px) {
+        flex-direction: column;
+    }
 `
 
 
@@ -57,7 +61,6 @@ const UploadButton = styled(Button)`
 `
 
 const CancelButton = styled(Button)`
-    height: 40px;
     padding: 0 15px;
     margin-right: 10px;
     background-color: ${p => p.theme.colors.secondary.base};
@@ -75,6 +78,10 @@ const AccessControlsWrapper = styled.div`
     font-size: 18px;
     cursor: pointer;
     user-select: none;
+
+    @media (max-width: 512px) {
+        margin-bottom: 15px;
+    }
 `
 
 const StyledIcon = styled(FontAwesomeIcon)`
