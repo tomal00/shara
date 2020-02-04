@@ -74,10 +74,10 @@ export default () => {
     }
 
     return <TopbarWrapper>
-        {(width > 768 && accountHash) && <Logo />}
-        <SearchInputWrapper>
+        {(width > 768) && <Logo />}
+        {accountHash && <SearchInputWrapper>
             <SearchInput />
-        </SearchInputWrapper>
+        </SearchInputWrapper>}
         <Navigation />
     </TopbarWrapper>
 }
