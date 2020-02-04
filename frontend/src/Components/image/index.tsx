@@ -6,7 +6,7 @@ import { AppContext } from 'Root/AppContext'
 import { Image as ImageType } from 'Types/file'
 import { makeCancelable } from 'Root/helpers'
 import { Cancelable } from 'Root/Types/cancelable'
-import { useCancelableCleanup } from 'Root/hooks'
+import { useCancelableCleanup, useWidth } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collection } from 'Types/collection'
@@ -23,8 +23,8 @@ const Wrapper = styled.div`
     background: ${p => p.theme.colors.grey.light};
 
     @media (max-width: 768px) {
-        flex-direction: column-reverse;
-        justify-content:flex-end;
+        flex-direction: column;
+        justify-content:flex-start;
         min-height: calc(100% - 100px);
         height: auto;
         align-items: center;
@@ -48,6 +48,7 @@ const FileInfo = styled.div`
     @media (max-width: 768px) {
         flex-direction: row;
         flex-wrap: wrap;
+        padding: 10px 10px 0;
     }
 `
 
@@ -74,8 +75,10 @@ const StyledDeleteIcon = styled(FontAwesomeIcon)`
     transition: color 0.2s ease-out;
     margin-bottom: 5px;
 
-    &:hover {
-        color: #e53935;
+    @media (hover: hover) {
+        &:hover {
+            color: #e53935;
+        }
     }
 `
 
@@ -89,8 +92,8 @@ const StyledDescription = styled(Description)`
     max-height: 300px;
 
     @media (max-width: 768px) {
-        width: 100%;
-        margin: 0;
+        width: calc(100% - 32px);
+        margin: 0 auto 10px;
     }
 `
 
@@ -121,6 +124,7 @@ export default () => {
     const [imageName, setImageName]: [string, StateSetter<string>] = React.useState('')
     const [imageDescription, setImageDescription]: [string, StateSetter<string>] = React.useState('')
     const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
+    const width = useWidth()
 
     useCancelableCleanup(activePromises)
 
@@ -170,88 +174,98 @@ export default () => {
         </Wrapper>
     }
 
+    const nameWrapperElement = image ? (
+        <NameWrapper>
+            <StyledNameInput
+                readOnly={!image.isOwner}
+                value={imageName}
+                onChange={(e) => setImageName(e.target.value)}
+                onBlur={() => {
+                    if (imageName == image.name || !image.isOwner) return
+                    if (!imageName) {
+                        setImageName(image.name)
+                        return
+                    }
+
+                    api.updateImageInfo(image.id, imageName, image.description, image.collectionId)
+                        .catch(err => console.error(err))
+                    setImage({
+                        ...image,
+                        name: imageName
+                    })
+                }} />
+            {image.isOwner && <StyledDeleteIcon
+                icon='trash-alt'
+                onClick={() => {
+                    const cancelable = makeCancelable(api.deleteFile(image.id))
+                    cancelable
+                        .promise
+                        .then(({ success }) => {
+                            if (success) {
+                                history.push('/library')
+                            }
+                        })
+                        .catch(e => {
+                            if (!e.isCanceled) console.error(e)
+                        })
+
+                    activePromises.push(cancelable)
+                }} />}
+        </NameWrapper>
+    ) : null
+
+    const dropdownElement = image && image.isOwner ? (
+        <StyledDropdown
+            placeholder='No collection'
+            emptyDropdownText='You have no collections'
+            items={collections.map(c => ({ name: c.name, value: c, key: c.id }))}
+            initiallySelectedItem={
+                image.collectionId ?
+                    (() => {
+                        const collection = collections.find((c) => c.id === image.collectionId)
+                        if (!collection) return null
+                        else return {
+                            name: collection.name,
+                            value: collection,
+                            key: collection.id
+                        }
+                    })()
+                    : null
+            }
+            onSelect={({ value }) => {
+                api.updateImageInfo(image.id, image.name, image.description, value.id)
+                    .catch(err => console.error(err))
+            }} />
+    ) : null
+
+    const descriptionElement = !!image ? (<StyledDescription
+        placeholder='description...'
+        rows={1}
+        value={imageDescription}
+        readOnly={!image.isOwner}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setImageDescription(e.target.value)
+        }}
+        onBlur={() => {
+            if (image.description == imageDescription || !image.isOwner) return
+
+            api.updateImageInfo(image.id, image.name, imageDescription, image.collectionId)
+                .catch(err => console.error(err))
+
+            setImage({
+                ...image,
+                description: imageDescription
+            })
+        }} />) : null
+
     return (
         <Wrapper>
             <FileInfo>
                 {
                     !!image && <React.Fragment>
-                        <NameWrapper>
-                            <StyledNameInput
-                                readOnly={!image.isOwner}
-                                value={imageName}
-                                onChange={(e) => setImageName(e.target.value)}
-                                onBlur={() => {
-                                    if (imageName == image.name || !image.isOwner) return
-                                    if (!imageName) {
-                                        setImageName(image.name)
-                                        return
-                                    }
-
-                                    api.updateImageInfo(image.id, imageName, image.description, image.collectionId)
-                                        .catch(err => console.error(err))
-                                    setImage({
-                                        ...image,
-                                        name: imageName
-                                    })
-                                }} />
-                            {image.isOwner && <StyledDeleteIcon
-                                icon='trash-alt'
-                                onClick={() => {
-                                    const cancelable = makeCancelable(api.deleteFile(image.id))
-                                    cancelable
-                                        .promise
-                                        .then(({ success }) => {
-                                            if (success) {
-                                                history.push('/library')
-                                            }
-                                        })
-                                        .catch(e => {
-                                            if (!e.isCanceled) console.error(e)
-                                        })
-
-                                    activePromises.push(cancelable)
-                                }} />}
-                        </NameWrapper>
-                        {image.isOwner && <StyledDropdown
-                            placeholder='No collection'
-                            emptyDropdownText='You have no collections'
-                            items={collections.map(c => ({ name: c.name, value: c, key: c.id }))}
-                            initiallySelectedItem={
-                                image.collectionId ?
-                                    (() => {
-                                        const collection = collections.find((c) => c.id === image.collectionId)
-                                        if (!collection) return null
-                                        else return {
-                                            name: collection.name,
-                                            value: collection,
-                                            key: collection.id
-                                        }
-                                    })()
-                                    : null
-                            }
-                            onSelect={({ value }) => {
-                                api.updateImageInfo(image.id, image.name, image.description, value.id)
-                                    .catch(err => console.error(err))
-                            }} />}
-                        <StyledDescription
-                            placeholder='description...'
-                            rows={1}
-                            value={imageDescription}
-                            readOnly={!image.isOwner}
-                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                setImageDescription(e.target.value)
-                            }}
-                            onBlur={() => {
-                                if (image.description == imageDescription || !image.isOwner) return
-
-                                api.updateImageInfo(image.id, image.name, imageDescription, image.collectionId)
-                                    .catch(err => console.error(err))
-
-                                setImage({
-                                    ...image,
-                                    description: imageDescription
-                                })
-                            }} />
+                        {nameWrapperElement}
+                        {dropdownElement}
+                        {width > 768 && descriptionElement}
                     </React.Fragment>
                 }
             </FileInfo>
@@ -260,6 +274,7 @@ export default () => {
                     !!image && <Image src={image.url} />
                 }
             </ImageWrapper>
+            {!(width > 768) && descriptionElement}
         </Wrapper>
     )
 }

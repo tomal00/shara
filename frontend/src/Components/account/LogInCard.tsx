@@ -23,6 +23,7 @@ const LogInCard = styled.div`
     align-items: center;
     grid-row-gap: 20px;
     grid-column-gap: 20px;
+    margin: 10px 0;
 
     @media (max-width: 450px) {
         padding: 30px 30px;

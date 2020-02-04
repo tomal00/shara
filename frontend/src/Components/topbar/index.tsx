@@ -49,8 +49,10 @@ const SearchToggler = styled.a`
     cursor: pointer;
     user-select: none;
 
-    &:hover {
-        color:  ${p => p.theme.colors.primary.dark};
+    @media (hover: hover) {
+        &:hover {
+            color:  ${p => p.theme.colors.primary.dark};
+        }
     }
 
 `

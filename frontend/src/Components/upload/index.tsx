@@ -11,7 +11,7 @@ import { StateSetter } from 'Types/etc'
 import { useHistory, Redirect } from 'react-router-dom'
 
 const Wrapper = styled.div`
-    height: calc(100% - 50px);
+    min-height: calc(100% - 50px);
     top: 50px;
     display: flex;
     align-items: center;

@@ -17,17 +17,17 @@ const Wrapper = styled.div`
     margin: 20px;
     display: inline-block;
 
-    &:hover {
-        &:nth-child(even) {
-            background-color: ${p => p.theme.colors.primary.dark};
+    @media (hover: hover) {
+        &:hover {
+            &:nth-child(even) {
+                background-color: ${p => p.theme.colors.primary.dark};
+            }
+            &:nth-child(odd) {
+                background-color: ${p => p.theme.colors.secondary.dark};
+            }
+            color: ${p => p.theme.colors.primary.text};
         }
-        &:nth-child(odd) {
-            background-color: ${p => p.theme.colors.secondary.dark};
-        }
-        color: ${p => p.theme.colors.primary.text};
     }
-
-    &:
 `
 const Image = styled.div`
     background-image: url(${(p: { imageUrl: string }) => p.imageUrl});

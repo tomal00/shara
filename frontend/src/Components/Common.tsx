@@ -22,8 +22,10 @@ export const Button = styled.button`
     outline: none!important;
     height: 43px;
 
-    &:hover {
-        background-color: ${p => p.theme.colors.primary.dark};
+    @media (hover: hover) {
+        &:hover {
+            background-color: ${p => p.theme.colors.primary.dark};
+        }
     }
 
     &:focus {
@@ -44,8 +46,16 @@ export const Input = styled.input`
     text-overflow: ellipsis;
     outline: none!important;
 
-    &:hover:not(:focus) {
-        border-color: ${p => p.theme.colors.primary.base};
+    @media (hover: hover) {
+        &:hover:not(:focus) {
+            border-color: ${p => p.theme.colors.primary.base};
+        }
+        ${p => p.readOnly ? `
+            &:hover {
+                    border-color: ${p.theme.colors.primary.base};
+                }
+            ` : `
+        `}
     }
 
     &:focus {
@@ -53,9 +63,6 @@ export const Input = styled.input`
     }
 
     ${p => p.readOnly ? `
-        &:hover {
-            border-color: ${p.theme.colors.primary.base};
-        }
     ` : `
         &:focus {
             border-color: ${p.theme.colors.primary.dark};
@@ -82,8 +89,10 @@ export const NameInput = styled.input`
     ${p => p.readOnly ? `
 
     ` : `
-        &:hover:not(:focus) {
-            border-color: ${p.theme.colors.primary.base};
+        @media (hover: hover) {
+            &:hover:not(:focus) {
+                border-color: ${p.theme.colors.primary.base};
+            }
         }
 
         &:focus {
@@ -124,8 +133,15 @@ export const Description = styled(ExpandableTextArea)`
     font-size: 16px;
     box-sizing: content-box;
 
-    &:hover:not(:focus) {
-        border-color: ${p => p.theme.colors.primary.base};
+    @media (hover: hover) {
+        &:hover:not(:focus) {
+            border-color: ${p => p.theme.colors.primary.base};
+        }
+        ${p => p.readOnly ? `
+            &:hover {
+                border-color: ${p.theme.colors.primary.base};
+            }
+        ` : ``}
     }
 
     &:focus {
@@ -133,9 +149,6 @@ export const Description = styled(ExpandableTextArea)`
     }
 
     ${p => p.readOnly ? `
-        &:hover {
-            border-color: ${p.theme.colors.primary.base};
-        }
     ` : `
         &:focus {
             border-color: ${p.theme.colors.primary.dark};
@@ -182,8 +195,10 @@ const DropdownItems = styled.ul`
         rgba(51, 51, 51, 0.2) -2.5px 2.5px 7.5px, 
         rgba(51, 51, 51, 0.2) -2.5px -2.5px 7.5px;
 
-    &:hover {
-        border-color: ${p => p.theme.colors.primary.base};
+    @media (hover: hover) {
+        &:hover {
+            border-color: ${p => p.theme.colors.primary.base};
+        }
     }
 `
 
@@ -200,8 +215,10 @@ const DropdownItem = styled.li`
         padding-bottom: 10px;
     }
 
-    &:hover:not(.empty) {
-        background-color: ${p => p.theme.colors.grey.base};
+    @media (hover: hover) {
+        &:hover:not(.empty) {
+            background-color: ${p => p.theme.colors.grey.base};
+        }
     }
 `
 

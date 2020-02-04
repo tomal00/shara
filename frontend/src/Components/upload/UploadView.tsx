@@ -24,7 +24,12 @@ const StyledIcon = styled(FontAwesomeIcon)`
     transition: color 0.2s ease-out;
     cursor: pointer;
 
-    ${IconWrapper}:hover &, ${IconWrapper}.drag-over & {
+    @media (hover: hover) {
+        ${IconWrapper}:hover & {
+            color: ${p => p.theme.colors.primary.dark};
+        }
+    }
+    ${IconWrapper}.drag-over & {
         color: ${p => p.theme.colors.primary.dark};
     }
 `
@@ -40,7 +45,15 @@ const TopText = styled.div`
     transition: color 0.2s ease-out, transform 0.2s ease-out, opacity 0.1s ease-out;
     transform: translateY(-100px);
 
-    ${IconWrapper}:hover &, ${IconWrapper}.drag-over & {
+    @media (hover: hover) {
+        ${IconWrapper}:hover & {
+            color: ${p => p.theme.colors.secondary.base};
+            transform: translateY(-200px);
+            opacity: 1;
+        }
+    }
+
+    ${IconWrapper}.drag-over & {
         color: ${p => p.theme.colors.secondary.base};
         transform: translateY(-200px);
         opacity: 1;

@@ -101,8 +101,10 @@ const ResultItem = styled.li`
 const ItemName = styled.span`
     font-weight: bold;
 
-    ${ResultItem}:hover & {
-        color: ${p => p.theme.colors.secondary.light};
+    @media (hover: hover) {
+        ${ResultItem}:hover & {
+            color: ${p => p.theme.colors.secondary.light};
+        }
     }
 `
 

@@ -25,6 +25,7 @@ const ViewWrapper = styled.div`
     box-sizing: border-box;
     border-radius: ${p => p.theme.borderRadius}px;
     border: 1px solid ${p => p.theme.colors.grey.base};
+    margin: 10px 0;
 `
 
 const ImagePreview = styled.img`
@@ -54,8 +55,10 @@ const UploadButton = styled(Button)`
     background-color: ${p => p.theme.colors.primary.base};
     color: ${p => p.theme.colors.primary.text};
 
-    &:hover {
-        background-color: ${p => p.theme.colors.primary.dark};
+    @media (hover: hover) {
+        &:hover {
+            background-color: ${p => p.theme.colors.primary.dark};
+        }
     }
 `
 
@@ -64,8 +67,10 @@ const CancelButton = styled(Button)`
     margin-right: 10px;
     background-color: ${p => p.theme.colors.secondary.base};
 
-    &:hover {
-        background-color: ${p => p.theme.colors.secondary.dark};
+    @media (hover: hover) {
+        &:hover {
+            background-color: ${p => p.theme.colors.secondary.dark};
+        }
     }
 `
 
@@ -89,8 +94,10 @@ const StyledIcon = styled(FontAwesomeIcon)`
     transition: color 0.2s ease-out;
     position: relative;
 
-    ${AccessControlsWrapper}:hover & {
-        color: ${p => p.theme.colors.secondary.base};
+    @media (hover: hover) {
+        ${AccessControlsWrapper}:hover & {
+            color: ${p => p.theme.colors.secondary.base};
+        }
     }
 
     &.public {

@@ -24,6 +24,7 @@ const AccountCard = styled.div`
     grid-column-gap: 20px;
     border: 1px solid ${p => p.theme.colors.grey.base};
     background: ${p => p.theme.colors.white.base};
+    margin: 10px 0;
 
     @media (max-width: 450px) {
         padding: 30px 30px;
@@ -49,11 +50,13 @@ const Avatar = styled.div`
     transition: border-color 0.2s ease-out;
     align-self: start;
 
-    &:hover {
-        border-color: ${p => p.theme.colors.secondary.dark};
+    @media (hover: hover) {
+        &:hover {
+            border-color: ${p => p.theme.colors.secondary.dark};
 
-        &::after {
-            opacity: 0.5;
+            &::after {
+                opacity: 0.5;
+            }
         }
     }
 

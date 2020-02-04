@@ -34,8 +34,10 @@ const CreateCollectionButton = styled.div`
     white-space: nowrap;
     overflow: hidden;
 
-    &:hover {
-        background-color: ${p => p.theme.colors.grey.base};
+    @media (hover: hover) {
+        &:hover {
+            background-color: ${p => p.theme.colors.grey.base};
+        }
     }
 `
 
@@ -91,17 +93,18 @@ const StyledIcon = styled(FontAwesomeIcon)`
     right: 0;
     top: 6px;
 
-    ${ControlsWrapper}.expanded & {
-        transform: rotate(180deg);
-        color: ${p => p.theme.colors.secondary.base};
-
+    @media (hover: hover) {
         &:hover {
+            color:  ${p => p.theme.colors.primary.dark};
+        }
+        ${ControlsWrapper}.expanded &:hover {
             color:  ${p => p.theme.colors.secondary.dark};
         }
     }
 
-    &:hover {
-        color:  ${p => p.theme.colors.primary.dark};
+    ${ControlsWrapper}.expanded & {
+        transform: rotate(180deg);
+        color: ${p => p.theme.colors.secondary.base};
     }
 `
 

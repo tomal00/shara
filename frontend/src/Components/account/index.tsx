@@ -7,7 +7,7 @@ import { StateSetter } from 'Types/etc'
 import Loading from 'Components/Loading'
 
 const Wrapper = styled.div`
-    height: calc(100% - 100px);
+    min-height: calc(100% - 100px);
     top: 50px;
     display: flex;
     align-items: center;

@@ -24,9 +24,11 @@ const CollectionName = styled.div`
     border-radius: ${p => p.theme.borderRadius}px;
     border: 2px solid transparent;
     
-    &:hover {
-        background-color: ${p => p.theme.colors.grey.base};
-        border-color: ${p => p.theme.colors.grey.base};
+    @media (hover: hover) {
+        &:hover {
+            background-color: ${p => p.theme.colors.grey.base};
+            border-color: ${p => p.theme.colors.grey.base};
+        }
     }
 
     ${ListItem}.active & {
@@ -50,8 +52,10 @@ const StyledIcon = styled(FontAwesomeIcon)`
     height: 100%;
     padding: 0 10px;
 
-    &:hover {
-        color: #e53935;
+    @media (hover: hover) {
+        &:hover {
+            color: #e53935;
+        }
     }
 `
 
