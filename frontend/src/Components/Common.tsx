@@ -1,8 +1,10 @@
 import * as React from 'react'
-import styled from 'styled-components'
+import styled, { StyledComponent } from 'styled-components'
 import * as autosize from 'autosize'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome'
 import { StateSetter } from 'Types/etc'
+import { RotateProp } from '@fortawesome/fontawesome-svg-core'
+import { useCallbackOnOutsideClick } from 'Root/hooks'
 
 const { useEffect, useRef, useState } = React
 
@@ -18,6 +20,7 @@ export const Button = styled.button`
     transition: background-color 0.2s ease-out, color 0.2s ease-out, opacity 0.2s ease-out;
     cursor: pointer;
     outline: none!important;
+    height: 43px;
 
     &:hover {
         background-color: ${p => p.theme.colors.primary.dark};
@@ -74,6 +77,7 @@ export const NameInput = styled.input`
     background: transparent;
     border-bottom: 2px solid transparent;
     outline: none!important;
+    min-width: 0;
 
     ${p => p.readOnly ? `
 
@@ -145,9 +149,10 @@ const DropdownWrapper = styled.div`
     margin-top: 10px;
 `
 
-const DropdownIcon = styled(FontAwesomeIcon)`
+const DropdownIcon: StyledComponent<React.FunctionComponent<FontAwesomeIconProps>, null> = styled(FontAwesomeIcon)`
     font-size: 12px;
     margin-left: 5px;
+    transition: all 0.2s ease-out;
 `
 
 const DropdownTitle = styled.div`
@@ -171,6 +176,11 @@ const DropdownItems = styled.ul`
     width: calc(100% - 4px);
     padding: 0;
     transition: background-color 0.2s ease-out;
+    box-shadow: 
+        rgba(51, 51, 51, 0.2) 2.5px 2.5px 7.5px, 
+        rgba(51, 51, 51, 0.2) 2.5px -2.5px 7.5px, 
+        rgba(51, 51, 51, 0.2) -2.5px 2.5px 7.5px, 
+        rgba(51, 51, 51, 0.2) -2.5px -2.5px 7.5px;
 
     &:hover {
         border-color: ${p => p.theme.colors.primary.base};
@@ -207,24 +217,28 @@ export const Dropdown = (
         items,
         onSelect,
         initiallySelectedItem,
-        emptyDropdownText
+        emptyDropdownText,
+        className
     }: {
         placeholder: string,
         items: DropdownItemType[],
         initiallySelectedItem?: DropdownItemType
         onSelect: (item: DropdownItemType) => void,
-        emptyDropdownText: string
+        emptyDropdownText: string,
+        className?: string
     }
 ) => {
     const [selectedItem, selectItem]: [DropdownItemType, StateSetter<DropdownItemType>] = useState(initiallySelectedItem)
     const [isExpanded, setIsExpanded]: [boolean, StateSetter<boolean>] = useState(false)
+    const ref = useRef(null)
+    useCallbackOnOutsideClick(() => { setIsExpanded(false) }, ref)
 
-    return <DropdownWrapper>
+    return <DropdownWrapper className={className} ref={ref}>
         <DropdownTitle
             className={!initiallySelectedItem ? 'with-placeholder' : ''}
             onClick={() => setIsExpanded(!isExpanded)} >
             {selectedItem ? selectedItem.name : placeholder}
-            <DropdownIcon icon='chevron-down' />
+            <DropdownIcon icon='chevron-down' rotation={isExpanded ? 180 as RotateProp : undefined as RotateProp} />
         </DropdownTitle>
         {
             isExpanded && <DropdownItems>

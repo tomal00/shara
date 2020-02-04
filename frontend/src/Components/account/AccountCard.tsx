@@ -8,21 +8,26 @@ import { Cancelable } from 'Root/Types/cancelable'
 import { useCancelableCleanup } from 'Root/hooks'
 
 const AccountCard = styled.div`
-    padding: 50px 80px;
-    width: 400px;
-    /*height: 300px;*/
+    padding: 50px 70px;
+    width: 540px;
+    max-width: 90%;
+    box-sizing: border-box;
     height: fit-content;
     border-radius: ${p => p.theme.borderRadius}px;
     background: ${p => p.theme.colors.secondary.base};
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-rows: 25px 120px 43px 43px;
+    grid-template-rows: 25px 120px 43px auto;
     grid-row-gap: 15px;
     align-items: center;
     grid-row-gap: 20px;
     grid-column-gap: 20px;
     border: 1px solid ${p => p.theme.colors.grey.base};
     background: ${p => p.theme.colors.white.base};
+
+    @media (max-width: 450px) {
+        padding: 30px 30px;
+    }
 `
 
 const CustomInput = styled(Input)`
@@ -70,6 +75,7 @@ const Avatar = styled.div`
 
 const StyledNameInput = styled(NameInput)`
     grid-column: span 2;
+    max-width: 100%;
 `
 const StyledButton = styled(Button)`
     grid-column: span 2;

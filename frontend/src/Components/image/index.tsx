@@ -6,7 +6,7 @@ import { AppContext } from 'Root/AppContext'
 import { Image as ImageType } from 'Types/file'
 import { makeCancelable } from 'Root/helpers'
 import { Cancelable } from 'Root/Types/cancelable'
-import { useCancelableCleanup, useWidth } from 'Root/hooks'
+import { useCancelableCleanup } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collection } from 'Types/collection'
@@ -21,6 +21,14 @@ const Wrapper = styled.div`
     display: flex;
     border-radius: ${p => p.theme.borderRadius}px;
     background: ${p => p.theme.colors.grey.light};
+
+    @media (max-width: 768px) {
+        flex-direction: column-reverse;
+        justify-content:flex-end;
+        min-height: calc(100% - 100px);
+        height: auto;
+        align-items: center;
+    }
 `
 
 const Image = styled.img`
@@ -36,6 +44,11 @@ const FileInfo = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    @media (max-width: 768px) {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 `
 
 const ImageWrapper = styled.div`
@@ -47,6 +60,11 @@ const ImageWrapper = styled.div`
     padding: 10px;
     flex-grow: 999;
     background-color: inherit;
+
+    @media (max-width: 768px) {
+        flex-grow: 0;
+        height: fit-content;
+    }
 `
 
 const StyledDeleteIcon = styled(FontAwesomeIcon)`
@@ -69,6 +87,28 @@ const StyledNameInput = styled(NameInput)`
 
 const StyledDescription = styled(Description)`
     max-height: 300px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        margin: 0;
+    }
+`
+
+const NameWrapper = styled.div`
+    display: flex;
+    align-items: center;
+
+    @media (max-width: 768px) {
+        width: 50%;
+    }
+`
+
+const StyledDropdown = styled(Dropdown)`
+    @media (max-width: 768px) {
+        width: 50%;
+        margin: 0;
+        text-align: center;
+    }
 `
 
 const activePromises: Cancelable<any>[] = []
@@ -81,8 +121,6 @@ export default () => {
     const [imageName, setImageName]: [string, StateSetter<string>] = React.useState('')
     const [imageDescription, setImageDescription]: [string, StateSetter<string>] = React.useState('')
     const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
-
-    const width = useWidth()
 
     useCancelableCleanup(activePromises)
 
@@ -134,10 +172,10 @@ export default () => {
 
     return (
         <Wrapper>
-            {width > 768 && <FileInfo>
+            <FileInfo>
                 {
                     !!image && <React.Fragment>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <NameWrapper>
                             <StyledNameInput
                                 readOnly={!image.isOwner}
                                 value={imageName}
@@ -173,8 +211,8 @@ export default () => {
 
                                     activePromises.push(cancelable)
                                 }} />}
-                        </div>
-                        {image.isOwner && <Dropdown
+                        </NameWrapper>
+                        {image.isOwner && <StyledDropdown
                             placeholder='No collection'
                             emptyDropdownText='You have no collections'
                             items={collections.map(c => ({ name: c.name, value: c, key: c.id }))}
@@ -216,7 +254,7 @@ export default () => {
                             }} />
                     </React.Fragment>
                 }
-            </FileInfo>}
+            </FileInfo>
             <ImageWrapper>
                 {
                     !!image && <Image src={image.url} />

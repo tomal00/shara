@@ -8,19 +8,25 @@ import { useCancelableCleanup } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
 
 const LogInCard = styled.div`
-    padding: 50px 80px;
-    width: 400px;
+    padding: 50px 70px;
+    width: 540px;
+    max-width: 90%;
+    box-sizing: border-box;
     height: fit-content;
     border-radius: ${p => p.theme.borderRadius}px;
     background: ${p => p.theme.colors.white.base};
     border: 1px solid ${p => p.theme.colors.grey.base};
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-rows: auto auto 43px 43px;
+    grid-template-rows: auto auto 43px auto auto;
     grid-row-gap: 15px;
     align-items: center;
     grid-row-gap: 20px;
     grid-column-gap: 20px;
+
+    @media (max-width: 450px) {
+        padding: 30px 30px;
+    }
 `
 
 const RegisterButton = styled(Button)`
@@ -30,6 +36,10 @@ const RegisterButton = styled(Button)`
 `
 
 const LogInButton = styled(Button)`
+    grid-column: span 2;
+    padding: 10px 15px;
+    justify-self: stretch;
+    margin-bottom: 15px;
 `
 
 const TextWrapper = styled.div`
@@ -38,6 +48,8 @@ const TextWrapper = styled.div`
 
 const StyledInput = styled(Input)`
     height: 100%;
+    grid-column: span 2;
+    justify-self: stretch;
 `
 
 const Title = styled.div`

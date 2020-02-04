@@ -17,6 +17,6 @@ const FooterWrapper = styled.div`
 export default () => {
 
     return <FooterWrapper>
-        2020, Made by Tomáš Malec
+        2020, Created by Tomáš Malec
     </FooterWrapper>
 }

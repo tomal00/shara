@@ -19,6 +19,7 @@ const Title = styled.div`
     font-size: 25px;
     font-family: 'Questrial', sans-serif;
     font-weight: bold;
+    user-select: none;
 `
 
 export default () => {

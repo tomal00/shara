@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Cancelable } from 'Types/cancelable'
 import { StateSetter } from 'Types/etc'
+import { RefObject } from 'react'
 
 export function useCancelableCleanup(arr: Cancelable<any>[]) {
     useEffect(() => () => {
@@ -27,4 +28,20 @@ export function useWidth() {
     }, [])
 
     return width
+}
+
+export function useCallbackOnOutsideClick(callback: () => void, ref: RefObject<HTMLDivElement>) {
+    const handleClick = (e: MouseEvent) => {
+        if (!ref.current.contains(e.target as Node)) {
+            callback()
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('click', handleClick)
+
+        return () => {
+            document.removeEventListener('click', handleClick)
+        }
+    }, [])
 }

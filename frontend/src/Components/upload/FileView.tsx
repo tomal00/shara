@@ -49,7 +49,6 @@ const UploadControls = styled.div`
 
 
 const UploadButton = styled(Button)`
-    height: 43px;
     padding: 0 15px;
     margin-left: 10px;
     background-color: ${p => p.theme.colors.primary.base};
