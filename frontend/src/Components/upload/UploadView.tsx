@@ -24,7 +24,7 @@ const StyledIcon = styled(FontAwesomeIcon)`
     transition: color 0.2s ease-out;
     cursor: pointer;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         ${IconWrapper}:hover & {
             color: ${p => p.theme.colors.primary.dark};
         }
@@ -45,7 +45,7 @@ const TopText = styled.div`
     transition: color 0.2s ease-out, transform 0.2s ease-out, opacity 0.1s ease-out;
     transform: translateY(-100px);
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         ${IconWrapper}:hover & {
             color: ${p => p.theme.colors.secondary.base};
             transform: translateY(-200px);

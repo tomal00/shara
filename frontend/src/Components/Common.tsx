@@ -22,7 +22,7 @@ export const Button = styled.button`
     outline: none!important;
     height: 43px;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             background-color: ${p => p.theme.colors.primary.dark};
         }
@@ -46,7 +46,7 @@ export const Input = styled.input`
     text-overflow: ellipsis;
     outline: none!important;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover:not(:focus) {
             border-color: ${p => p.theme.colors.primary.base};
         }
@@ -89,7 +89,7 @@ export const NameInput = styled.input`
     ${p => p.readOnly ? `
 
     ` : `
-        @media (hover: hover) {
+        @media (hover: hover) and (pointer: fine) {
             &:hover:not(:focus) {
                 border-color: ${p.theme.colors.primary.base};
             }
@@ -133,7 +133,7 @@ export const Description = styled(ExpandableTextArea)`
     font-size: 16px;
     box-sizing: content-box;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover:not(:focus) {
             border-color: ${p => p.theme.colors.primary.base};
         }
@@ -195,7 +195,7 @@ const DropdownItems = styled.ul`
         rgba(51, 51, 51, 0.2) -2.5px 2.5px 7.5px, 
         rgba(51, 51, 51, 0.2) -2.5px -2.5px 7.5px;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             border-color: ${p => p.theme.colors.primary.base};
         }
@@ -215,7 +215,7 @@ const DropdownItem = styled.li`
         padding-bottom: 10px;
     }
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover:not(.empty) {
             background-color: ${p => p.theme.colors.grey.base};
         }

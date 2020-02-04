@@ -101,7 +101,7 @@ const ResultItem = styled.li`
 const ItemName = styled.span`
     font-weight: bold;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         ${ResultItem}:hover & {
             color: ${p => p.theme.colors.secondary.light};
         }

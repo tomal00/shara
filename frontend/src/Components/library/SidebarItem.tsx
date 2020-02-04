@@ -24,7 +24,7 @@ const CollectionName = styled.div`
     border-radius: ${p => p.theme.borderRadius}px;
     border: 2px solid transparent;
     
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             background-color: ${p => p.theme.colors.grey.base};
             border-color: ${p => p.theme.colors.grey.base};
@@ -52,7 +52,7 @@ const StyledIcon = styled(FontAwesomeIcon)`
     height: 100%;
     padding: 0 10px;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             color: #e53935;
         }

@@ -17,7 +17,7 @@ const Wrapper = styled.div`
     margin: 20px;
     display: inline-block;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             &:nth-child(even) {
                 background-color: ${p => p.theme.colors.primary.dark};

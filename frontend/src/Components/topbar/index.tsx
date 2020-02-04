@@ -49,7 +49,7 @@ const SearchToggler = styled.a`
     cursor: pointer;
     user-select: none;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             color:  ${p => p.theme.colors.primary.dark};
         }

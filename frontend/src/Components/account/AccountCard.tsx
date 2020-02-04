@@ -50,7 +50,7 @@ const Avatar = styled.div`
     transition: border-color 0.2s ease-out;
     align-self: start;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             border-color: ${p => p.theme.colors.secondary.dark};
 

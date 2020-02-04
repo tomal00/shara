@@ -49,6 +49,7 @@ const FileInfo = styled.div`
         flex-direction: row;
         flex-wrap: wrap;
         padding: 10px 10px 0;
+        width: calc(100% - 20px);
     }
 `
 
@@ -75,7 +76,7 @@ const StyledDeleteIcon = styled(FontAwesomeIcon)`
     transition: color 0.2s ease-out;
     margin-bottom: 5px;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             color: #e53935;
         }

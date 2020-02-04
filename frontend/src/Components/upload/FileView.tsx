@@ -55,7 +55,7 @@ const UploadButton = styled(Button)`
     background-color: ${p => p.theme.colors.primary.base};
     color: ${p => p.theme.colors.primary.text};
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             background-color: ${p => p.theme.colors.primary.dark};
         }
@@ -67,7 +67,7 @@ const CancelButton = styled(Button)`
     margin-right: 10px;
     background-color: ${p => p.theme.colors.secondary.base};
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             background-color: ${p => p.theme.colors.secondary.dark};
         }
@@ -94,7 +94,7 @@ const StyledIcon = styled(FontAwesomeIcon)`
     transition: color 0.2s ease-out;
     position: relative;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         ${AccessControlsWrapper}:hover & {
             color: ${p => p.theme.colors.secondary.base};
         }

@@ -34,7 +34,7 @@ const CreateCollectionButton = styled.div`
     white-space: nowrap;
     overflow: hidden;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             background-color: ${p => p.theme.colors.grey.base};
         }
@@ -93,7 +93,7 @@ const StyledIcon = styled(FontAwesomeIcon)`
     right: 0;
     top: 6px;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
             color:  ${p => p.theme.colors.primary.dark};
         }

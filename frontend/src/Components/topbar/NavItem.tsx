@@ -17,7 +17,7 @@ const StyledLink = styled(NavLink)`
     transition: color 0.2s ease-out;
     user-select: none;
 
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
         &:hover:not(.active) {
             color: ${p => p.theme.colors.secondary.base};
         }
