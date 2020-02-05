@@ -6,6 +6,8 @@ import { StateSetter } from 'Types/etc'
 import { makeCancelable } from 'Root/helpers'
 import { Cancelable } from 'Root/Types/cancelable'
 import { useCancelableCleanup } from 'Root/hooks'
+import { selectFileFromExplorer } from 'Root/files'
+const defaultAvatar = require("Assets/default-avatar.png").default
 
 const AccountCard = styled.div`
     padding: 50px 70px;
@@ -37,7 +39,7 @@ const CustomInput = styled(Input)`
     grid-column: span 2;
 `
 
-const Avatar = styled.div`
+const Avatar = styled.div<{ avatarUrl: string }>`
     box-sizing: border-box;
     height: 100px;
     width: 100px;
@@ -72,7 +74,7 @@ const Avatar = styled.div`
         background-color: white;
         background-position: center;
         background-size: cover;
-        background-image: url(https://images-na.ssl-images-amazon.com/images/I/51GfWevWFiL._SX425_.jpg);
+        background-image: url(${p => p.avatarUrl});
     }
 `
 
@@ -86,9 +88,15 @@ const StyledButton = styled(Button)`
 
 const activePromises: Cancelable<any>[] = []
 
+interface AccountCardState {
+    name: string,
+    avatarUrl?: string
+}
+
 export default ({ onLoad }: { onLoad: () => void }) => {
-    const { accountHash, api, setAccountHash } = React.useContext(AppContext)
-    const [name, setName]: [string, StateSetter<string>] = React.useState('')
+    const { accountHash, api, setAccountHash, addNotification } = React.useContext(AppContext)
+    const [state, setState]: [AccountCardState, StateSetter<AccountCardState>] = React.useState({ name: '' })
+    const { name, avatarUrl } = state
 
     useCancelableCleanup(activePromises)
 
@@ -97,24 +105,55 @@ export default ({ onLoad }: { onLoad: () => void }) => {
         cancelable
             .promise
             .then((res) => {
-                setName(res.name);
+                setState({ ...state, name: res.name, avatarUrl: res.avatarUrl });
                 onLoad()
             })
             .catch(err => { if (!err.isCanceled) console.error(err) })
         activePromises.push(cancelable)
-
     }, [accountHash])
 
     return <AccountCard>
         <StyledNameInput
             placeholder='Nickname'
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setState({ ...state, name: e.target.value })}
             onBlur={() => {
                 api.updateAccountInfo({ name })
                     .catch(err => console.error(err))
             }} />
-        <Avatar />
+        <Avatar
+            avatarUrl={avatarUrl ? avatarUrl : defaultAvatar}
+            onClick={async (e) => {
+                e.persist()
+
+                try {
+                    const file = await selectFileFromExplorer()
+                    if (file && file.type.match(/image/g)) {
+                        const cancelable = makeCancelable(api.uploadAvatar(file).then(api.getAccountInfo))
+                        cancelable
+                            .promise
+                            .then((res) => {
+                                setState({ ...state, name: res.name, avatarUrl: res.avatarUrl });
+                            })
+                            .catch(err => { if (!err.isCanceled) console.error(err) })
+                        activePromises.push(cancelable)
+                    }
+                    else {
+                        addNotification({
+                            clearPrevious: true,
+                            notification: {
+                                level: 'error',
+                                title: 'Invalid type of file',
+                                message: 'Please, select a file of image type',
+                                autoDismiss: 10
+                            }
+                        })
+                    }
+                }
+                catch (e) {
+                    console.error(e)
+                }
+            }} />
         <CustomInput value={accountHash} readOnly />
         <StyledButton
             onClick={() => {

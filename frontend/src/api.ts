@@ -33,7 +33,22 @@ export class Api {
             method: 'POST',
             ...commonFetchProps,
             body: JSON.stringify({
-                name
+                name,
+            })
+        });
+        this.checkStatusCode(res, 200)
+
+        return { success: true }
+    }
+    uploadAvatar = async (avatar: File): Promise<{ success: boolean }> => {
+        const fileArray = await getFileArray(avatar)
+
+        let res = await fetch(`${this.apiUrl}/uploadAvatar`, {
+            method: 'POST',
+            ...commonFetchProps,
+            body: JSON.stringify({
+                fileArray,
+                mime: avatar.type
             })
         });
         this.checkStatusCode(res, 200)
@@ -63,7 +78,7 @@ export class Api {
 
         return { success: true }
     }
-    getAccountInfo = async (): Promise<{ success: boolean, name: string }> => {
+    getAccountInfo = async (): Promise<{ success: boolean, name: string, avatarUrl?: string }> => {
         let res = await fetch(`${this.apiUrl}/getAccountInfo`, {
             method: 'GET',
             ...commonFetchProps,
@@ -72,7 +87,7 @@ export class Api {
 
         const { data } = await res.json()
 
-        return { success: true, name: data.name }
+        return { success: true, name: data.name, avatarUrl: data.avatarUrl }
     }
     verifyHash = async (): Promise<{ success: boolean, accountHash: string }> => {
         let res = await fetch(`${this.apiUrl}/verifyHash`, {

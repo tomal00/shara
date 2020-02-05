@@ -127,6 +127,16 @@ functions:
             origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
+  uploadAvatar:
+    handler: src/Lambdas/uploadAvatar.handler
+    events:
+      - http:
+          method: post
+          path: uploadAvatar
+          cors:
+            origin: '${self:custom.config.websiteUrl}'
+            allowCredentials: true
+
   deleteFile:
     handler: src/Lambdas/deleteFile.handler
     events:

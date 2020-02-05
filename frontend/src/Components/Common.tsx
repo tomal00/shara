@@ -162,7 +162,7 @@ const DropdownWrapper = styled.div`
     margin-top: 10px;
 `
 
-const DropdownIcon: StyledComponent<React.FunctionComponent<FontAwesomeIconProps>, null> = styled(FontAwesomeIcon)`
+const DropdownIcon = styled(FontAwesomeIcon) <FontAwesomeIconProps>`
     font-size: 12px;
     margin-left: 5px;
     transition: all 0.2s ease-out;
