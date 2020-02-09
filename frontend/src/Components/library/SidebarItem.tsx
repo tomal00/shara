@@ -18,22 +18,20 @@ const CollectionName = styled.div`
     white-space: nowrap;
     box-sizing: content-box;
     padding: 5px 20px 5px 10px;
-    width: calc(100% - 34px);
-
-    transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
-    border-radius: ${p => p.theme.borderRadius}px;
-    border: 2px solid transparent;
+    width: calc(100% - 30px);
+    transition: border-color 0.2s ease-out, color 0.2s ease-out;
+    border-bottom: 2px solid transparent;
     
     @media (hover: hover) and (pointer: fine) {
         &:hover {
-            background-color: ${p => p.theme.colors.grey.base};
-            border-color: ${p => p.theme.colors.grey.base};
+            border-color: ${p => p.theme.colors.primary.base};
+            color: ${p => p.theme.colors.primary.base};
         }
     }
 
     ${ListItem}.active & {
-        background-color: ${p => p.theme.colors.grey.base};
-        border-color: ${p => p.theme.colors.grey.dark};
+        border-color: ${p => p.theme.colors.primary.dark};
+        color: ${p => p.theme.colors.primary.dark};
         cursor: default;
     }
 `
@@ -72,7 +70,7 @@ interface CollectionItemProps {
 export default ({ name, /*itemCount,*/ isActive, onSelect, onDelete }: CollectionItemProps) => {
 
     return <ListItem className={isActive ? 'active' : ''} >
-        <CollectionName onClick={onSelect} >{name}</CollectionName>
+        <CollectionName onClick={onSelect}>{name}</CollectionName>
         <StyledIcon icon='trash-alt' onClick={onDelete} />
         {/*<ItemCount>{itemCount}</ItemCount>*/}
     </ListItem>

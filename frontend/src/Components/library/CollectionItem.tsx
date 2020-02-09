@@ -9,21 +9,24 @@ const Wrapper = styled.div`
     position: relative;
     background-color: ${p => p.theme.colors.grey.base};
     border-radius: ${p => p.theme.borderRadius}px;
-    padding: 10px;
+    padding: 4px;
     height: 180px;
     width: 180px;
     cursor: pointer;
-    transition: background-color 0.2s ease-out, color 0.2s ease-out;
+    transition: background-color 0.2s ease-out, color 0.2s ease-out, border-color 0.2s ease-out;
     margin: 20px;
     display: inline-block;
+    border-bottom: 2px solid ${p => p.theme.colors.grey.dark};
 
     @media (hover: hover) and (pointer: fine) {
         &:hover {
             &:nth-child(even) {
-                background-color: ${p => p.theme.colors.primary.dark};
+                background-color: ${p => p.theme.colors.primary.base};
+                border-color: ${p => p.theme.colors.primary.dark};
             }
             &:nth-child(odd) {
-                background-color: ${p => p.theme.colors.secondary.dark};
+                background-color: ${p => p.theme.colors.secondary.base};
+                border-color: ${p => p.theme.colors.secondary.dark};
             }
             color: ${p => p.theme.colors.primary.text};
         }
@@ -36,6 +39,14 @@ const Image = styled.div`
     background-position: center;
     background-size: cover;
     background-color: white;
+    border-radius: 3px;
+    transition: opacity 0.2s ease-out;
+
+    @media (hover: hover) and (pointer: fine) {
+        ${Wrapper}:hover & {
+            opacity: 0.6;
+        }
+    }
 `
 
 const ImageWrapper = styled.div`
@@ -48,7 +59,7 @@ const FileName = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    padding: 10px 0;
+    padding: 8px 0;
 `
 
 const StyledLink = styled(Link)`
