@@ -17,19 +17,14 @@ export const handler: APIGatewayProxyHandler = async (_, _context) => {
         accountHash.end()
         const hashString = accountHash.read().toString('hex')
 
-        await new Promise((res, rej) => {
-            dynamo.putItem({
-                TableName: accountsTableName,
-                Item: {
-                    hash: {
-                        S: hashString
-                    }
+        await dynamo.putItem({
+            TableName: accountsTableName,
+            Item: {
+                hash: {
+                    S: hashString
                 }
-            }, (err) => {
-                if (err) rej(err)
-                else res()
-            })
-        })
+            }
+        }).promise()
 
         return withCors({
             statusCode: 200,

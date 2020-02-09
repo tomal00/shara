@@ -32,23 +32,18 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const mappedValues = mapDataTypesToAttrValues([{ attributeName: 'name', dataType: 'S' }], ExpressionAttributeValues)
 
-        await new Promise((res, rej) => {
-            dynamo.updateItem({
-                Key: {
-                    "hash": {
-                        S: hash
-                    }
-                },
-                ReturnValues: "NONE",
-                TableName: accountsTableName,
-                UpdateExpression,
-                ExpressionAttributeNames,
-                ExpressionAttributeValues: Object.keys(mappedValues).length ? mappedValues : undefined
-            }, (err, _) => {
-                if (err) rej(err)
-                else res()
-            })
-        })
+        await dynamo.updateItem({
+            Key: {
+                "hash": {
+                    S: hash
+                }
+            },
+            ReturnValues: "NONE",
+            TableName: accountsTableName,
+            UpdateExpression,
+            ExpressionAttributeNames,
+            ExpressionAttributeValues: Object.keys(mappedValues).length ? mappedValues : undefined
+        }).promise()
 
         return withCors({
             statusCode: 200,

@@ -22,8 +22,8 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const { imageId } = JSON.parse(event.body)
 
-        await new Promise((res, rej) => {
-            dynamo.deleteItem({
+        try {
+            await dynamo.deleteItem({
                 TableName: imagesTableName,
                 Key: {
                     imageId: {
@@ -40,26 +40,21 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                         S: hash
                     }
                 }
-            }, (err) => {
-                if (err) {
-                    if (err.code === 'ConditionalCheckFailedException') rej('You are not the owner of this file!')
-                    rej(err)
+            }).promise()
+        }
+        catch (err) {
+            if (err.code === 'ConditionalCheckFailedException') {
+                return withCors({
+                    statusCode: 401,
+                    body: JSON.stringify({ message: 'You are not the owner of this file!' })
+                })
+            }
+        }
 
-                    return
-                }
-                res()
-            })
-        })
-
-        await new Promise((res, rej) => {
-            s3.deleteObject({
-                Bucket: S3fileBucketName,
-                Key: `${hash}/images/${imageId}`,
-            }, (err) => {
-                if (err) rej(err)
-                else res()
-            })
-        })
+        await s3.deleteObject({
+            Bucket: S3fileBucketName,
+            Key: `${hash}/images/${imageId}`,
+        }).promise()
 
         return withCors({
             statusCode: 200,

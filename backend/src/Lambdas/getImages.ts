@@ -28,33 +28,27 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     } : {}
 
     try {
-        const images: FullFileInfo[] = await new Promise<FullFileInfo[]>((res, rej) => {
-            dynamo.query({
-                TableName: imagesTableName,
-                ExpressionAttributeValues: {
-                    ":h": {
-                        S: accountHash
-                    },
-                    ...collectionIdAttr
+        const images: FullFileInfo[] = await dynamo.query({
+            TableName: imagesTableName,
+            ExpressionAttributeValues: {
+                ":h": {
+                    S: accountHash
                 },
-                IndexName: 'ownerHash-imageId',
-                KeyConditionExpression: `ownerHash = :h`,
-                FilterExpression: collectionId ? 'collectionId = :c' : undefined,
-                Select: 'ALL_ATTRIBUTES'
-            }, (err, data) => {
-                if (err) rej(err)
-                else {
-                    res(data.Items.map(i => ({
-                        ownerHash: i.ownerHash.S,
-                        collectionId: i.collectionId ? i.collectionId.S : undefined,
-                        imageId: i.imageId.S,
-                        imageName: i.imageName.S,
-                        description: i.description ? i.description.S : undefined,
-                        isPrivate: i.isPrivate.BOOL
-                    })))
-                }
-            })
-        })
+                ...collectionIdAttr
+            },
+            IndexName: 'ownerHash-imageId',
+            KeyConditionExpression: `ownerHash = :h`,
+            FilterExpression: collectionId ? 'collectionId = :c' : undefined,
+            Select: 'ALL_ATTRIBUTES'
+        }).promise()
+            .then(data => data.Items.map(i => ({
+                ownerHash: i.ownerHash.S,
+                collectionId: i.collectionId ? i.collectionId.S : undefined,
+                imageId: i.imageId.S,
+                imageName: i.imageName.S,
+                description: i.description ? i.description.S : undefined,
+                isPrivate: i.isPrivate.BOOL
+            })))
 
         return withCors({
             statusCode: 200,

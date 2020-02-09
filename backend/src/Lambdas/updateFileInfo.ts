@@ -58,23 +58,18 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             { attributeName: 'collectionId', dataType: 'S' }
         ], ExpressionAttributeValues)
 
-        await new Promise((res, rej) => {
-            dynamo.updateItem({
-                Key: {
-                    imageId: {
-                        S: `${imageId}`
-                    }
-                },
-                ReturnValues: "NONE",
-                TableName: imagesTableName,
-                UpdateExpression,
-                ExpressionAttributeNames,
-                ExpressionAttributeValues: Object.keys(mappedValues).length ? mappedValues : undefined
-            }, (err) => {
-                if (err) rej(err)
-                else res()
-            })
-        })
+        await dynamo.updateItem({
+            Key: {
+                imageId: {
+                    S: `${imageId}`
+                }
+            },
+            ReturnValues: "NONE",
+            TableName: imagesTableName,
+            UpdateExpression,
+            ExpressionAttributeNames,
+            ExpressionAttributeValues: Object.keys(mappedValues).length ? mappedValues : undefined
+        }).promise()
 
         return withCors({
             statusCode: 200,

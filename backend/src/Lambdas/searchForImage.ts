@@ -30,32 +30,27 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     }
 
     try {
-        const results = await new Promise<FullFileInfo[]>((res, rej) => {
-            dynamo.query({
-                TableName: imagesTableName,
-                ExpressionAttributeValues: {
-                    ":h": {
-                        S: hash
-                    }
-                },
-                IndexName: 'ownerHash-imageId',
-                KeyConditionExpression: "ownerHash = :h",
-                Select: 'ALL_ATTRIBUTES'
-            }, (err, data) => {
-
-                if (err) rej(err)
-                else res(data.Items.map(i => {
-                    return {
-                        imageName: i.imageName.S,
-                        imageId: i.imageId.S,
-                        collectionId: i.collectionId ? i.collectionId.S : undefined,
-                        ownerHash: i.ownerHash.S,
-                        description: i.description ? i.description.S : undefined,
-                        isPrivate: i.isPrivate.BOOL
-                    }
-                }))
-            })
-        })
+        const results: FullFileInfo[] = await dynamo.query({
+            TableName: imagesTableName,
+            ExpressionAttributeValues: {
+                ":h": {
+                    S: hash
+                }
+            },
+            IndexName: 'ownerHash-imageId',
+            KeyConditionExpression: "ownerHash = :h",
+            Select: 'ALL_ATTRIBUTES'
+        }).promise()
+            .then(data => data.Items.map(i => (
+                {
+                    imageName: i.imageName.S,
+                    imageId: i.imageId.S,
+                    collectionId: i.collectionId ? i.collectionId.S : undefined,
+                    ownerHash: i.ownerHash.S,
+                    description: i.description ? i.description.S : undefined,
+                    isPrivate: i.isPrivate.BOOL
+                }
+            )))
 
         const fuse = new Fuse(results, {
             shouldSort: true,

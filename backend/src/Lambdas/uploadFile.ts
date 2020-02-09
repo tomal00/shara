@@ -29,45 +29,35 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const imageId = `${Date.now()}${Math.floor(Math.random() * 10000)}`
 
-        await new Promise<string>((res, rej) => {
-            s3.putObject({
-                Bucket: S3fileBucketName,
-                Key: `${hash}/images/${imageId}`,
-                Body: file.buffer,
-                ContentType: file.meta.mime
-            }, (err) => {
-                if (err) rej(err)
-                res()
-            })
-        })
+        await s3.putObject({
+            Bucket: S3fileBucketName,
+            Key: `${hash}/images/${imageId}`,
+            Body: file.buffer,
+            ContentType: file.meta.mime
+        }).promise()
 
-        await new Promise((res, rej) => {
-            dynamo.putItem({
-                TableName: imagesTableName,
-                Item: {
-                    ownerHash: {
-                        S: hash
-                    },
-                    imageName: {
-                        S: file.name
-                    },
-                    imageId: {
-                        S: imageId
-                    },
-                    isPrivate: {
-                        BOOL: file.isPrivate
-                    },
-                    ...(file.meta.description ? {
-                        description: {
-                            S: file.meta.description
-                        }
-                    } : {})
-                }
-            }, (err) => {
-                if (err) rej(err)
-                else res()
-            })
-        })
+        await dynamo.putItem({
+            TableName: imagesTableName,
+            Item: {
+                ownerHash: {
+                    S: hash
+                },
+                imageName: {
+                    S: file.name
+                },
+                imageId: {
+                    S: imageId
+                },
+                isPrivate: {
+                    BOOL: file.isPrivate
+                },
+                ...(file.meta.description ? {
+                    description: {
+                        S: file.meta.description
+                    }
+                } : {})
+            }
+        }).promise()
 
         return withCors({
             statusCode: 200,

@@ -21,8 +21,8 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const { collectionId } = JSON.parse(event.body)
 
-        await new Promise((res, rej) => {
-            dynamo.deleteItem({
+        try {
+            await dynamo.deleteItem({
                 TableName: collectionsTableName,
                 Key: {
                     collectionId: {
@@ -39,39 +39,35 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                         S: hash
                     }
                 }
-            }, (err) => {
-                if (err) {
-                    if (err.code === 'ConditionalCheckFailedException') rej('You are not the owner of this collection!')
-                    rej(err)
+            }).promise()
+        }
+        catch (err) {
+            if (err.code === 'ConditionalCheckFailedException') {
+                return withCors({
+                    statusCode: 401,
+                    body: JSON.stringify({ message: 'You are not the owner of this collection!' })
+                })
+            }
+            else throw err
+        }
 
-                    return
-                }
-                res()
-            })
-        })
-
-        const imageIdsOfCollection: string[] = await new Promise((res, rej) => {
-            dynamo.query({
-                TableName: imagesTableName,
-                ExpressionAttributeValues: {
-                    ":c": {
-                        S: collectionId
-                    },
+        const imageIdsOfCollection: string[] = await dynamo.query({
+            TableName: imagesTableName,
+            ExpressionAttributeValues: {
+                ":c": {
+                    S: collectionId
                 },
-                IndexName: 'collectionId-imageId',
-                KeyConditionExpression: `collectionId = :c`,
-                Select: 'SPECIFIC_ATTRIBUTES',
-                ProjectionExpression: 'imageId'
-            }, (err, data) => {
-                if (err) rej(err)
-                else {
-                    res(data.Items.map(i => i.imageId.S))
-                }
-            })
-        })
+            },
+            IndexName: 'collectionId-imageId',
+            KeyConditionExpression: `collectionId = :c`,
+            Select: 'SPECIFIC_ATTRIBUTES',
+            ProjectionExpression: 'imageId'
+        }).promise()
+            .then(data => data.Items.map(i => i.imageId.S))
 
-        await Promise.all(imageIdsOfCollection.map(i => new Promise((res, rej) => {
-            dynamo.updateItem({
+
+        await Promise.all(imageIdsOfCollection.map(
+            i => dynamo.updateItem({
                 TableName: imagesTableName,
                 ReturnValues: "NONE",
                 Key: {
@@ -83,11 +79,8 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                     '#C': 'collectionId'
                 },
                 UpdateExpression: 'REMOVE #C'
-            }, (err) => {
-                if (err) rej(err)
-                else res()
-            })
-        })))
+            }).promise()
+        ))
 
         return withCors({
             statusCode: 200,

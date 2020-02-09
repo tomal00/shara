@@ -1,3 +1,3 @@
 export interface AccountInfo {
-    name: ''
+    name: string
 }

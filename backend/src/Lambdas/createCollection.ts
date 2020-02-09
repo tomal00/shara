@@ -22,25 +22,20 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const { collectionName } = JSON.parse(event.body)
 
-        await new Promise((res, rej) => {
-            dynamo.putItem({
-                TableName: collectionsTableName,
-                Item: {
-                    collectionId: {
-                        S: collectionId
-                    },
-                    name: {
-                        S: collectionName
-                    },
-                    ownerHash: {
-                        S: hash
-                    }
+        await dynamo.putItem({
+            TableName: collectionsTableName,
+            Item: {
+                collectionId: {
+                    S: collectionId
+                },
+                name: {
+                    S: collectionName
+                },
+                ownerHash: {
+                    S: hash
                 }
-            }, (err) => {
-                if (err) rej(err)
-                else res()
-            })
-        })
+            }
+        }).promise()
 
         return withCors({
             statusCode: 200,

@@ -22,28 +22,22 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     }
 
     try {
-        const collections: CollectionInfo[] = await new Promise<CollectionInfo[]>((res, rej) => {
-            dynamo.query({
-                TableName: collectionsTableName,
-                ExpressionAttributeValues: {
-                    ":h": {
-                        S: accountHash
-                    }
-                },
-                IndexName: 'ownerHash-collectionId',
-                KeyConditionExpression: "ownerHash = :h",
-                Select: 'ALL_ATTRIBUTES'
-            }, (err, data) => {
-                if (err) rej(err)
-                else {
-                    res(data.Items.map(i => ({
-                        name: i.name.S,
-                        collectionId: i.collectionId.S,
-                        ownerHash: i.ownerHash.S
-                    })))
+        const collections: CollectionInfo[] = await dynamo.query({
+            TableName: collectionsTableName,
+            ExpressionAttributeValues: {
+                ":h": {
+                    S: accountHash
                 }
-            })
-        })
+            },
+            IndexName: 'ownerHash-collectionId',
+            KeyConditionExpression: "ownerHash = :h",
+            Select: 'ALL_ATTRIBUTES'
+        }).promise()
+            .then(data => data.Items.map(i => ({
+                name: i.name.S,
+                collectionId: i.collectionId.S,
+                ownerHash: i.ownerHash.S
+            })))
 
         return withCors({
             statusCode: 200,

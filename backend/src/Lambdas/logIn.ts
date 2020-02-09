@@ -13,25 +13,36 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     try {
         const accountHash = JSON.parse(event.body).hash
 
-        if (!accountHash) throw 'No hash specified'
-
-        await new Promise((res, rej) => {
-            dynamo.getItem({
-                TableName: accountsTableName,
-                Key: {
-                    hash: {
-                        S: accountHash
-                    }
-                }
-            }, (err, data) => {
-                if (err) rej(err)
-                else if (!data.Item) rej(`No account matches this hash: ${accountHash}`) //HÁZÍ 500, ZMĚNIT
-                else res()
+        if (!accountHash) {
+            return withCors({
+                statusCode: 400,
+                body: JSON.stringify({
+                    message: `No hash specified`,
+                })
             })
-        })
+        }
+
+        const { Item } = await dynamo.getItem({
+            TableName: accountsTableName,
+            Key: {
+                hash: {
+                    S: accountHash
+                }
+            }
+        }).promise()
+
+        if (!Item) {
+            return withCors({
+                statusCode: 401,
+                body: JSON.stringify({
+                    message: `No account matches this hash: ${accountHash}`,
+                })
+            })
+        }
+
         return withCors({
             headers: {
-                'Set-Cookie': `accountHash=${accountHash}`, //Bylo by fajn nastavit picoviny jako kdy expirene atd
+                'Set-Cookie': `accountHash=${accountHash}`
             },
             statusCode: 200,
             body: JSON.stringify({ message: 'success' })

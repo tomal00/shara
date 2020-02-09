@@ -26,65 +26,48 @@ export const accountExists = async (hash: string): Promise<boolean> => {
 
     if (!hash) return false
 
-    return new Promise((res, rej) => {
-        dynamo.getItem({
-            TableName: accountsTableName,
-            Key: {
-                hash: {
-                    S: hash
-                }
+    return dynamo.getItem({
+        TableName: accountsTableName,
+        Key: {
+            hash: {
+                S: hash
             }
-        }, (err, data) => {
-            if (err) rej(err)
-            else res(data && !!data.Item)
-        })
-    })
+        }
+    }).promise().then(data => data && !!data.Item)
 }
 
 export const getAccountInfo = async (hash: string): Promise<AccountInfo> => {
     const dynamo = new DynamoDB()
 
-    return new Promise((res, rej) => {
-        dynamo.getItem({
-            TableName: accountsTableName,
-            Key: {
-                hash: {
-                    S: hash
-                }
+    return dynamo.getItem({
+        TableName: accountsTableName,
+        Key: {
+            hash: {
+                S: hash
             }
-        }, (err, data) => {
-            if (err) rej(err)
-            else res({
-                name: data.Item.name ? data.Item.name.S : ''
-            } as AccountInfo)
-        })
-    })
+        }
+    }).promise()
+        .then(data => ({
+            name: data.Item.name ? data.Item.name.S : ''
+        }))
 }
-/*
-    name: string,
-    id: string,
-    ownerHash: string
-*/
+
 export const getCollectionInfo = async (collectionId: string): Promise<CollectionInfo> => {
     const dynamo = new DynamoDB()
 
-    return new Promise((res, rej) => {
-        dynamo.getItem({
-            TableName: collectionsTableName,
-            Key: {
-                collectionId: {
-                    S: collectionId
-                }
+    return dynamo.getItem({
+        TableName: collectionsTableName,
+        Key: {
+            collectionId: {
+                S: collectionId
             }
-        }, (err, data) => {
-            if (err) rej(err)
-            else res({
-                name: data.Item.name.S,
-                collectionId: data.Item.collectionId.S,
-                ownerHash: data.Item.ownerHash.S
-            } as CollectionInfo)
-        })
-    })
+        }
+    }).promise()
+        .then(data => ({
+            name: data.Item.name.S,
+            collectionId: data.Item.collectionId.S,
+            ownerHash: data.Item.ownerHash.S
+        }))
 }
 
 export const extractProperties = (propNames: string[], from: any): any => {
@@ -99,19 +82,16 @@ export const extractProperties = (propNames: string[], from: any): any => {
 export const getFileInfo = async (imageId: string): Promise<FullFileInfo> => {
     const dynamo = new DynamoDB()
 
-    return new Promise<FullFileInfo>((res, rej) => {
-        dynamo.getItem({
-            TableName: imagesTableName,
-            Key: {
-                imageId: {
-                    S: `${imageId}`
-                }
+    return dynamo.getItem({
+        TableName: imagesTableName,
+        Key: {
+            imageId: {
+                S: `${imageId}`
             }
-        }, (err, data) => {
-            if (err) rej(err)
-            else if (!data || !data.Item) rej({ message: 'The file does not exist!', data: imageId })
-
-            if (err || !data || !data.Item) return
+        }
+    }).promise()
+        .then(data => {
+            if (!data || !data.Item) throw new Error(`The file does not exist! ${imageId}`)
 
             const fileInfo = {}
             for (let key in data.Item) {
@@ -119,9 +99,9 @@ export const getFileInfo = async (imageId: string): Promise<FullFileInfo> => {
                 fileInfo[key] = data.Item[key][dataType]
             }
 
-            res(fileInfo as FullFileInfo)
+            return fileInfo as FullFileInfo
         })
-    })
+
 }
 
 interface Attribute {
