@@ -1,7 +1,5 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import { Collection } from 'Types/collection'
-import { NameInput } from 'Components/Common'
 import { Image as ImageType } from 'Types/file'
 import { Link } from "react-router-dom";
 

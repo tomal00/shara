@@ -2,12 +2,30 @@ import { useEffect, useState } from 'react';
 import { Cancelable } from 'Types/cancelable'
 import { StateSetter } from 'Types/etc'
 import { RefObject } from 'react'
+import { makeCancelable } from 'Root/helpers'
 
-export function useCancelableCleanup(arr: Cancelable<any>[]) {
+export function useCancelable() {
+    const cancelables: Cancelable<any>[] = []
+
+    function createCancelable<T>(p: Promise<T>) {
+        const cancelable = makeCancelable<T>(p)
+        cancelables.push(cancelable)
+
+        return cancelable
+    }
+
+    function cancelCancelables() {
+        for (let cancelable of cancelables) {
+            cancelable.cancel()
+        }
+        cancelables.splice(0, cancelables.length)
+    }
+
     useEffect(() => () => {
-        for (let i of arr) { i.cancel() }
-        arr.splice(0, arr.length)
+        cancelCancelables()
     }, [])
+
+    return { createCancelable, cancelCancelables }
 }
 
 export function useWidth() {

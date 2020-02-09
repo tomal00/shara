@@ -4,9 +4,7 @@ import CollectionView from 'Root/Components/library/CollectionView'
 import SideBar from 'Components/library/SideBar'
 import { AppContext } from 'Root/AppContext'
 import { Collection } from 'Types/collection'
-import { makeCancelable } from 'Root/helpers'
-import { Cancelable } from 'Types/cancelable'
-import { useCancelableCleanup, useWidth } from 'Root/hooks'
+import { useCancelable, useWidth } from 'Root/hooks'
 import { Image } from 'Types/file'
 import { StateSetter } from 'Types/etc'
 import { Redirect } from 'react-router-dom'
@@ -21,8 +19,6 @@ const Wrapper = styled.div`
     background: ${p => p.theme.colors.grey.light};
 `
 
-const activePromises: Cancelable<any>[] = []
-
 export default () => {
     const { api, accountHash } = React.useContext(AppContext)
     const width = useWidth()
@@ -36,31 +32,24 @@ export default () => {
     const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
     const [images, setImages]: [Image[], StateSetter<Image[]>] = React.useState(null)
     const selectedCollection = collections && collections.find(c => c.id === selectedCollectionId)
-
-    useCancelableCleanup(activePromises)
+    const { createCancelable } = useCancelable()
 
     React.useEffect(() => {
-        const cancelableCollections = makeCancelable(api.getCollections())
-        cancelableCollections
+        createCancelable(api.getCollections())
             .promise
             .then(({ success, collections }) => {
                 if (success) setCollections(collections)
             })
-            .catch(e => { if (!e.isCanceled) console.error(e) })
+            .catch(err => { if (!err.isCanceled) console.error(err) })
 
-        activePromises.push(cancelableCollections)
-
-        const cancelableImages = makeCancelable(api.getImages())
-        cancelableImages
+        createCancelable(api.getImages())
             .promise
             .then(({ success, images }) => {
                 if (success) setImages(images)
             })
-            .catch(e => {
-                if (!e.isCanceled) console.error(e)
+            .catch(err => {
+                if (!err.isCanceled) console.error(err)
             })
-
-        activePromises.push(cancelableImages)
     }, [])
 
     const currentCollectionImages = selectedCollection ?
@@ -80,42 +69,32 @@ export default () => {
                 selectedCollection={selectedCollection}
                 onSelectCollection={(id: string) => selectCollection(id)}
                 onCreateCollection={() => {
-                    const cancelable = makeCancelable(api.createCollection('New collection').then(api.getCollections))
-                    cancelable
+                    createCancelable(api.createCollection('New collection').then(api.getCollections))
                         .promise
                         .then(({ success, collections }) => {
                             if (success) setCollections(collections)
                         })
-                        .catch(e => { if (!e.isCanceled) console.error(e) })
-
-                    activePromises.push(cancelable)
+                        .catch(err => { if (!err.isCanceled) console.error(err) })
                 }}
                 onDeleteCollection={(id: string) => {
-                    const cancelable = makeCancelable(api.deleteCollection(id).then(api.getCollections))
-                    cancelable
+                    createCancelable(api.deleteCollection(id).then(api.getCollections))
                         .promise
                         .then(({ success, collections }) => {
                             if (success) setCollections(collections)
                         })
-                        .catch(e => { if (!e.isCanceled) console.error(e) })
-
-                    activePromises.push(cancelable)
+                        .catch(err => { if (!err.isCanceled) console.error(err) })
                 }} />}
             {<CollectionView
                 isReduced={isReduced}
                 selectedCollection={selectedCollection}
                 images={currentCollectionImages}
                 onChangeCollectionName={(newName, collectionId) => {
-                    const cancelable = makeCancelable(api.renameCollection(newName, collectionId).then(api.getCollections))
-
-                    cancelable
+                    createCancelable(api.renameCollection(newName, collectionId).then(api.getCollections))
                         .promise
                         .then(({ success, collections }) => {
                             if (success) setCollections(collections)
                         })
-                        .catch(e => { if (!e.isCanceled) console.error(e) })
-
-                    activePromises.push(cancelable)
+                        .catch(err => { if (!err.isCanceled) console.error(err) })
                 }} />}
         </Wrapper>
     )

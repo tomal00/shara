@@ -4,9 +4,7 @@ import UploadView from 'Components/upload/UploadView'
 import FileView from 'Components/upload/FileView'
 import { UploadedFile } from 'Types/file'
 import { AppContext } from 'Root/AppContext'
-import { makeCancelable } from 'Root/helpers'
-import { Cancelable } from 'Root/Types/cancelable'
-import { useCancelableCleanup } from 'Root/hooks'
+import { useCancelable } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
 import { useHistory, Redirect } from 'react-router-dom'
 
@@ -20,8 +18,6 @@ const Wrapper = styled.div`
     background: ${p => p.theme.colors.grey.light};
 `
 
-const activePromises: Cancelable<any>[] = []
-
 export default () => {
     const { api, accountHash, addNotification } = React.useContext(AppContext)
 
@@ -29,10 +25,9 @@ export default () => {
         return <Redirect to='/account' />
     }
 
+    const { createCancelable } = useCancelable()
     const [file, setFile]: [UploadedFile, StateSetter<File>] = React.useState(null)
     const history = useHistory()
-
-    useCancelableCleanup(activePromises)
 
     return <Wrapper>
         {file ?
@@ -40,8 +35,7 @@ export default () => {
                 file={file}
                 onCancel={() => setFile(null)}
                 onUpload={(file: UploadedFile) => {
-                    const cancelable = makeCancelable(api.uploadFile(file))
-                    cancelable
+                    createCancelable(api.uploadFile(file))
                         .promise
                         .then(({ success, imageId }) => {
                             if (success) {
@@ -49,10 +43,7 @@ export default () => {
                                 history.push(`/image/${imageId}`)
                             }
                         })
-                        .catch(e => {
-                            if (!e.isCanceled) console.error(e)
-                        })
-                    activePromises.push(cancelable)
+                        .catch(err => { if (!err.isCanceled) console.error(err) })
                 }} />)
             : (<UploadView
                 onSelectFile={setFile}

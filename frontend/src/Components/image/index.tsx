@@ -4,9 +4,7 @@ import { NameInput, Description, Dropdown } from 'Components/Common'
 import { useParams, useHistory } from 'react-router-dom'
 import { AppContext } from 'Root/AppContext'
 import { Image as ImageType } from 'Types/file'
-import { makeCancelable } from 'Root/helpers'
-import { Cancelable } from 'Root/Types/cancelable'
-import { useCancelableCleanup, useWidth } from 'Root/hooks'
+import { useCancelable, useWidth } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collection } from 'Types/collection'
@@ -115,8 +113,6 @@ const StyledDropdown = styled(Dropdown)`
     }
 `
 
-const activePromises: Cancelable<any>[] = []
-
 export default () => {
     const { imageId } = useParams()
     const history = useHistory()
@@ -126,47 +122,42 @@ export default () => {
     const [imageDescription, setImageDescription]: [string, StateSetter<string>] = React.useState('')
     const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
     const width = useWidth()
-
-    useCancelableCleanup(activePromises)
+    const { createCancelable } = useCancelable()
 
     React.useEffect(() => {
-        const cancelable = makeCancelable(
-            api.getImage(imageId)
-                .then(({ image }) => {
-                    setImage(image)
-                    setImageName(image.name)
-                    setImageDescription(image.description || '')
-
-                    return image.isOwner
-                })
-                .catch(e => {
-                    history.push('/account')
-                    addNotification({
-                        clearPrevious: true,
-                        notification: {
-                            level: 'error',
-                            title: 'Unable to show image',
-                            message: 'This image is either private or doesn\'t exist',
-                            autoDismiss: 10
-                        }
-                    })
-                })
-                .then((shouldFetchCollections: boolean) => {
-                    if (!shouldFetchCollections) return null
-                    else return api.getCollections()
-                        .then((res) => {
-                            setCollections(res.collections)
-                        })
-                })
-        )
-
-        cancelable
+        createCancelable(api.getImage(imageId))
             .promise
-            .catch(e => {
-                if (!e.isCanceled) console.error(e)
-            })
+            .then(({ image }) => {
+                setImage(image)
+                setImageName(image.name)
+                setImageDescription(image.description || '')
 
-        activePromises.push(cancelable)
+                return image.isOwner
+            })
+            .catch(err => {
+                if (err.isCanceled) return
+
+                history.push('/account')
+                addNotification({
+                    clearPrevious: true,
+                    notification: {
+                        level: 'error',
+                        title: 'Unable to show image',
+                        message: 'This image is either private or doesn\'t exist',
+                        autoDismiss: 10
+                    }
+                })
+            })
+            .then((shouldFetchCollections) => {
+                if (shouldFetchCollections) {
+                    return createCancelable(api.getCollections()).promise
+                }
+                return null
+            })
+            .then((res) => {
+                setCollections(res.collections)
+            })
+            .catch(err => { if (!err.isCanceled) console.error(err) })
     }, [imageId])
 
     if (!image || (image.isOwner && !collections)) {
@@ -198,19 +189,16 @@ export default () => {
             {image.isOwner && <StyledDeleteIcon
                 icon='trash-alt'
                 onClick={() => {
-                    const cancelable = makeCancelable(api.deleteFile(image.id))
-                    cancelable
+                    createCancelable(api.deleteFile(image.id))
                         .promise
                         .then(({ success }) => {
                             if (success) {
                                 history.push('/library')
                             }
                         })
-                        .catch(e => {
-                            if (!e.isCanceled) console.error(e)
+                        .catch(err => {
+                            if (!err.isCanceled) console.error(err)
                         })
-
-                    activePromises.push(cancelable)
                 }} />}
         </NameWrapper>
     ) : null

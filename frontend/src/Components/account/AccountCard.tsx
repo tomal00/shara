@@ -3,9 +3,7 @@ import styled from 'styled-components'
 import { Button, Input, NameInput } from 'Components/Common'
 import { AppContext } from 'Root/AppContext'
 import { StateSetter } from 'Types/etc'
-import { makeCancelable } from 'Root/helpers'
-import { Cancelable } from 'Root/Types/cancelable'
-import { useCancelableCleanup } from 'Root/hooks'
+import { useCancelable } from 'Root/hooks'
 import { selectFileFromExplorer } from 'Root/files'
 const defaultAvatar = require("Assets/default-avatar.png").default
 
@@ -86,8 +84,6 @@ const StyledButton = styled(Button)`
     grid-column: span 2;
 `
 
-const activePromises: Cancelable<any>[] = []
-
 interface AccountCardState {
     name: string,
     avatarUrl?: string
@@ -97,19 +93,18 @@ export default ({ onLoad }: { onLoad: () => void }) => {
     const { accountHash, api, setAccountHash, addNotification } = React.useContext(AppContext)
     const [state, setState]: [AccountCardState, StateSetter<AccountCardState>] = React.useState({ name: '' })
     const { name, avatarUrl } = state
-
-    useCancelableCleanup(activePromises)
+    const { createCancelable } = useCancelable()
 
     React.useEffect(() => {
-        const cancelable = makeCancelable(api.getAccountInfo())
-        cancelable
+        createCancelable(api.getAccountInfo())
             .promise
             .then((res) => {
                 setState({ ...state, name: res.name, avatarUrl: res.avatarUrl });
                 onLoad()
             })
-            .catch(err => { if (!err.isCanceled) console.error(err) })
-        activePromises.push(cancelable)
+            .catch(err => {
+                !err.isCanceled && console.error(err)
+            })
     }, [accountHash])
 
     return <AccountCard>
@@ -129,14 +124,13 @@ export default ({ onLoad }: { onLoad: () => void }) => {
                 try {
                     const file = await selectFileFromExplorer()
                     if (file && file.type.match(/image/g)) {
-                        const cancelable = makeCancelable(api.uploadAvatar(file).then(api.getAccountInfo))
-                        cancelable
+                        createCancelable(api.uploadAvatar(file).then(api.getAccountInfo))
                             .promise
                             .then((res) => {
                                 setState({ ...state, name: res.name, avatarUrl: res.avatarUrl });
                             })
-                            .catch(err => { if (!err.isCanceled) console.error(err) })
-                        activePromises.push(cancelable)
+                            .catch(err => console.error(err))
+
                     }
                     else {
                         addNotification({

@@ -2,10 +2,8 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { Input, Button } from 'Components/Common'
 import { AppContext } from 'Root/AppContext'
-import { makeCancelable } from 'Root/helpers'
-import { Cancelable } from 'Root/Types/cancelable'
-import { useCancelableCleanup } from 'Root/hooks'
 import { StateSetter } from 'Types/etc'
+import { useCancelable } from 'Root/hooks'
 
 const LogInCard = styled.div`
     padding: 50px 70px;
@@ -59,13 +57,10 @@ const Title = styled.div`
     text-align: center;
 `
 
-const activePromises: Cancelable<any>[] = []
-
 export default () => {
     const { api, setAccountHash } = React.useContext(AppContext)
     const [hash, setHash]: [string, StateSetter<string>] = React.useState('')
-
-    useCancelableCleanup(activePromises)
+    const { createCancelable } = useCancelable()
 
     return <LogInCard>
         <Title>Not logged in</Title>
@@ -79,25 +74,20 @@ export default () => {
             placeholder='account hash' />
         <LogInButton
             onClick={() => {
-                const cancelable = makeCancelable(api.logIn(hash))
-                cancelable
+                createCancelable(api.logIn(hash))
                     .promise
                     .then(({ success }) => {
                         if (success) setAccountHash(hash)
                         else alert('Incorrect hash!')
                     })
-                    .catch((e) => {
-                        if (!e.isCanceled) alert('Incorrect hash!')
+                    .catch((err) => {
+                        if (!err.isCanceled) alert('Incorrect hash!')
                     })
-
-                activePromises.push(cancelable)
             }}>
             Log in
         </LogInButton>
         <RegisterButton onClick={() => {
-            const cancelable = makeCancelable(api.createAccount())
-
-            cancelable
+            createCancelable(api.createAccount())
                 .promise
                 .then(({ accountHash }) => {
                     setAccountHash(accountHash)

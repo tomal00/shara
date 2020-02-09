@@ -6,10 +6,10 @@ export const makeCancelable = <T>(promise: Promise<T>): Cancelable<T> => {
     const wrappedPromise = new Promise<T>((resolve, reject) => {
         promise.then(
             val => {
-                return hasCanceled_ ? reject({ isCanceled: true }) : resolve(val)
+                return hasCanceled_ ? reject({ isCanceled: true, name: 'PROMISE_CANCELED', message: 'The promise was canceled before it was resolved' }) : resolve(val)
             },
             error => {
-                return hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
+                return hasCanceled_ ? reject({ isCanceled: true, name: 'PROMISE_CANCELED', message: 'The promise was canceled before it was resolved' }) : reject(error)
             }
         );
     });
