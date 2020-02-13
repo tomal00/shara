@@ -19,6 +19,18 @@ const Wrapper = styled.div`
     background: ${p => p.theme.colors.grey.light};
 `
 
+interface State {
+    selectedCollectionId: string,
+    collections: Collection[],
+    images: Image[]
+}
+
+interface UnmergedState {
+    selectedCollectionId?: string,
+    collections?: Collection[],
+    images?: Image[]
+}
+
 export default () => {
     const { api, accountHash } = React.useContext(AppContext)
     const width = useWidth()
@@ -28,9 +40,12 @@ export default () => {
         return <Redirect to='/account' />
     }
 
-    const [selectedCollectionId, selectCollection]: [string, StateSetter<string>] = React.useState(null)
-    const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
-    const [images, setImages]: [Image[], StateSetter<Image[]>] = React.useState(null)
+    //const [state, setState]: [State, StateSetter<State>] = React.useState({ selectedCollectionId: null, collections: null, images: null })
+    const [state, setState] = React.useReducer(
+        (state: State, newState: UnmergedState): State => ({ ...state, ...newState }),
+        { selectedCollectionId: null, collections: null, images: null }
+    )
+    const { selectedCollectionId, collections, images } = state
     const selectedCollection = collections && collections.find(c => c.id === selectedCollectionId)
     const { createCancelable } = useCancelable()
 
@@ -38,14 +53,16 @@ export default () => {
         createCancelable(api.getCollections())
             .promise
             .then(({ success, collections }) => {
-                if (success) setCollections(collections)
+                if (success) setState({ collections })
             })
             .catch(err => { if (!err.isCanceled) console.error(err) })
 
         createCancelable(api.getImages())
             .promise
             .then(({ success, images }) => {
-                if (success) setImages(images)
+                if (success) {
+                    setState({ images })
+                }
             })
             .catch(err => {
                 if (!err.isCanceled) console.error(err)
@@ -67,12 +84,12 @@ export default () => {
                 isReduced={isReduced}
                 collections={collections}
                 selectedCollection={selectedCollection}
-                onSelectCollection={(id: string) => selectCollection(id)}
+                onSelectCollection={(id: string) => setState({ selectedCollectionId: id })}
                 onCreateCollection={() => {
                     createCancelable(api.createCollection('New collection').then(api.getCollections))
                         .promise
                         .then(({ success, collections }) => {
-                            if (success) setCollections(collections)
+                            if (success) setState({ collections })
                         })
                         .catch(err => { if (!err.isCanceled) console.error(err) })
                 }}
@@ -80,7 +97,7 @@ export default () => {
                     createCancelable(api.deleteCollection(id).then(api.getCollections))
                         .promise
                         .then(({ success, collections }) => {
-                            if (success) setCollections(collections)
+                            if (success) setState({ collections })
                         })
                         .catch(err => { if (!err.isCanceled) console.error(err) })
                 }} />}
@@ -92,7 +109,7 @@ export default () => {
                     createCancelable(api.renameCollection(newName, collectionId).then(api.getCollections))
                         .promise
                         .then(({ success, collections }) => {
-                            if (success) setCollections(collections)
+                            if (success) setState({ collections })
                         })
                         .catch(err => { if (!err.isCanceled) console.error(err) })
                 }} />}

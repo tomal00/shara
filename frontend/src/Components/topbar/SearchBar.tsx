@@ -113,10 +113,24 @@ const ItemDescription = styled.span`
     margin-left: 5px;
 `
 
+interface SearchBarState {
+    isInputFocused: boolean,
+    inputValue: string,
+    searchResults: Image[]
+}
+
+interface UnmergedState {
+    isInputFocused?: boolean,
+    inputValue?: string,
+    searchResults?: Image[]
+}
+
 export default () => {
-    const [isInputFocused, setInputFocused]: [boolean, StateSetter<boolean>] = useState(false)
-    const [inputValue, setInputValue]: [string, StateSetter<string>] = useState('')
-    const [searchResults, setSearchResults]: [Image[], StateSetter<Image[]>] = useState([])
+    const [state, setState] = React.useReducer(
+        (state: SearchBarState, newState: UnmergedState): SearchBarState => ({ ...state, ...newState }),
+        { isInputFocused: false, inputValue: '', searchResults: [] }
+    )
+    const { isInputFocused, inputValue, searchResults } = state
     const history = useHistory()
     const isInputEmpty = !inputValue
     const { api } = useContext(AppContext)
@@ -132,14 +146,14 @@ export default () => {
                     api.searchForImage(inputValue)
                         .then(({ success, results }) => {
                             if (success) {
-                                setSearchResults(results)
+                                setState({ searchResults: results })
                             }
                         })
                         .catch(e => console.error(e))
                 }} />
             <Input
-                onFocus={() => setInputFocused(true)}
-                onBlur={() => setInputFocused(false)}
+                onFocus={() => setState({ isInputFocused: true })}
+                onBlur={() => setState({ isInputFocused: false })}
                 placeholder='search through your images...'
                 value={inputValue}
                 onKeyDown={(e) => {
@@ -147,16 +161,16 @@ export default () => {
                         api.searchForImage(inputValue)
                             .then(({ success, results }) => {
                                 if (success) {
-                                    setSearchResults(results)
+                                    setState({ searchResults: results })
                                 }
                             })
                             .catch(e => console.error(e))
                     }
                 }}
                 onChange={(e) => {
-                    setInputValue(e.target.value)
+                    setState({ inputValue: e.target.value })
                     if (!e.target.value) {
-                        setSearchResults([])
+                        setState({ searchResults: [] })
                     }
                 }}
                 className={`${searchResults.length ? 'has-results' : ''} ${isInputEmpty ? 'empty' : ''}`} />
@@ -167,8 +181,7 @@ export default () => {
                             <ResultItem
                                 key={r.id}
                                 onClick={() => {
-                                    setInputValue('')
-                                    setSearchResults([])
+                                    setState({ inputValue: '', searchResults: [] })
                                     history.push(`/image/${r.id}`)
                                 }}>
                                 <ItemName>{r.name}</ItemName>

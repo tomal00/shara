@@ -228,6 +228,16 @@ interface DropdownItemType {
     key?: any
 }
 
+interface DropdownState {
+    selectedItem: DropdownItemType,
+    isExpanded: boolean
+}
+
+interface UnmergedState {
+    selectedItem?: DropdownItemType,
+    isExpanded?: boolean
+}
+
 export const Dropdown = (
     {
         placeholder,
@@ -245,15 +255,18 @@ export const Dropdown = (
         className?: string
     }
 ) => {
-    const [selectedItem, selectItem]: [DropdownItemType, StateSetter<DropdownItemType>] = useState(initiallySelectedItem)
-    const [isExpanded, setIsExpanded]: [boolean, StateSetter<boolean>] = useState(false)
+    const [state, setState] = React.useReducer(
+        (state: DropdownState, newState: UnmergedState): DropdownState => ({ ...state, ...newState }),
+        { selectedItem: initiallySelectedItem, isExpanded: false }
+    )
+    const { selectedItem, isExpanded } = state
     const ref = useRef(null)
-    useCallbackOnOutsideClick(() => { setIsExpanded(false) }, ref)
+    useCallbackOnOutsideClick(() => { setState({ isExpanded: false }) }, ref)
 
     return <DropdownWrapper className={className} ref={ref}>
         <DropdownTitle
             className={!initiallySelectedItem ? 'with-placeholder' : ''}
-            onClick={() => setIsExpanded(!isExpanded)} >
+            onClick={() => setState({ isExpanded: !isExpanded })} >
             {selectedItem ? selectedItem.name : placeholder}
             <DropdownIcon icon='chevron-down' rotation={isExpanded ? 180 as RotateProp : undefined as RotateProp} />
         </DropdownTitle>
@@ -264,8 +277,7 @@ export const Dropdown = (
                         <DropdownItem
                             key={i.key || i.value}
                             onClick={() => {
-                                selectItem(i)
-                                setIsExpanded(false)
+                                setState({ ...state, selectedItem: i, isExpanded: false })
                                 onSelect(i)
                             }}>
                             {i.name}

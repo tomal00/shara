@@ -113,14 +113,29 @@ const StyledDropdown = styled(Dropdown)`
     }
 `
 
+interface ImageState {
+    image: ImageType,
+    imageName: string,
+    imageDescription: string,
+    collections: Collection[]
+}
+
+interface UnmergedState {
+    image?: ImageType,
+    imageName?: string,
+    imageDescription?: string,
+    collections?: Collection[]
+}
+
 export default () => {
     const { imageId } = useParams()
     const history = useHistory()
     const { api, addNotification } = React.useContext(AppContext)
-    const [image, setImage]: [ImageType, StateSetter<ImageType>] = React.useState(null)
-    const [imageName, setImageName]: [string, StateSetter<string>] = React.useState('')
-    const [imageDescription, setImageDescription]: [string, StateSetter<string>] = React.useState('')
-    const [collections, setCollections]: [Collection[], StateSetter<Collection[]>] = React.useState(null)
+    const [state, setState] = React.useReducer(
+        (state: ImageState, newState: UnmergedState): ImageState => ({ ...state, ...newState }),
+        { image: null, imageName: '', imageDescription: '', collections: null }
+    )
+    const { image, imageName, imageDescription, collections } = state
     const width = useWidth()
     const { createCancelable } = useCancelable()
 
@@ -128,9 +143,7 @@ export default () => {
         createCancelable(api.getImage(imageId))
             .promise
             .then(({ image }) => {
-                setImage(image)
-                setImageName(image.name)
-                setImageDescription(image.description || '')
+                setState({ image, imageName: image.name, imageDescription: image.description || '' })
 
                 return image.isOwner
             })
@@ -155,7 +168,7 @@ export default () => {
                 return null
             })
             .then((res) => {
-                setCollections(res.collections)
+                setState({ collections: res.collections })
             })
             .catch(err => { if (!err.isCanceled) console.error(err) })
     }, [imageId])
@@ -171,20 +184,18 @@ export default () => {
             <StyledNameInput
                 readOnly={!image.isOwner}
                 value={imageName}
-                onChange={(e) => setImageName(e.target.value)}
+                onChange={(e) => setState({ imageName: e.target.value })}
                 onBlur={() => {
                     if (imageName == image.name || !image.isOwner) return
                     if (!imageName) {
-                        setImageName(image.name)
+                        setState({ imageName: image.name })
                         return
                     }
 
                     api.updateImageInfo(image.id, imageName, image.description, image.collectionId)
                         .catch(err => console.error(err))
-                    setImage({
-                        ...image,
-                        name: imageName
-                    })
+
+                    setState({ image: { ...image, name: imageName } })
                 }} />
             {image.isOwner && <StyledDeleteIcon
                 icon='trash-alt'
@@ -233,7 +244,7 @@ export default () => {
         value={imageDescription}
         readOnly={!image.isOwner}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setImageDescription(e.target.value)
+            setState({ imageDescription: e.target.value })
         }}
         onBlur={() => {
             if (image.description == imageDescription || !image.isOwner) return
@@ -241,10 +252,7 @@ export default () => {
             api.updateImageInfo(image.id, image.name, imageDescription, image.collectionId)
                 .catch(err => console.error(err))
 
-            setImage({
-                ...image,
-                description: imageDescription
-            })
+            setState({ image: { ...image, description: imageDescription } })
         }} />) : null
 
     return (
