@@ -2,8 +2,10 @@
 frontend/node_modules
 frontend/config.json
 frontend/dist
+frontend/package-lock.json
 electron-app/node_modules
 backend/config.json
+backend/package-lock.json
 
 # package directories
 backend/node_modules
