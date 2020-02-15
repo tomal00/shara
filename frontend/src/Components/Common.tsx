@@ -1,12 +1,12 @@
 import * as React from 'react'
-import styled, { StyledComponent } from 'styled-components'
+import styled from 'styled-components'
 import * as autosize from 'autosize'
 import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome'
 import { StateSetter } from 'Types/etc'
 import { RotateProp } from '@fortawesome/fontawesome-svg-core'
 import { useCallbackOnOutsideClick } from 'Root/hooks'
 
-const { useEffect, useRef, useState } = React
+const { useEffect, useRef } = React
 
 export const Button = styled.button`
     background: none;

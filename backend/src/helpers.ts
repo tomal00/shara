@@ -115,7 +115,7 @@ export const mapDataTypesToAttrValues = (attributes: Attribute[], expressionAttr
         const attribute = attributes.find(a => `:${a.attributeName}` === key)
 
         mapped[key] = {
-            [attribute.dataType]: `${expressionAttributeValues[key]}`
+            [attribute.dataType]: expressionAttributeValues[key]
         }
     }
 

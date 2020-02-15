@@ -18,5 +18,6 @@ export interface Image {
     description?: string,
     url: string,
     collectionId?: string,
-    isOwner: boolean
+    isOwner: boolean,
+    isPrivate: boolean
 }

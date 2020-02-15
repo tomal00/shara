@@ -140,8 +140,10 @@ export class Api {
         imageId: string,
         newName: string,
         newDescription: string,
-        newCollectionId: string
+        newCollectionId: string,
+        isPrivate: boolean
     ): Promise<{ success: boolean }> => {
+        console.log(isPrivate)
         let res = await fetch(`${this.apiUrl}/updateFileInfo`, {
             method: 'POST',
             ...commonFetchProps,
@@ -149,7 +151,8 @@ export class Api {
                 imageId,
                 imageName: newName,
                 description: newDescription,
-                collectionId: newCollectionId
+                collectionId: newCollectionId,
+                isPrivate
             })
         });
         this.checkStatusCode(res, 200)
@@ -193,7 +196,8 @@ export class Api {
                 collectionId: data.collectionId,
                 id: data.imageId,
                 url: this.getImageUrl(data.imageId),
-                isOwner: data.isOwner
+                isOwner: data.isOwner,
+                isPrivate: data.isPrivate
             }
         }
     }
@@ -214,7 +218,8 @@ export class Api {
                 description: c.description,
                 url: this.getImageUrl(c.imageId),
                 collectionId: c.collectionId,
-                isOwner: c.isOwner
+                isOwner: c.isOwner,
+                isPrivate: c.isPrivate
             }))
         }
     }

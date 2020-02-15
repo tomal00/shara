@@ -34,7 +34,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             body: JSON.stringify({
                 message: 'success',
                 data: {
-                    ...extractProperties(['imageName', 'description', 'imageId', 'collectionId'], image),
+                    ...extractProperties(['imageName', 'description', 'imageId', 'collectionId', 'isPrivate'], image),
                     isOwner: hash === image.ownerHash
                 },
             })

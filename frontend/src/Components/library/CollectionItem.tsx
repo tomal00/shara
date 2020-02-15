@@ -2,6 +2,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { Image as ImageType } from 'Types/file'
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Wrapper = styled.div`
     position: relative;
@@ -30,8 +31,8 @@ const Wrapper = styled.div`
         }
     }
 `
-const Image = styled.div`
-    background-image: url(${(p: { imageUrl: string }) => p.imageUrl});
+const Image = styled.div<{ imageUrl: string }>`
+    background-image: url(${({ imageUrl }) => imageUrl});
     height: 150px;
     background-repeat: no-repeat;
     background-position: center;
@@ -65,12 +66,27 @@ const StyledLink = styled(Link)`
     color: inherit;
 `
 
+const StyledIcon = styled(FontAwesomeIcon)`
+    position: absolute;
+    font-size: 20px;
+    top: 15px;
+    color: white;
+    text-shadow: 0px 0px 10px black;
+    opacity: 0.6;
+    right: 10px;
+
+    &.private {
+        right: 15px;
+    }
+`
+
 export default ({ image }: { image: ImageType, key?: any }) => {
 
     return <Wrapper>
         <StyledLink to={`/image/${image.id}`}>
             <ImageWrapper>
                 <Image imageUrl={image.url} />
+                <StyledIcon className={image.isPrivate ? 'private' : 'public'} icon={image.isPrivate ? 'lock' : 'lock-open'} />
             </ImageWrapper>
             <FileName>{image.name}</FileName>
         </StyledLink>

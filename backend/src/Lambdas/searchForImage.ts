@@ -67,7 +67,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             statusCode: 200,
             body: JSON.stringify({
                 message: 'success',
-                results: possibleMatches.map(p => extractProperties(['collectionId', 'imageId', 'imageName', 'description'], p))
+                results: possibleMatches.map(p => extractProperties(['collectionId', 'imageId', 'imageName', 'description', 'isPrivate'], p))
             }),
         });
     }

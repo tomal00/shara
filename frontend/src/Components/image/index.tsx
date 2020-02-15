@@ -5,7 +5,6 @@ import { useParams, useHistory } from 'react-router-dom'
 import { AppContext } from 'Root/AppContext'
 import { Image as ImageType } from 'Types/file'
 import { useCancelable, useWidth } from 'Root/hooks'
-import { StateSetter } from 'Types/etc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collection } from 'Types/collection'
 import Loading from 'Components/Loading'
@@ -67,16 +66,27 @@ const ImageWrapper = styled.div`
     }
 `
 
-const StyledDeleteIcon = styled(FontAwesomeIcon)`
+const StyledIcon = styled(FontAwesomeIcon)`
     padding: 0 5px;
     font-size: 20px;
     cursor: pointer;
     transition: color 0.2s ease-out;
     margin-bottom: 5px;
+    user-select: none;
+`
 
+const StyledDeleteIcon = styled(StyledIcon)`
     @media (hover: hover) and (pointer: fine) {
         &:hover {
             color: #e53935;
+        }
+    }
+`
+
+const StyledLockIcon = styled(StyledIcon)`
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: ${p => p.theme.colors.secondary.base};
         }
     }
 `
@@ -101,13 +111,13 @@ const NameWrapper = styled.div`
     align-items: center;
 
     @media (max-width: 768px) {
-        width: 50%;
+        width: 60%;
     }
 `
 
 const StyledDropdown = styled(Dropdown)`
     @media (max-width: 768px) {
-        width: 50%;
+        width: 40%;
         margin: 0;
         text-align: center;
     }
@@ -179,7 +189,7 @@ export default () => {
         </Wrapper>
     }
 
-    const nameWrapperElement = image ? (
+    const nameWrapperNode = image ? (
         <NameWrapper>
             <StyledNameInput
                 readOnly={!image.isOwner}
@@ -192,29 +202,42 @@ export default () => {
                         return
                     }
 
-                    api.updateImageInfo(image.id, imageName, image.description, image.collectionId)
+                    api.updateImageInfo(image.id, imageName, image.description, image.collectionId, image.isPrivate)
                         .catch(err => console.error(err))
 
                     setState({ image: { ...image, name: imageName } })
                 }} />
-            {image.isOwner && <StyledDeleteIcon
-                icon='trash-alt'
-                onClick={() => {
-                    createCancelable(api.deleteFile(image.id))
-                        .promise
-                        .then(({ success }) => {
-                            if (success) {
-                                history.push('/library')
-                            }
-                        })
-                        .catch(err => {
-                            if (!err.isCanceled) console.error(err)
-                        })
-                }} />}
+            {image.isOwner && <React.Fragment>
+                <div style={{ minWidth: 32.5, textAlign: 'left' }}>
+                    <StyledLockIcon
+                        icon={image.isPrivate ? 'lock' : 'lock-open'}
+                        onClick={() => {
+                            api.updateImageInfo(image.id, image.name, image.description, image.collectionId, !image.isPrivate)
+                                .catch(err => console.error(err))
+
+                            setState({ image: { ...image, isPrivate: !image.isPrivate } })
+                        }}
+                    />
+                </div>
+                <StyledDeleteIcon
+                    icon='trash-alt'
+                    onClick={() => {
+                        createCancelable(api.deleteFile(image.id))
+                            .promise
+                            .then(({ success }) => {
+                                if (success) {
+                                    history.push('/library')
+                                }
+                            })
+                            .catch(err => {
+                                if (!err.isCanceled) console.error(err)
+                            })
+                    }} />
+            </React.Fragment>}
         </NameWrapper>
     ) : null
 
-    const dropdownElement = image && image.isOwner ? (
+    const dropdownNode = image && image.isOwner ? (
         <StyledDropdown
             placeholder='No collection'
             emptyDropdownText='You have no collections'
@@ -233,12 +256,12 @@ export default () => {
                     : null
             }
             onSelect={({ value }) => {
-                api.updateImageInfo(image.id, image.name, image.description, value.id)
+                api.updateImageInfo(image.id, image.name, image.description, value.id, image.isPrivate)
                     .catch(err => console.error(err))
             }} />
     ) : null
 
-    const descriptionElement = !!image ? (<StyledDescription
+    const descriptionNode = !!image ? (<StyledDescription
         placeholder='description...'
         rows={1}
         value={imageDescription}
@@ -249,7 +272,7 @@ export default () => {
         onBlur={() => {
             if (image.description == imageDescription || !image.isOwner) return
 
-            api.updateImageInfo(image.id, image.name, imageDescription, image.collectionId)
+            api.updateImageInfo(image.id, image.name, imageDescription, image.collectionId, image.isPrivate)
                 .catch(err => console.error(err))
 
             setState({ image: { ...image, description: imageDescription } })
@@ -260,9 +283,9 @@ export default () => {
             <FileInfo>
                 {
                     !!image && <React.Fragment>
-                        {nameWrapperElement}
-                        {dropdownElement}
-                        {width > 768 && descriptionElement}
+                        {nameWrapperNode}
+                        {dropdownNode}
+                        {width > 768 && descriptionNode}
                     </React.Fragment>
                 }
             </FileInfo>
@@ -271,7 +294,7 @@ export default () => {
                     !!image && <Image src={image.url} />
                 }
             </ImageWrapper>
-            {!(width > 768) && descriptionElement}
+            {!(width > 768) && descriptionNode}
         </Wrapper>
     )
 }

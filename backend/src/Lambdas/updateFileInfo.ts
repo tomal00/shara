@@ -22,7 +22,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const parsed = JSON.parse(event.body)
         const { imageId } = parsed
-        const modified = extractProperties(['imageName', 'description', 'collectionId'], parsed)
+        const modified = extractProperties(['imageName', 'description', 'collectionId', 'isPrivate'], parsed)
         let fullFileInfo
 
         try {
@@ -44,7 +44,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             })
         }
 
-        const original = extractProperties(['imageName', 'description', 'collectionId'], fullFileInfo)
+        const original = extractProperties(['imageName', 'description', 'collectionId', 'isPrivate'], fullFileInfo)
 
         const {
             UpdateExpression,
@@ -55,7 +55,8 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
         const mappedValues = mapDataTypesToAttrValues([
             { attributeName: 'imageName', dataType: 'S' },
             { attributeName: 'description', dataType: 'S' },
-            { attributeName: 'collectionId', dataType: 'S' }
+            { attributeName: 'collectionId', dataType: 'S' },
+            { attributeName: 'isPrivate', dataType: 'BOOL' }
         ], ExpressionAttributeValues)
 
         await dynamo.updateItem({
@@ -81,7 +82,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             statusCode: 500,
             body: JSON.stringify({
                 message: 'Something went horribly wrong',
-                data: e
+                data: e && (e.message || e)
             })
         })
     }
