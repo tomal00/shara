@@ -5,6 +5,9 @@ import { AppContext } from 'Root/AppContext'
 import { StateSetter } from 'Types/etc'
 import { useCancelable } from 'Root/hooks'
 import { selectFileFromExplorer } from 'Root/files'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { copyToClipboard } from 'Root/helpers'
+
 const defaultAvatar = require("Assets/default-avatar.png").default
 
 const AccountCard = styled.div`
@@ -31,10 +34,34 @@ const AccountCard = styled.div`
     }
 `
 
-const CustomInput = styled(Input)`
-    width: 100%;
-    height: 100%;
+const HashWrapper = styled.div`
     grid-column: span 2;
+    display: flex;
+    align-self: stretch;
+`
+
+const StyledIcon = styled(FontAwesomeIcon)`
+    height: calc(100% - 20px);
+    width: 20px!important;
+    padding: 10px;
+    transition: color 0.2s ease-out;
+    cursor: pointer;
+    user-select: none;
+    color: ${p => p.theme.colors.grey.dark};
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: ${p => p.theme.colors.primary.base};
+        }
+    }
+`
+
+const CustomInput = styled(Input)`
+    height: 100%;
+
+    ${HashWrapper} > & {
+        flex-grow: 10;
+    }
 `
 
 const Avatar = styled.div<{ avatarUrl: string }>`
@@ -148,7 +175,21 @@ export default ({ onLoad }: { onLoad: () => void }) => {
                     console.error(e)
                 }
             }} />
-        <CustomInput value={accountHash} readOnly />
+        <HashWrapper>
+            <CustomInput value={accountHash} readOnly />
+            <StyledIcon icon='copy' onClick={() => {
+                copyToClipboard(accountHash)
+                addNotification({
+                    clearPrevious: true,
+                    notification: {
+                        level: 'info',
+                        title: 'Copied',
+                        message: 'Your account\'s hash has been copied to clipboard ',
+                        autoDismiss: 10
+                    }
+                })
+            }} />
+        </HashWrapper>
         <StyledButton
             onClick={() => {
                 api.logOut()

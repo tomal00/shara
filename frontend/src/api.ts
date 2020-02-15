@@ -12,9 +12,14 @@ const commonFetchProps = {
 
 export class Api {
     constructor(private readonly apiUrl: string) { }
-    private checkStatusCode(res: Response, expectedStatusCode: number) {
+    private async checkStatusCode(res: Response, expectedStatusCode: number) {
         if (res.status !== expectedStatusCode) {
-            throw new Error('api error')
+            let data = null
+            try {
+                data = await res.json()
+            }
+            catch (e) { }
+            throw new Error(`api error ${data}`)
         }
     }
     createAccount = async (): Promise<{ success: boolean, accountHash: string }> => {
@@ -22,7 +27,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { accountHash } = await res.json()
 
@@ -36,7 +41,7 @@ export class Api {
                 name,
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -51,7 +56,7 @@ export class Api {
                 mime: avatar.type
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -65,7 +70,7 @@ export class Api {
                 hash: accountHash
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -74,7 +79,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -83,7 +88,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { data } = await res.json()
 
@@ -94,7 +99,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { accountHash, isValid } = await res.json()
 
@@ -115,7 +120,7 @@ export class Api {
                 }
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { imageId } = await res.json()
 
@@ -131,7 +136,7 @@ export class Api {
                 imageId,
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -155,7 +160,7 @@ export class Api {
                 isPrivate
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -164,7 +169,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { results } = await res.json()
 
@@ -184,7 +189,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { data } = await res.json()
 
@@ -206,7 +211,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { data } = await res.json()
 
@@ -233,7 +238,7 @@ export class Api {
             body: JSON.stringify({ collectionId })
         });
 
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -242,7 +247,7 @@ export class Api {
             method: 'GET',
             ...commonFetchProps,
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         const { data } = await res.json()
 
@@ -258,7 +263,7 @@ export class Api {
                 collectionName
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }
@@ -273,7 +278,7 @@ export class Api {
                 name: newName
             })
         });
-        this.checkStatusCode(res, 200)
+        await this.checkStatusCode(res, 200)
 
         return { success: true }
     }

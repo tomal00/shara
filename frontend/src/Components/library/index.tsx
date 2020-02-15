@@ -6,7 +6,6 @@ import { AppContext } from 'Root/AppContext'
 import { Collection } from 'Types/collection'
 import { useCancelable, useWidth } from 'Root/hooks'
 import { Image } from 'Types/file'
-import { StateSetter } from 'Types/etc'
 import { Redirect } from 'react-router-dom'
 import Loading from 'Components/Loading'
 
