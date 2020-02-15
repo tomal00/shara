@@ -212,10 +212,16 @@ export default () => {
                     <StyledLockIcon
                         icon={image.isPrivate ? 'lock' : 'lock-open'}
                         onClick={() => {
-                            api.updateImageInfo(image.id, image.name, image.description, image.collectionId, !image.isPrivate)
-                                .catch(err => console.error(err))
-
-                            setState({ image: { ...image, isPrivate: !image.isPrivate } })
+                            createCancelable(api.updateImageInfo(image.id, image.name, image.description, image.collectionId, !image.isPrivate))
+                                .promise
+                                .then(({ success }) => {
+                                    if (success) {
+                                        setState({ image: { ...image, isPrivate: !image.isPrivate } })
+                                    }
+                                })
+                                .catch(err => {
+                                    if (!err.isCanceled) console.error(err)
+                                })
                         }}
                     />
                 </div>
