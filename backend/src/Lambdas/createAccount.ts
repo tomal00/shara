@@ -29,7 +29,7 @@ export const handler: APIGatewayProxyHandler = async (_, _context) => {
         return withCors({
             statusCode: 200,
             headers: {
-                'Set-Cookie': `accountHash=${hashString}`, //Bylo by fajn nastavit picoviny jako kdy expirene atd
+                'Set-Cookie': `accountHash=${accountHash}; SameSite=Strict; HttpOnly; Max-Age=2147483647`,
                 'Content-Type': 'application/json; charset=utf-8'
             },
             body: JSON.stringify({ message: 'success', accountHash: hashString }),
