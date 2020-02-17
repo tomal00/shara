@@ -150,7 +150,6 @@ export class Api {
         newCollectionId: string,
         isPrivate: boolean
     ): Promise<{ success: boolean }> => {
-        console.log(isPrivate)
         let res = await fetch(`${this.apiUrl}/updateFileInfo`, {
             method: 'POST',
             ...commonFetchProps,
