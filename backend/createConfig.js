@@ -6,7 +6,11 @@ const template = {
     S3fileBucketName: '',
     accountsTableName: '',
     imagesTableName: '',
-    collectionsTableName: ''
+    collectionsTableName: '',
+    domain: {
+        name: '',
+        basePath: ''
+    }
 }
 
 

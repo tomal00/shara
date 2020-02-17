@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import * as React from 'react'
-const logo = require("Assets/logo_no_text.png").default
+const logo = require("Assets/logo.png").default
 
 const Logo = styled.div`
     justify-self: flex-start;

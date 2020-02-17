@@ -92,7 +92,11 @@ export default () => {
                 .then(({ accountHash }) => {
                     setAccountHash(accountHash)
                 })
-                .catch(err => { if (!err.isCanceled) console.error(err) })
+                .catch((err) => {
+                    if (!err.isCanceled) {
+                        console.error(err)
+                    }
+                })
         }}>
             Generate a new account
         </RegisterButton>

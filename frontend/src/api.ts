@@ -19,7 +19,9 @@ export class Api {
                 data = await res.json()
             }
             catch (e) { }
-            throw new Error(`api error ${data}`)
+
+            console.error(data)
+            throw new Error(`api error`)
         }
     }
     createAccount = async (): Promise<{ success: boolean, accountHash: string }> => {
