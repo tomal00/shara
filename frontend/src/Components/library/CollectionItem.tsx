@@ -71,7 +71,7 @@ const StyledIcon = styled(FontAwesomeIcon)`
     font-size: 20px;
     top: 15px;
     color: white;
-    text-shadow: 0px 0px 10px black;
+    filter: drop-shadow(0px 0px 2px black);
     opacity: 0.6;
     right: 10px;
 
