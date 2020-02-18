@@ -22,6 +22,13 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const { imageId } = JSON.parse(event.body)
 
+        if (!imageId) {
+            return withCors({
+                statusCode: 401,
+                body: JSON.stringify({ message: "Image id was not specified!" })
+            })
+        }
+
         try {
             await dynamo.deleteItem({
                 TableName: imagesTableName,

@@ -21,7 +21,15 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
         }
 
         const parsed = JSON.parse(event.body)
-        const { imageId } = parsed
+        const { imageId, imageName } = parsed
+
+        if (!imageId || !imageName) {
+            return withCors({
+                statusCode: 401,
+                body: JSON.stringify({ message: "Some mandatory file info is missing" })
+            })
+        }
+
         const modified = extractProperties(['imageName', 'description', 'collectionId', 'isPrivate'], parsed)
         let fullFileInfo
 

@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { getFileInfo, withCors } from '../helpers'
+import { getFileInfo, withCors, getCookies } from '../helpers'
 import { config as awsConfig, S3 } from 'aws-sdk';
 import { S3fileBucketName } from '../../config.json'
 
@@ -12,7 +12,20 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
     try {
         const s3 = new S3()
-        const { ownerHash } = await getFileInfo(imageId)
+        const { ownerHash, isPrivate } = await getFileInfo(imageId)
+
+        if (isPrivate) {
+            const hash = getCookies(event).accountHash
+
+            if (hash !== ownerHash) {
+                return withCors({
+                    statusCode: 401,
+                    body: JSON.stringify({
+                        message: 'This file is private!'
+                    })
+                })
+            }
+        }
 
         const url = await s3.getSignedUrlPromise('getObject', { Bucket: S3fileBucketName, Key: `${ownerHash}/images/${imageId}` });
 
@@ -21,7 +34,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             body: JSON.stringify({ message: 'success' }),
             headers: {
                 location: url,
-                origin: 'http://screenshot-app-website.s3-website.eu-central-1.amazonaws.com'
+                origin: 'https://shara.pictures'
             },
         });
     }

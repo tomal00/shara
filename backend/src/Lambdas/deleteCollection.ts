@@ -21,6 +21,13 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const { collectionId } = JSON.parse(event.body)
 
+        if (!collectionId) {
+            return withCors({
+                statusCode: 401,
+                body: JSON.stringify({ message: "Collection id was not specified!" })
+            })
+        }
+
         try {
             await dynamo.deleteItem({
                 TableName: collectionsTableName,

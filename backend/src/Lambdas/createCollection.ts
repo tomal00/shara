@@ -22,6 +22,13 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const { collectionName } = JSON.parse(event.body)
 
+        if (!collectionName) {
+            return withCors({
+                statusCode: 400,
+                body: JSON.stringify({ message: "Collection name was not specified!" })
+            })
+        }
+
         await dynamo.putItem({
             TableName: collectionsTableName,
             Item: {

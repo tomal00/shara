@@ -24,10 +24,10 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
         const { name, collectionId } = JSON.parse(event.body)
         const info = { name }
 
-        if (!name) {
+        if (!name || !collectionId) {
             return withCors({
                 statusCode: 400,
-                body: JSON.stringify({ message: "You need to specify the new collection's name!" })
+                body: JSON.stringify({ message: "Some mandatory collection info is missing" })
             })
         }
 

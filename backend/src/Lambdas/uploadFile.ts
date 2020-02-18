@@ -27,6 +27,13 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             buffer: Buffer.from(parsedFile.uInt8Array)
         }
 
+        if (!file.name) {
+            return withCors({
+                statusCode: 401,
+                body: JSON.stringify({ message: "Some mandatory file info is missing" })
+            })
+        }
+
         const imageId = `${Date.now()}${Math.floor(Math.random() * 10000)}`
 
         await s3.putObject({

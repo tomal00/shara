@@ -1,15 +1,12 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { DynamoDB, config as awsConfig } from 'aws-sdk';
-import { withCors } from '../helpers'
-import { accountsTableName } from '../../config.json'
+import { config as awsConfig } from 'aws-sdk';
+import { withCors, accountExists } from '../helpers'
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-    const dynamo = new DynamoDB()
-
     try {
         const accountHash = JSON.parse(event.body).hash
 
@@ -22,16 +19,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             })
         }
 
-        const { Item } = await dynamo.getItem({
-            TableName: accountsTableName,
-            Key: {
-                hash: {
-                    S: accountHash
-                }
-            }
-        }).promise()
-
-        if (!Item) {
+        if (!(await accountExists(accountHash))) {
             return withCors({
                 statusCode: 401,
                 body: JSON.stringify({
