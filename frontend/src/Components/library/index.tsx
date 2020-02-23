@@ -31,7 +31,7 @@ interface UnmergedState {
 }
 
 export default () => {
-    const { api, accountHash } = React.useContext(AppContext)
+    const { api, accountHash, logOut } = React.useContext(AppContext)
     const width = useWidth()
     const isReduced = width < 512
 
@@ -54,7 +54,12 @@ export default () => {
             .then(({ success, collections }) => {
                 if (success) setState({ collections })
             })
-            .catch(err => { if (!err.isCanceled) console.error(err) })
+            .catch(err => {
+                if (!err.isCanceled) {
+                    console.error(err)
+                    if (err.statusCode === 401) { logOut() }
+                }
+            })
 
         createCancelable(api.getImages())
             .promise
@@ -64,7 +69,10 @@ export default () => {
                 }
             })
             .catch(err => {
-                if (!err.isCanceled) console.error(err)
+                if (!err.isCanceled) {
+                    console.error(err)
+                    if (err.statusCode === 401) { logOut() }
+                }
             })
     }, [])
 
@@ -90,7 +98,12 @@ export default () => {
                         .then(({ success, collections }) => {
                             if (success) setState({ collections })
                         })
-                        .catch(err => { if (!err.isCanceled) console.error(err) })
+                        .catch(err => {
+                            if (!err.isCanceled) {
+                                console.error(err)
+                                if (err.statusCode === 401) { logOut() }
+                            }
+                        })
                 }}
                 onDeleteCollection={(id: string) => {
                     createCancelable(api.deleteCollection(id).then(api.getCollections))
@@ -98,7 +111,12 @@ export default () => {
                         .then(({ success, collections }) => {
                             if (success) setState({ collections })
                         })
-                        .catch(err => { if (!err.isCanceled) console.error(err) })
+                        .catch(err => {
+                            if (!err.isCanceled) {
+                                console.error(err)
+                                if (err.statusCode === 401) { logOut() }
+                            }
+                        })
                 }} />}
             {<CollectionView
                 isReduced={isReduced}
@@ -110,7 +128,12 @@ export default () => {
                         .then(({ success, collections }) => {
                             if (success) setState({ collections })
                         })
-                        .catch(err => { if (!err.isCanceled) console.error(err) })
+                        .catch(err => {
+                            if (!err.isCanceled) {
+                                console.error(err)
+                                if (err.statusCode === 401) { logOut() }
+                            }
+                        })
                 }} />}
         </Wrapper>
     )

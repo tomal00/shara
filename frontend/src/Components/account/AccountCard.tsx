@@ -117,7 +117,7 @@ interface AccountCardState {
 }
 
 export default ({ onLoad }: { onLoad: () => void }) => {
-    const { accountHash, api, setAccountHash, addNotification } = React.useContext(AppContext)
+    const { accountHash, api, setAccountHash, addNotification, logOut } = React.useContext(AppContext)
     const [state, setState]: [AccountCardState, StateSetter<AccountCardState>] = React.useState({ name: '' })
     const { name, avatarUrl } = state
     const { createCancelable } = useCancelable()
@@ -130,7 +130,10 @@ export default ({ onLoad }: { onLoad: () => void }) => {
                 onLoad()
             })
             .catch(err => {
-                !err.isCanceled && console.error(err)
+                if (!err.isCanceled) {
+                    console.error(err)
+                    if (err.statusCode === 401) { logOut() }
+                }
             })
     }, [accountHash])
 
@@ -141,7 +144,12 @@ export default ({ onLoad }: { onLoad: () => void }) => {
             onChange={(e) => setState({ ...state, name: e.target.value })}
             onBlur={() => {
                 api.updateAccountInfo({ name })
-                    .catch(err => console.error(err))
+                    .catch(err => {
+                        if (!err.isCanceled) {
+                            console.error(err)
+                            if (err.statusCode === 401) { logOut() }
+                        }
+                    })
             }} />
         <Avatar
             avatarUrl={avatarUrl ? avatarUrl : defaultAvatar}
@@ -156,7 +164,12 @@ export default ({ onLoad }: { onLoad: () => void }) => {
                             .then((res) => {
                                 setState({ ...state, name: res.name, avatarUrl: res.avatarUrl });
                             })
-                            .catch(err => console.error(err))
+                            .catch(err => {
+                                if (!err.isCanceled) {
+                                    console.error(err)
+                                    if (err.statusCode === 401) { logOut() }
+                                }
+                            })
 
                     }
                     else {

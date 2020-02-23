@@ -19,7 +19,7 @@ const Wrapper = styled.div`
 `
 
 export default () => {
-    const { api, accountHash, addNotification } = React.useContext(AppContext)
+    const { api, accountHash, addNotification, logOut } = React.useContext(AppContext)
 
     if (!accountHash) {
         return <Redirect to='/account' />
@@ -43,7 +43,12 @@ export default () => {
                                 history.push(`/image/${imageId}`)
                             }
                         })
-                        .catch(err => { if (!err.isCanceled) console.error(err) })
+                        .catch(err => {
+                            if (!err.isCanceled) {
+                                console.error(err)
+                                if (err.statusCode === 401) { logOut() }
+                            }
+                        })
                 }} />)
             : (<UploadView
                 onSelectFile={setFile}

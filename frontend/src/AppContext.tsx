@@ -6,12 +6,14 @@ interface InitialContext {
     api?: Api,
     accountHash?: string,
     setAccountHash: (hash: string) => void,
+    logOut: () => void,
     addNotification: NotificationSetter
 }
 
 const InitialContext: InitialContext = {
     setAccountHash: () => { },
-    addNotification: () => { }
+    addNotification: () => { },
+    logOut: () => { }
 }
 
 export const AppContext = React.createContext(InitialContext)
@@ -21,20 +23,33 @@ export const Provider = (
         children,
         api,
         accountHash,
-        addNotification
+        addNotification,
     }: {
         children: React.ReactNode,
         api: Api,
         accountHash?: string,
-        addNotification: NotificationSetter
+        addNotification: NotificationSetter,
     }) => {
     const [hash, setAccountHash] = React.useState(accountHash)
+    const logOut = () => {
+        setAccountHash('')
+        addNotification({
+            clearPrevious: true,
+            notification: {
+                level: 'error',
+                message: 'You have been logged out due to an unexpected error.',
+                autoDismiss: 10,
+                title: 'Unexpected unauthorized error'
+            }
+        })
+    }
 
     return <AppContext.Provider value={{
         api,
         accountHash: hash,
         setAccountHash,
-        addNotification
+        addNotification,
+        logOut
     }}>
         {children}
     </AppContext.Provider>
