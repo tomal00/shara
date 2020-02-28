@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Cancelable } from 'Types/cancelable'
 import { StateSetter } from 'Types/etc'
 import { RefObject } from 'react'
 import { makeCancelable } from 'Root/helpers'
 
 export function useCancelable() {
-    const cancelables: Cancelable<any>[] = []
+    const cancelablesRef: React.RefObject<Cancelable<any>[]> = useRef([])
 
     function createCancelable<T>(p: Promise<T>) {
         const cancelable = makeCancelable<T>(p)
-        cancelables.push(cancelable)
+        cancelablesRef.current.push(cancelable)
 
         return cancelable
     }
 
     function cancelCancelables() {
-        for (let cancelable of cancelables) {
+        for (let cancelable of cancelablesRef.current) {
             cancelable.cancel()
         }
-        cancelables.splice(0, cancelables.length)
+        cancelablesRef.current.splice(0, cancelablesRef.current.length)
     }
 
     useEffect(() => () => {
