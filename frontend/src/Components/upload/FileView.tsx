@@ -1,11 +1,13 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { UploadedFile } from 'Types/file'
-import { NameInput, Button, Description } from 'Components/Common'
+import { NameInput, Button, Description, StyledTooltip } from 'Components/Common'
 import { StateSetter } from 'Types/etc'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import ReactTooltip from 'react-tooltip'
+import { useDidUpdate } from 'Root/hooks'
 
-const { useState } = React
+const { useState, useRef } = React
 
 interface FileViewProps {
     file: UploadedFile,
@@ -82,6 +84,7 @@ const AccessControlsWrapper = styled.div`
     font-size: 18px;
     cursor: pointer;
     user-select: none;
+    width: 230px;
 
     @media (max-width: 512px) {
         margin-bottom: 15px;
@@ -110,6 +113,9 @@ export default ({ file, onCancel, onUpload }: FileViewProps) => {
     const [description, setDescription]: [string, StateSetter<string>] = useState('')
     const [fileName, setFileName]: [string, StateSetter<string>] = useState(file.name)
     const [isPrivate, setPrivate]: [boolean, StateSetter<boolean>] = useState(file.isPrivate)
+    const accessTogglerWrapperRef: React.Ref<HTMLDivElement> = useRef(null)
+
+    useDidUpdate(() => ReactTooltip.show(accessTogglerWrapperRef.current), [isPrivate])
 
     return <ViewWrapper>
         <div>
@@ -132,12 +138,17 @@ export default ({ file, onCancel, onUpload }: FileViewProps) => {
                     setDescription(target.value)
                 }} />
         <UploadControls>
-            <AccessControlsWrapper onClick={() => setPrivate(!isPrivate)} >
+            <AccessControlsWrapper
+                onClick={() => setPrivate(!isPrivate)}
+                ref={accessTogglerWrapperRef}
+                data-for='access-control-tooltip'
+                data-tip={`Click here if you wish to change<br>the image to ${isPrivate ? 'public' : 'private'}.`} >
                 <StyledIcon
                     className={isPrivate ? 'private' : 'public'}
                     icon={isPrivate ? 'lock' : 'lock-open'} />
                 <span>{isPrivate ? 'This image will be private' : 'This image will be public'}</span>
             </AccessControlsWrapper>
+            <StyledTooltip tooltipProps={{ id: 'access-control-tooltip', effect: 'solid', multiline: true }} />
             <div>
                 <CancelButton onClick={onCancel}>Cancel</CancelButton>
                 <UploadButton

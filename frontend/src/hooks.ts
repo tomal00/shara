@@ -4,6 +4,19 @@ import { StateSetter } from 'Types/etc'
 import { RefObject } from 'react'
 import { makeCancelable } from 'Root/helpers'
 
+
+export function useDidUpdate(effect: React.EffectCallback, deps?: React.DependencyList) {
+    const didSkipInitialRenderRef: React.RefObject<{ didSkip: boolean }> = useRef({ didSkip: false })
+    useEffect(() => {
+        if (didSkipInitialRenderRef.current.didSkip) {
+            effect()
+        }
+        else didSkipInitialRenderRef.current.didSkip = true
+    }, deps)
+}
+
+
+
 export function useCancelable() {
     const cancelablesRef: React.RefObject<Cancelable<any>[]> = useRef([])
 

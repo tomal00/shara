@@ -6,7 +6,7 @@ import {
     Redirect
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
-import styled, { ThemeProvider } from 'styled-components'
+import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
 
 import Topbar from 'Components/topbar'
 import Library from 'Components/library'

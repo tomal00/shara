@@ -1,6 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import { NameInput, Description, Dropdown } from 'Components/Common'
+import { NameInput, Description, Dropdown, StyledTooltip } from 'Components/Common'
 import { useParams, useHistory } from 'react-router-dom'
 import { AppContext } from 'Root/AppContext'
 import { Image as ImageType } from 'Types/file'
@@ -123,6 +123,15 @@ const StyledDropdown = styled(Dropdown)`
     }
 `
 
+const DeleteIconTooltip = styled(StyledTooltip)`
+    background-color: #e53935!important;
+    border-color: #666!important;
+    
+    &::after {
+        border-top-color: #666!important;
+    }
+`
+
 interface ImageState {
     image: ImageType,
     imageName: string,
@@ -208,7 +217,10 @@ export default () => {
                     setState({ image: { ...image, name: imageName } })
                 }} />
             {image.isOwner && <React.Fragment>
-                <div style={{ minWidth: 32.5, textAlign: 'left' }}>
+                <div
+                    data-for='access-controls-tooltip'
+                    data-tip={`Click the icon if you wish to change<br>the image to ${image.isPrivate ? 'public' : 'private'}.`}
+                    style={{ minWidth: 32.5, textAlign: 'left' }}>
                     <StyledLockIcon
                         icon={image.isPrivate ? 'lock' : 'lock-open'}
                         onClick={() => {
@@ -225,20 +237,26 @@ export default () => {
                         }}
                     />
                 </div>
-                <StyledDeleteIcon
-                    icon='trash-alt'
-                    onClick={() => {
-                        createCancelable(api.deleteFile(image.id))
-                            .promise
-                            .then(({ success }) => {
-                                if (success) {
-                                    history.push('/library')
-                                }
-                            })
-                            .catch(err => {
-                                if (!err.isCanceled) console.error(err)
-                            })
-                    }} />
+                <div
+                    data-for='delete-icon-tooltip'
+                    data-tip={`Click to delete the image`}>
+                    <StyledDeleteIcon
+                        icon='trash-alt'
+                        onClick={() => {
+                            createCancelable(api.deleteFile(image.id))
+                                .promise
+                                .then(({ success }) => {
+                                    if (success) {
+                                        history.push('/library')
+                                    }
+                                })
+                                .catch(err => {
+                                    if (!err.isCanceled) console.error(err)
+                                })
+                        }} />
+                </div>
+                <DeleteIconTooltip tooltipProps={{ id: 'delete-icon-tooltip', effect: 'solid' }} />
+                <StyledTooltip tooltipProps={{ id: 'access-controls-tooltip', effect: 'solid', multiline: true }} />
             </React.Fragment>}
         </NameWrapper>
     ) : null

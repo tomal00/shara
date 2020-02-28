@@ -1,6 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import { Button, Input, NameInput } from 'Components/Common'
+import { Button, Input, NameInput, StyledTooltip } from 'Components/Common'
 import { AppContext } from 'Root/AppContext'
 import { StateSetter } from 'Types/etc'
 import { useCancelable } from 'Root/hooks'
@@ -152,6 +152,8 @@ export default ({ onLoad }: { onLoad: () => void }) => {
                     })
             }} />
         <Avatar
+            data-for='avatar-tooltip'
+            data-tip='Change avatar'
             avatarUrl={avatarUrl ? avatarUrl : defaultAvatar}
             onClick={async (e) => {
                 e.persist()
@@ -188,20 +190,26 @@ export default ({ onLoad }: { onLoad: () => void }) => {
                     console.error(e)
                 }
             }} />
+        <StyledTooltip tooltipProps={{ id: 'avatar-tooltip', effect: 'solid', place: 'right' }} />
         <HashWrapper>
             <CustomInput value={accountHash} readOnly />
-            <StyledIcon icon='copy' onClick={() => {
-                copyToClipboard(accountHash)
-                addNotification({
-                    clearPrevious: true,
-                    notification: {
-                        level: 'info',
-                        title: 'Copied',
-                        message: 'Your account\'s hash has been copied to clipboard ',
-                        autoDismiss: 10
-                    }
-                })
-            }} />
+            <span
+                data-for='copy-tooltip'
+                data-tip='Copy to clipboard'>
+                <StyledIcon icon='copy' onClick={() => {
+                    copyToClipboard(accountHash)
+                    addNotification({
+                        clearPrevious: true,
+                        notification: {
+                            level: 'info',
+                            title: 'Copied',
+                            message: 'Your account\'s hash has been copied to clipboard ',
+                            autoDismiss: 10
+                        }
+                    })
+                }} />
+            </span>
+            <StyledTooltip isPrimaryColor tooltipProps={{ id: 'copy-tooltip', effect: 'solid' }} />
         </HashWrapper>
         <StyledButton
             onClick={() => {

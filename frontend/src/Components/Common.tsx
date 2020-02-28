@@ -2,11 +2,33 @@ import * as React from 'react'
 import styled from 'styled-components'
 import * as autosize from 'autosize'
 import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome'
-import { StateSetter } from 'Types/etc'
 import { RotateProp } from '@fortawesome/fontawesome-svg-core'
 import { useCallbackOnOutsideClick } from 'Root/hooks'
+import ReactTooltip from 'react-tooltip'
 
 const { useEffect, useRef } = React
+
+export const DesktopOnlyTooltip = styled(ReactTooltip)`
+    display: none!important;
+
+    @media (hover: hover) and (pointer: fine) {
+        display: block!important;
+    }
+`
+
+export const StyledTooltip = styled(({ className, tooltipProps = {} }: { className?: string, isPrimaryColor?: boolean, tooltipProps?: ReactTooltip.Props }) => {
+
+    return <DesktopOnlyTooltip className={className} {...tooltipProps} />
+})`
+    background-color: ${p => p.isPrimaryColor ? p.theme.colors.primary.base : p.theme.colors.secondary.base}!important;
+    border: 2px solid ${p => p.isPrimaryColor ? p.theme.colors.secondary.base : p.theme.colors.primary.base}!important;
+    padding: 5px 10px!important;
+    font-size: 14px!important;
+
+    &::after {
+        border-${p => p.tooltipProps.place ? p.tooltipProps.place : 'top'}-color: ${p => p.isPrimaryColor ? p.theme.colors.secondary.base : p.theme.colors.primary.base}!important;
+    }
+`
 
 export const Button = styled.button`
     background: none;
@@ -170,9 +192,12 @@ const DropdownIcon = styled(FontAwesomeIcon) <FontAwesomeIconProps>`
 
 const DropdownTitle = styled.div`
     font-size: 18px;
-    cursor: pointer;
     padding: 10px 0;
     user-select: none;
+
+    & > span {
+        cursor: pointer;
+    }
 
     &.with-placeholder {
         
@@ -265,10 +290,11 @@ export const Dropdown = (
 
     return <DropdownWrapper className={className} ref={ref}>
         <DropdownTitle
-            className={!initiallySelectedItem ? 'with-placeholder' : ''}
-            onClick={() => setState({ isExpanded: !isExpanded })} >
-            {selectedItem ? selectedItem.name : placeholder}
-            <DropdownIcon icon='chevron-down' rotation={isExpanded ? 180 as RotateProp : undefined as RotateProp} />
+            className={!initiallySelectedItem ? 'with-placeholder' : ''} >
+            <span onClick={() => setState({ isExpanded: !isExpanded })}>
+                {selectedItem ? selectedItem.name : placeholder}
+                <DropdownIcon icon='chevron-down' rotation={isExpanded ? 180 as RotateProp : undefined as RotateProp} />
+            </span>
         </DropdownTitle>
         {
             isExpanded && <DropdownItems>

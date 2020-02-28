@@ -1,11 +1,11 @@
 import styled from 'styled-components'
 import * as React from 'react'
 import { NavLink } from 'react-router-dom'
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 
 interface NavItemProps {
     name: string,
-    icon: IconDefinition
+    icon: JSX.Element,
+    title: string
 }
 
 const StyledLink = styled(NavLink)`
@@ -33,9 +33,9 @@ const ListItem = styled.li`
     margin: 0 5px;
 `
 
-const NavItem = ({ name, icon }: NavItemProps) => (
+const NavItem = ({ name, icon, title }: NavItemProps) => (
     <ListItem>
-        <StyledLink to={`/${name.toLowerCase()}`} activeClassName='active'>
+        <StyledLink title={title} to={`/${name.toLowerCase()}`} activeClassName='active'>
             {icon}
         </StyledLink>
     </ListItem>
