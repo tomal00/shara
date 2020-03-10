@@ -18,3 +18,35 @@ backend/.serverless
 backend/.webpack
 
 soon-2-b-logo.png
+
+
+electron-app/.vscode/
+electron-app/dist/
+electron-app/node_modules/
+electron-app/out/
+
+# Logs
+electron-app/logs
+electron-app/*.log
+electron-app/npm-debug.log*
+electron-app/yarn-debug.log*
+electron-app/yarn-error.log*
+
+# Yarn Integrity file
+electron-app/.yarn-integrity
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+electron-app/.grunt
+
+# Optional npm cache directory
+electron-app/.npm
+
+# Optional eslint cache
+electron-app/.eslintcache
+
+# Windows thumbnail cache files
+electron-app/Thumbs.db
+
+# OS X files
+electron-app/.DS_Store
+electron-app/._*
