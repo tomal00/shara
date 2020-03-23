@@ -19,7 +19,7 @@ icons.init()
 
 let accountHash = ''
 
-api.verifyHash()
+api.verifySession()
     .then((res) => {
         accountHash = res.accountHash
     })

@@ -1,19 +1,19 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { getCookies, accountExists, getCollectionInfo, mapDataTypesToAttrValues, withCors, extractProperties } from '../helpers'
-import { DynamoDB, config as awsConfig } from 'aws-sdk';
+import { getDynamo, getCookies, verifySession, getCollectionInfo, mapDataTypesToAttrValues, withCors, extractProperties } from '../helpers'
+import { config as awsConfig } from 'aws-sdk';
 import due from 'dynamo-update-expression'
 import { collectionsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-    const dynamo = new DynamoDB()
-    const cookies = getCookies(event)
-    const hash = cookies.accountHash
+    const dynamo = getDynamo()
+    const sessionId = getCookies(event).sessionId
+    const ownerHash = await verifySession(sessionId)
 
-    if (!(await accountExists(hash))) {
+    if (!ownerHash) {
         return withCors({
             statusCode: 401,
             body: JSON.stringify({ message: "You are not logged in!" })
@@ -33,7 +33,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         const currentCollectionInfo = await getCollectionInfo(collectionId)
 
-        if (currentCollectionInfo.ownerHash !== hash) {
+        if (currentCollectionInfo.ownerHash !== ownerHash) {
             return withCors({
                 statusCode: 401,
                 body: JSON.stringify({ message: "You are not the owner of this collection!" })

@@ -1,18 +1,19 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { getCookies, accountExists, withCors, extractProperties } from '../helpers'
-import { config as awsConfig, DynamoDB } from 'aws-sdk';
+import { getCookies, verifySession, withCors, extractProperties, getDynamo } from '../helpers'
+import { config as awsConfig } from 'aws-sdk';
 import { CollectionInfo } from '../Types/collection'
 import { collectionsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-    const accountHash = getCookies(event).accountHash
-    const dynamo = new DynamoDB()
+    const sessionId = getCookies(event).sessionId
+    const dynamo = getDynamo()
+    const ownerHash = await verifySession(sessionId)
 
-    if (!(await accountExists(accountHash))) {
+    if (!ownerHash) {
         return withCors({
             statusCode: 401,
             body: JSON.stringify({
@@ -26,7 +27,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             TableName: collectionsTableName,
             ExpressionAttributeValues: {
                 ":h": {
-                    S: accountHash
+                    S: ownerHash
                 }
             },
             IndexName: 'ownerHash-collectionId',

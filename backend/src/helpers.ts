@@ -3,7 +3,19 @@ import { AccountInfo } from './Types/account'
 import { DynamoDB } from 'aws-sdk';
 import { FullFileInfo } from './Types/file'
 import { CollectionInfo } from './Types/collection'
-import { websiteUrl, accountsTableName, imagesTableName, collectionsTableName } from '../config.json'
+import { websiteUrl, accountsTableName, imagesTableName, collectionsTableName, sessionsTableName } from '../config.json'
+
+export const getDynamo = (): DynamoDB => {
+    return new DynamoDB(
+        /*process.env.NODE_ENV === 'development' ?
+            {
+                region: 'localhost',
+                endpoint: 'http://localhost:8000',
+                secretAccessKey: 'whatever',
+                accessKeyId: 'ebin'
+            } : {}*/
+    )
+}
 
 export const getCookies = ({ headers }: APIGatewayProxyEvent): any => {
     if (!headers.Cookie) return {}
@@ -22,7 +34,7 @@ export const getCookies = ({ headers }: APIGatewayProxyEvent): any => {
 }
 
 export const accountExists = async (hash: string): Promise<boolean> => {
-    const dynamo = new DynamoDB()
+    const dynamo = getDynamo()
 
     if (!hash) return false
 
@@ -36,8 +48,23 @@ export const accountExists = async (hash: string): Promise<boolean> => {
     }).promise().then(data => data && !!data.Item)
 }
 
+export const verifySession = async (sessionId: string): Promise<string | null> => {
+    if (!sessionId) return null
+
+    const dynamo = getDynamo()
+
+    return dynamo.getItem({
+        TableName: sessionsTableName,
+        Key: {
+            sessionId: {
+                S: sessionId
+            }
+        }
+    }).promise().then(data => data.Item ? data.Item.accountHash.S : null)
+}
+
 export const getAccountInfo = async (hash: string): Promise<AccountInfo> => {
-    const dynamo = new DynamoDB()
+    const dynamo = getDynamo()
 
     return dynamo.getItem({
         TableName: accountsTableName,
@@ -53,7 +80,7 @@ export const getAccountInfo = async (hash: string): Promise<AccountInfo> => {
 }
 
 export const getCollectionInfo = async (collectionId: string): Promise<CollectionInfo> => {
-    const dynamo = new DynamoDB()
+    const dynamo = getDynamo()
 
     return dynamo.getItem({
         TableName: collectionsTableName,
@@ -80,7 +107,7 @@ export const extractProperties = (propNames: string[], from: any): any => {
 }
 
 export const getFileInfo = async (imageId: string): Promise<FullFileInfo> => {
-    const dynamo = new DynamoDB()
+    const dynamo = getDynamo()
 
     return dynamo.getItem({
         TableName: imagesTableName,

@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { withCors, getFileInfo, extractProperties, getCookies } from '../helpers'
+import { withCors, getFileInfo, extractProperties, getCookies, verifySession } from '../helpers'
 import { config as awsConfig } from 'aws-sdk';
 
 awsConfig.update({ region: 'eu-central-1' });
@@ -17,10 +17,10 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     })
 
     try {
-        const hash = getCookies(event).accountHash
+        const accountHash = await verifySession(getCookies(event).sessionId)
         const image = await getFileInfo(imageId)
 
-        if (image.isPrivate && hash !== image.ownerHash) {
+        if (image.isPrivate && accountHash !== image.ownerHash) {
             return withCors({
                 statusCode: 401,
                 body: JSON.stringify({
@@ -35,7 +35,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                 message: 'success',
                 data: {
                     ...extractProperties(['imageName', 'description', 'imageId', 'collectionId', 'isPrivate'], image),
-                    isOwner: hash === image.ownerHash
+                    isOwner: accountHash === image.ownerHash
                 },
             })
         })

@@ -1,19 +1,21 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { DynamoDB, S3, config as awsConfig } from 'aws-sdk';
-import { getCookies, accountExists, withCors } from '../helpers'
+import { S3, config as awsConfig } from 'aws-sdk';
+import { getDynamo, getCookies, verifySession, withCors } from '../helpers'
 import { imagesTableName, S3fileBucketName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-    const dynamo = new DynamoDB()
+    const dynamo = getDynamo()
     const s3 = new S3({})
-    const hash = getCookies(event).accountHash
+    const sessionId = getCookies(event).sessionId
 
     try {
-        if (!(await accountExists(hash))) {
+        const ownerHash = await verifySession(sessionId)
+
+        if (!ownerHash) {
             return withCors({
                 statusCode: 401,
                 body: JSON.stringify({ message: "You are not logged in!" })
@@ -44,7 +46,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                 },
                 ExpressionAttributeValues: {
                     ':h': {
-                        S: hash
+                        S: ownerHash
                     }
                 }
             }).promise()
@@ -60,7 +62,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         await s3.deleteObject({
             Bucket: S3fileBucketName,
-            Key: `${hash}/images/${imageId}`,
+            Key: `${ownerHash}/images/${imageId}`,
         }).promise()
 
         return withCors({

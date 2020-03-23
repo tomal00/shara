@@ -2,12 +2,15 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
 import { config as awsConfig } from 'aws-sdk';
-import { withCors, accountExists } from '../helpers'
+import { withCors, accountExists, getDynamo } from '../helpers'
+import { sessionsTableName } from '../../config.json'
+import { createHash } from 'crypto';
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     try {
+        const dynamo = getDynamo()
         const accountHash = JSON.parse(event.body).hash
 
         if (!accountHash) {
@@ -28,9 +31,26 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             })
         }
 
+        const sessionHash = createHash('sha512')
+        await sessionHash.write(`${accountHash}${Date.now()}`)
+        sessionHash.end()
+        const sessionId = sessionHash.read().toString('hex')
+
+        await dynamo.putItem({
+            TableName: sessionsTableName,
+            Item: {
+                sessionId: {
+                    S: sessionId
+                },
+                accountHash: {
+                    S: accountHash
+                }
+            }
+        }).promise()
+
         return withCors({
             headers: {
-                'Set-Cookie': `accountHash=${accountHash}; SameSite=Strict; HttpOnly; Max-Age=2147483647`
+                'Set-Cookie': `sessionId=${sessionId}; Secure; HttpOnly; Max-Age=2147483647`
             },
             statusCode: 200,
             body: JSON.stringify({ message: 'success' })

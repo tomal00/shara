@@ -1,19 +1,20 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { getCookies, accountExists, getAccountInfo, mapDataTypesToAttrValues, withCors } from '../helpers'
-import { DynamoDB, config as awsConfig } from 'aws-sdk';
+import { getCookies, verifySession, getAccountInfo, mapDataTypesToAttrValues, withCors, getDynamo } from '../helpers'
+import { config as awsConfig } from 'aws-sdk';
 import due from 'dynamo-update-expression'
 import { accountsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-    const dynamo = new DynamoDB()
+    const dynamo = getDynamo()
     const cookies = getCookies(event)
-    const hash = cookies.accountHash
+    const sessionId = cookies.sessionId
+    const ownerHash = await verifySession(sessionId)
 
-    if (!(await accountExists(hash))) {
+    if (!ownerHash) {
         return withCors({
             statusCode: 401,
             body: JSON.stringify({ message: "You are not logged in!" })
@@ -23,7 +24,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     try {
         const { name } = JSON.parse(event.body)
         const info = { name }
-        const currentAccountInfo = await getAccountInfo(hash)
+        const currentAccountInfo = await getAccountInfo(ownerHash)
         const {
             UpdateExpression,
             ExpressionAttributeNames,
@@ -35,7 +36,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
         await dynamo.updateItem({
             Key: {
                 "hash": {
-                    S: hash
+                    S: ownerHash
                 }
             },
             ReturnValues: "NONE",

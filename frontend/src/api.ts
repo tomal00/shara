@@ -22,7 +22,7 @@ export class Api {
 
             throw {
                 statusCode: res.status,
-                message: 'API error'
+                message: data || 'API error'
             }
         }
     }
@@ -98,8 +98,8 @@ export class Api {
 
         return { success: true, name: data.name, avatarUrl: data.avatarUrl }
     }
-    verifyHash = async (): Promise<{ success: boolean, accountHash: string }> => {
-        let res = await fetch(`${this.apiUrl}/verifyHash`, {
+    verifySession = async (): Promise<{ success: boolean, accountHash: string }> => {
+        let res = await fetch(`${this.apiUrl}/verifySession`, {
             method: 'GET',
             ...commonFetchProps,
         });

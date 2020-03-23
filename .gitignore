@@ -6,6 +6,8 @@ frontend/package-lock.json
 electron-app/node_modules
 backend/config.json
 backend/package-lock.json
+electron-app/config.json
+backend/.env
 
 # package directories
 backend/node_modules

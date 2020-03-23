@@ -187,7 +187,7 @@ export default () => {
                 return null
             })
             .then((res) => {
-                setState({ collections: res.collections })
+                res && setState({ collections: res.collections })
             })
             .catch(err => { if (!err.isCanceled) console.error(err) })
     }, [imageId])

@@ -13,6 +13,7 @@ custom:
   accountsTable: ${self:custom.config.accountsTableName}
   imagesTable: ${self:custom.config.imagesTableName}
   collectionsTable: ${self:custom.config.collectionsTableName}
+  sessionsTable: ${self:custom.config.sessionsTableName}
   customDomain: 
     domainName: ${self:custom.config.domain.name}
     basePath: ${self:custom.config.domain.basePath}
@@ -49,6 +50,9 @@ provider:
         - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.imagesTable}/index/*"
         - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.collectionsTable}"
         - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.collectionsTable}/index/*"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.sessionsTable}"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.sessionsTable}/index/*"
+        
     - Effect: "Allow"
       Action: 
         - s3:PutObject
@@ -104,12 +108,12 @@ functions:
             origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
-  verifyHash:
-    handler: src/Lambdas/verifyHash.handler
+  verifySession:
+    handler: src/Lambdas/verifySession.handler
     events:
       - http:
           method: get
-          path: verifyHash
+          path: verifySession
           cors:
             origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
@@ -254,6 +258,17 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: hash
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    SessionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.sessionsTable}
+        AttributeDefinitions:
+          - AttributeName: sessionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: sessionId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
     CollectionsTable:

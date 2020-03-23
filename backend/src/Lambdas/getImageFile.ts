@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { getFileInfo, withCors, getCookies } from '../helpers'
+import { getFileInfo, withCors, getCookies, verifySession } from '../helpers'
 import { config as awsConfig, S3 } from 'aws-sdk';
 import { S3fileBucketName } from '../../config.json'
 
@@ -15,7 +15,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
         const { ownerHash, isPrivate } = await getFileInfo(imageId)
 
         if (isPrivate) {
-            const hash = getCookies(event).accountHash
+            const hash = await verifySession(getCookies(event).sessionId)
 
             if (hash !== ownerHash) {
                 return withCors({

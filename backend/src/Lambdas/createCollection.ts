@@ -1,19 +1,21 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { DynamoDB, config as awsConfig } from 'aws-sdk';
-import { getCookies, accountExists, withCors } from '../helpers'
+import { config as awsConfig } from 'aws-sdk';
+import { getCookies, verifySession, withCors, getDynamo } from '../helpers'
 import { collectionsTableName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-    const dynamo = new DynamoDB()
-    const hash = getCookies(event).accountHash
+    const dynamo = getDynamo()
+    const sessionId = getCookies(event).sessionId
     const collectionId = `${Date.now()}${Math.floor(Math.random() * 10000)}`
 
     try {
-        if (!(await accountExists(hash))) {
+        const ownerHash = await verifySession(sessionId)
+
+        if (!ownerHash) {
             return withCors({
                 statusCode: 401,
                 body: JSON.stringify({ message: "You are not logged in!" })
@@ -39,7 +41,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                     S: collectionName
                 },
                 ownerHash: {
-                    S: hash
+                    S: ownerHash
                 }
             }
         }).promise()

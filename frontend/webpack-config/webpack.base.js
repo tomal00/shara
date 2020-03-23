@@ -4,7 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 module.exports = {
-    target: 'browser',
+    target: 'web',
     entry: {
         main: ['babel-polyfill', './src/index.tsx'],
     },

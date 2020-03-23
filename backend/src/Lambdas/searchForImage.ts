@@ -1,8 +1,8 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { getCookies, accountExists, withCors, extractProperties } from '../helpers'
-import { DynamoDB, config as awsConfig } from 'aws-sdk';
+import { getDynamo, getCookies, verifySession, withCors, extractProperties } from '../helpers'
+import { config as awsConfig } from 'aws-sdk';
 import { FullFileInfo } from '../Types/file'
 import * as Fuse from 'fuse.js'
 import { imagesTableName } from '../../config.json'
@@ -10,16 +10,17 @@ import { imagesTableName } from '../../config.json'
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-    const hash = getCookies(event).accountHash
+    const sessionId = getCookies(event).sessionId
+    const ownerHash = await verifySession(sessionId)
 
-    if (!(await accountExists(hash))) {
+    if (!ownerHash) {
         return withCors({
             statusCode: 401,
             body: JSON.stringify({ message: "You are not logged in!" })
         })
     }
 
-    const dynamo = new DynamoDB()
+    const dynamo = getDynamo()
     const { searchValue } = event.queryStringParameters
 
     if (!searchValue) {
@@ -34,7 +35,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             TableName: imagesTableName,
             ExpressionAttributeValues: {
                 ":h": {
-                    S: hash
+                    S: ownerHash
                 }
             },
             IndexName: 'ownerHash-imageId',
