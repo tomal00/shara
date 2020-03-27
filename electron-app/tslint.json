@@ -34,7 +34,8 @@
         "Models",
         "Components",
         "Utils",
-        "Renderer"
+        "Renderer",
+        "Types"
       ]
     ],
     "no-import-side-effect": [

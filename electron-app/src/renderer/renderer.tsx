@@ -1,16 +1,14 @@
-/**
- * React renderer.
- */
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import App from 'Renderer/App'
+import icons from 'Renderer/icons'
 
-// Import the styles here to process them with webpack
-import 'Public/style.css';
+import 'normalize.css';
+import 'Public/style.css'
+
+icons.init()
 
 ReactDOM.render(
-  <div className='app'>
-    <h4>Welcome to React, Electron and TypescriptXDDDDD</h4>
-    <p>Hello</p>
-  </div>,
-  document.getElementById('app')
+    <App />,
+    document.getElementById('app')
 );

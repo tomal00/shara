@@ -1,23 +1,36 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain, Tray, Menu, shell, dialog, MenuItem, MenuItemConstructorOptions, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { selectFilePathFromExplorer } from 'Utils/files'
+import { uploadFile, verifySession } from 'Utils/api'
+
+const screenshot = require('screenshot-desktop')
 
 let mainWindow: Electron.BrowserWindow | null;
+let tray: Tray
 
-function createWindow(): void {
-    // Create the browser window.
+const logoPath: string = require('Public/logo.png')
+
+function createMainWindow(): void {
     mainWindow = new BrowserWindow({
-        height: 600,
-        width: 800,
+        height: 300,
+        width: 400,
         webPreferences: {
             webSecurity: false,
-            devTools: process.env.NODE_ENV === 'production' ? false : true
+            devTools: process.env.NODE_ENV === 'production' ? false : true,
+            nodeIntegration: true
         },
-        autoHideMenuBar: true
+        autoHideMenuBar: true,
+        resizable: false,
+        icon: logoPath
     });
+
+    if (process.env.NODE_ENV === 'production') {
+        mainWindow.removeMenu()
+    }
 
     // and load the index.html of the app.
     mainWindow.loadURL(
@@ -37,17 +50,92 @@ function createWindow(): void {
     });
 }
 
+async function updateTray() {
+    const img = nativeImage.createFromPath(path.join(__dirname, '/../public/logo.png'))
+
+    if (!tray) {
+        tray = new Tray(img)
+    }
+
+    const res = await verifySession()
+    const menu = Menu.buildFromTemplate([
+        {
+            label: 'Open shara',
+            type: 'normal',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show()
+                }
+                else {
+                    createMainWindow()
+                }
+            }
+        },
+        res.data && {
+            label: 'Take a screenshot',
+            type: "normal",
+            click: () => {
+                screenshot({ format: 'png' })
+                    .then(async (img: Buffer) => {
+                        const res = await uploadFile({
+                            name: `Screenshot-${(new Date()).toLocaleString()}`,
+                            isPrivate: false,
+                            fileArray: [...new Uint8Array(img)],
+                            meta: {
+                                size: img.byteLength,
+                                mime: 'image/png',
+                                description: ''
+                            }
+                        })
+
+                        if (res.success && res.data) {
+                            shell.openExternal(res.data.imageUrl)
+                        }
+                    })
+            }
+        },
+        {
+            label: 'Quit',
+            type: 'normal',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.close()
+                }
+                app.exit()
+            }
+        }
+    ].filter(a => !!a) as MenuItemConstructorOptions[] | MenuItem[])
+
+    tray.setToolTip('Shara')
+    tray.setContextMenu(menu)
+}
+
+function init(): void {
+    createMainWindow()
+    updateTray()
+
+    ipcMain.handle('get-file-path', async (): Promise<string | null> => {
+        const path = await selectFilePathFromExplorer()
+
+        return path
+    })
+
+    ipcMain.handle('update-tray', async (): Promise<void> => {
+        updateTray()
+    })
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', init);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-        app.quit();
+        // app.quit();
     }
 });
 
@@ -55,7 +143,7 @@ app.on('activate', () => {
     // On OS X it"s common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
-        createWindow();
+        init();
     }
 });
 

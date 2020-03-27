@@ -19,11 +19,14 @@
       "Components/*": [
         "src/renderer/Components/*"
       ],
-      "Renderer*/": [
+      "Renderer/*": [
         "src/renderer/*"
       ],
       "Utils/*": [
         "src/utils/*"
+      ],
+      "Types/*": [
+        "src/Types/*"
       ]
     },
     "module": "commonjs",
@@ -32,7 +35,8 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "sourceMap": true,
-    "target": "esnext"
+    "target": "esnext",
+    "resolveJsonModule": true
   },
   "exclude": [
     "node_modules"

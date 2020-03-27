@@ -1,20 +1,23 @@
 {
-  "name": "electron-app",
+  "name": "shara-desktop",
   "version": "1.0.0",
-  "description": "",
+  "description": "A desktop application for taking and uploading screenshots to shara.pictures.",
   "main": "./dist/main.bundle.js",
   "scripts": {
     "start": "electron ./dist/main.bundle.js",
     "dev": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --colors",
     "prod": "rimraf dist && cross-env NODE_ENV=production webpack --progress --colors",
     "test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
+    "createConfig": "node createConfig.js",
     "build:win": "electron-builder build --win --x64",
-    "build:mac": "electron-builder build --mac --x64"
+    "build:mac": "electron-builder build --mac --x64",
+    "build:linux": "electron-builder build --linux --x64"
   },
   "build": {
     "directories": {
       "app": "./dist/",
-      "output": "./out/"
+      "output": "./out/",
+      "buildResources": "./build"
     },
     "mac": {
       "target": "pkg"
@@ -23,16 +26,38 @@
       "target": "nsis",
       "asar": false
     },
+    "linux": {
+      "target": [
+        "deb"
+      ]
+    },
+    "extraResources": {
+      "from": "./public/logo.png",
+      "to": "public/logo.png"
+    },
     "buildVersion": "1.0.0"
   },
-  "author": "",
+  "homepage": "https://www.shara.pictures",
+  "author": {
+    "email": "tomas.malec00@gmail.com",
+    "name": "Tomáš Malec"
+  },
   "license": "MIT",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "@types/mime-types": "^2.1.0",
+    "@types/node-fetch": "^2.5.5",
     "@types/react": "^16.9.13",
     "@types/react-dom": "^16.9.4",
     "@types/styled-components": "^5.0.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
+    "mime-types": "^2.1.26",
+    "node-fetch": "^2.6.0",
+    "normalize.css": "^8.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "screenshot-desktop": "^1.12.0",
     "styled-components": "^5.0.1"
   },
   "devDependencies": {
@@ -44,8 +69,8 @@
     "copy-pkg-json-webpack-plugin": "0.0.38",
     "cross-env": "^5.2.1",
     "css-loader": "^1.0.1",
-    "electron": "^3.1.13",
-    "electron-builder": "^20.44.4",
+    "electron": "^8.2.0",
+    "electron-builder": "^22.4.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-import-resolver-webpack": "^0.11.1",

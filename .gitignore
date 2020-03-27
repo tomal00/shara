@@ -24,9 +24,9 @@ soon-2-b-logo.png
 
 electron-app/package-lock.json
 electron-app/.vscode/
-electron-app/dist/
-electron-app/node_modules/
-electron-app/out/
+electron-app/dist
+electron-app/node_modules
+electron-app/out
 
 # Logs
 electron-app/logs

@@ -25,6 +25,7 @@ const commonConfig = {
       Public: srcPaths('public'),
       Renderer: srcPaths('src/renderer'),
       Utils: srcPaths('src/utils'),
+      Types: srcPaths('src/Types'),
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
   },
@@ -40,7 +41,7 @@ const commonConfig = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(jpg|png|svg|ico|icns)$/,
+        test: /\.(jpg|png|svg|ico|icns|ttf)$/,
         loader: 'file-loader',
         options: {
           name: '[path][name].[ext]',
