@@ -51,10 +51,10 @@ function createMainWindow(): void {
 }
 
 async function updateTray() {
-    const img = nativeImage.createFromPath(path.join(__dirname, '/../public/logo.png'))
+    const trayImg = nativeImage.createFromPath(path.join(__dirname, '/../public/logo.png'))
 
     if (!tray) {
-        tray = new Tray(img)
+        tray = new Tray(trayImg)
     }
 
     const res = await verifySession()
@@ -75,22 +75,26 @@ async function updateTray() {
             label: 'Take a screenshot',
             type: "normal",
             click: () => {
-                screenshot({ format: 'png' })
+                screenshot({ filename: path.join(__dirname, `${Date.now()}.jpg`) })
                     .then(async (img: Buffer) => {
-                        const res = await uploadFile({
+                        dialog.showErrorBox(path.join(__dirname, `${Date.now()}.jpg`), `${[...new Uint8Array(img)].length} ${[...new Uint8Array(img)][0]}`)
+                        /*const res = await uploadFile({
                             name: `Screenshot-${(new Date()).toLocaleString()}`,
                             isPrivate: false,
                             fileArray: [...new Uint8Array(img)],
                             meta: {
                                 size: img.byteLength,
-                                mime: 'image/png',
+                                mime: 'image/jpeg',
                                 description: ''
                             }
                         })
 
                         if (res.success && res.data) {
                             shell.openExternal(res.data.imageUrl)
-                        }
+                        }*/
+                    })
+                    .catch((e: Error) => {
+                        dialog.showErrorBox('Error', e.message)
                     })
             }
         },

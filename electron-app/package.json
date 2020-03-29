@@ -23,18 +23,23 @@
       "target": "pkg"
     },
     "win": {
-      "target": "nsis",
-      "asar": false
+      "target": "nsis"
     },
     "linux": {
       "target": [
         "deb"
       ]
     },
-    "extraResources": {
-      "from": "./public/logo.png",
-      "to": "public/logo.png"
-    },
+    "extraResources": [
+      {
+        "from": "./public/logo.png",
+        "to": "public/logo.png"
+      },
+      {
+        "from": "./node_modules/screenshot-desktop/lib/win32/screenCapture_1.3.2.bat",
+        "to": "app/screenCapture_1.3.2.bat"
+      }
+    ],
     "buildVersion": "1.0.0"
   },
   "homepage": "https://www.shara.pictures",
