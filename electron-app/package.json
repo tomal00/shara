@@ -23,13 +23,20 @@
       "target": "pkg"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "asar": false
     },
     "linux": {
       "target": [
         "deb"
       ]
     },
+    "extraResources": [
+      {
+        "from": "./public/logo.png",
+        "to": "public/logo.png"
+      }
+    ],
     "buildVersion": "1.0.0"
   },
   "homepage": "https://www.shara.pictures",
