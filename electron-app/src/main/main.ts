@@ -75,10 +75,9 @@ async function updateTray() {
             label: 'Take a screenshot',
             type: "normal",
             click: () => {
-                screenshot({ filename: path.join(__dirname, `${Date.now()}.jpg`) })
+                screenshot()
                     .then(async (img: Buffer) => {
-                        dialog.showErrorBox(path.join(__dirname, `${Date.now()}.jpg`), `${[...new Uint8Array(img)].length} ${[...new Uint8Array(img)][0]}`)
-                        /*const res = await uploadFile({
+                        const res = await uploadFile({
                             name: `Screenshot-${(new Date()).toLocaleString()}`,
                             isPrivate: false,
                             fileArray: [...new Uint8Array(img)],
@@ -91,7 +90,7 @@ async function updateTray() {
 
                         if (res.success && res.data) {
                             shell.openExternal(res.data.imageUrl)
-                        }*/
+                        }
                     })
                     .catch((e: Error) => {
                         dialog.showErrorBox('Error', e.message)
