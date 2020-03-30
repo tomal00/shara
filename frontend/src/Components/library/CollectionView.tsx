@@ -5,6 +5,12 @@ import { NameInput } from 'Components/Common'
 import { Image } from 'Types/file'
 import CollectionItem from 'Components/library/CollectionItem'
 import { StateSetter } from 'Types/etc'
+import { Link } from 'react-router-dom'
+
+const StyledLink = styled(Link)`
+    text-decoration: underline;
+    color: inherit;
+`
 
 const Wrapper = styled.div`
     position: relative;
@@ -49,6 +55,10 @@ const CollectionWrapper = styled.div`
     }    
 `
 
+const InfoText = styled.div<{ isReduced: boolean }>`
+    ${p => p.isReduced ? `margin: 0 50px;` : `margin: 0 25px;`}
+`
+
 interface CollectionViewProps {
     selectedCollection: Collection,
     images: Image[],
@@ -79,9 +89,16 @@ export default React.memo(({ selectedCollection, images, onChangeCollectionName,
                 }} />
         </CollectionTitle>
         <CollectionWrapper>
-            {images.map((item: Image) => (
-                <CollectionItem image={item} key={item.id} />
-            ))}
+            {
+                images.length ? images.map((item: Image) => (
+                    <CollectionItem image={item} key={item.id} />
+                )) : <InfoText isReduced={isReduced}>
+                        <span>You don't have any uploaded images at the moment. You can upload images </span>
+                        <StyledLink to='upload'>
+                            here
+                        </StyledLink>
+                    </InfoText>
+            }
         </CollectionWrapper>
     </Wrapper>
 })

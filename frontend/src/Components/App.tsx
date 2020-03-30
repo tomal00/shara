@@ -15,6 +15,7 @@ import About from 'Components/about'
 import Upload from 'Components/upload'
 import Image from 'Components/image'
 import Footer from 'Components/footer'
+import Download from 'Components/download'
 import { lightTheme } from 'Root/Themes/DefaultTheme'
 import { Provider as ContextProvider } from 'Root/AppContext'
 import { Api } from 'Root/api'
@@ -72,6 +73,10 @@ const App = hot(({ className, api, accountHash }: { className?: string, api: Api
                             </Route>
                             <Route path='/image/:imageId'>
                                 <Image />
+                                <Footer />
+                            </Route>
+                            <Route exact path='/download'>
+                                <Download />
                                 <Footer />
                             </Route>
                             <Redirect from='/' to='/upload' />

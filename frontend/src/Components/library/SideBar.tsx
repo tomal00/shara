@@ -70,12 +70,12 @@ const ControlsWrapper = styled.div`
     height: 100%;
     display: inline-block;
     background: ${p => p.theme.colors.grey.light};
-    padding-right: 35px;
     transition: transform 0.25s linear;
     width: 250px;
 
     ${Wrapper}.reduced & {
         width: 230px;
+        padding-right: 35px;
         &:not(.expanded) {
             transform: translateX(-220px);
         }

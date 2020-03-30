@@ -20,7 +20,8 @@ const navItems: Array<{ name: string, icon: JSX.Element, title: string }> = [
     { name: 'Upload', icon: (<FontAwesomeIcon icon='cloud-upload-alt' />), title: 'Upload' },
     { name: 'Library', icon: (<FontAwesomeIcon icon='images' />), title: 'My images' },
     //{ name: 'About', icon: (<FontAwesomeIcon icon='info' />) },
-    { name: 'Account', icon: (<FontAwesomeIcon icon='user' />), title: 'My account' }
+    { name: 'Download', icon: (<FontAwesomeIcon icon='download' />), title: 'Download desktop app' },
+    { name: 'Account', icon: (<FontAwesomeIcon icon='user' />), title: 'My account' },
 ]
 
 export default () => (

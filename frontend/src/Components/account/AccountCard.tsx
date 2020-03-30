@@ -13,7 +13,6 @@ const defaultAvatar = require("Assets/default-avatar.png").default
 const AccountCard = styled.div`
     padding: 50px 70px;
     width: 540px;
-    max-width: 90%;
     box-sizing: border-box;
     height: fit-content;
     border-radius: ${p => p.theme.borderRadius}px;
@@ -27,7 +26,7 @@ const AccountCard = styled.div`
     grid-column-gap: 20px;
     border: 1px solid ${p => p.theme.colors.grey.base};
     background: ${p => p.theme.colors.white.base};
-    margin: 10px 0;
+    margin: 10px 5%;
 
     @media (max-width: 450px) {
         padding: 30px 30px;

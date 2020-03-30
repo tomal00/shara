@@ -8,6 +8,7 @@ backend/config.json
 backend/package-lock.json
 electron-app/config.json
 backend/.env
+tls
 
 # package directories
 backend/node_modules

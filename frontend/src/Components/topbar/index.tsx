@@ -28,7 +28,7 @@ const SearchInputWrapper = styled.div`
     left: calc(50% - 200px);
     height: 100%;
 
-    @media (max-width: 768px) {
+    @media (max-width: 875px) {
         position: relative;
         left: 0;
     }
@@ -76,7 +76,7 @@ export default () => {
     }
 
     return <TopbarWrapper>
-        {(width > 768) && <Logo />}
+        {(width > 875) && <Logo />}
         {accountHash && <SearchInputWrapper>
             <SearchInput />
         </SearchInputWrapper>}

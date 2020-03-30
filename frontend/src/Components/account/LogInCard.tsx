@@ -8,7 +8,6 @@ import { useCancelable } from 'Root/hooks'
 const LogInCard = styled.div`
     padding: 50px 70px;
     width: 540px;
-    max-width: 90%;
     box-sizing: border-box;
     height: fit-content;
     border-radius: ${p => p.theme.borderRadius}px;
@@ -21,7 +20,7 @@ const LogInCard = styled.div`
     align-items: center;
     grid-row-gap: 20px;
     grid-column-gap: 20px;
-    margin: 10px 0;
+    margin: 10px 5%;
 
     @media (max-width: 450px) {
         padding: 30px 30px;
