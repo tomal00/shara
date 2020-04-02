@@ -1,16 +1,16 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import '@babel/polyfill';
-import { S3, config as awsConfig } from 'aws-sdk';
+import { config as awsConfig, S3 } from 'aws-sdk';
 import { getCookies, verifySession, withCors, getDynamo } from '../helpers'
-import { UploadedFile } from '../Types/file'
+import { FullFileInfo } from '../Types/file'
 import { imagesTableName, S3fileBucketName } from '../../config.json'
 
 awsConfig.update({ region: 'eu-central-1' });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const dynamo = getDynamo()
-    const s3 = new S3({})
+    const s3 = new S3()
     const sessionId = getCookies(event).sessionId
     const ownerHash = await verifySession(sessionId)
 
@@ -22,33 +22,17 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             })
         }
 
-        const parsedFile = JSON.parse(event.body).file
-        const file: UploadedFile = {
-            ...parsedFile,
-            buffer: Buffer.from(parsedFile.uInt8Array)
-        }
+        const fileInfo: FullFileInfo = JSON.parse(event.body).fileInfo
 
-        if (!file.name) {
+        try {
+            await s3.headObject({ Bucket: S3fileBucketName, Key: `${ownerHash}/images/${fileInfo.imageId}` }).promise()
+        }
+        catch (e) {
             return withCors({
-                statusCode: 401,
-                body: JSON.stringify({ message: "Some mandatory file info is missing" })
+                statusCode: 404,
+                body: JSON.stringify({ message: "The file was not found." })
             })
         }
-        else if (!file.meta.mime.match(/image/)) {
-            return withCors({
-                statusCode: 400,
-                body: JSON.stringify({ message: "The file is not of an image type" })
-            })
-        }
-
-        const imageId = `${Date.now()}${Math.floor(Math.random() * 10000)}`
-
-        await s3.putObject({
-            Bucket: S3fileBucketName,
-            Key: `${ownerHash}/images/${imageId}`,
-            Body: file.buffer,
-            ContentType: file.meta.mime
-        }).promise()
 
         await dynamo.putItem({
             TableName: imagesTableName,
@@ -57,17 +41,17 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
                     S: ownerHash
                 },
                 imageName: {
-                    S: file.name
+                    S: fileInfo.imageName || 'New image'
                 },
                 imageId: {
-                    S: imageId
+                    S: fileInfo.imageId
                 },
                 isPrivate: {
-                    BOOL: file.isPrivate
+                    BOOL: fileInfo.isPrivate
                 },
-                ...(file.meta.description ? {
+                ...(fileInfo.description ? {
                     description: {
-                        S: file.meta.description
+                        S: fileInfo.description
                     }
                 } : {})
             }
@@ -75,7 +59,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         return withCors({
             statusCode: 200,
-            body: JSON.stringify({ message: 'success', imageId })
+            body: JSON.stringify({ message: 'success' })
         })
     }
     catch (e) {

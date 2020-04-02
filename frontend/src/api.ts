@@ -110,23 +110,40 @@ export class Api {
         return { success: true, accountHash: isValid ? accountHash : '' }
     }
     uploadFile = async (file: UploadedFile): Promise<{ success: boolean, imageId: string }> => {
-        const fileArray = await getFileArray(file.file)
+        const uploadRequestRes = await fetch(`${this.apiUrl}/requestFileUpload`, {
+            method: 'POST',
+            ...commonFetchProps,
+            body: JSON.stringify({ mime: file.meta.mime })
+        });
 
-        let res = await fetch(`${this.apiUrl}/uploadFile`, {
+        await this.checkStatusCode(uploadRequestRes, 200)
+
+        const { postUrl, imageId } = await uploadRequestRes.json()
+        const blob = new Blob([file.file], { type: file.meta.mime })
+        const uploadRes = await fetch(postUrl, {
+            method: 'PUT',
+            body: blob,
+            headers: {
+                'Content-Type': file.meta.mime
+            }
+        })
+
+        await this.checkStatusCode(uploadRes, 200)
+
+        const res = await fetch(`${this.apiUrl}/registerImage`, {
             method: 'POST',
             ...commonFetchProps,
             body: JSON.stringify({
-                file: {
-                    name: file.name,
-                    meta: file.meta,
-                    uInt8Array: fileArray,
-                    isPrivate: file.isPrivate
+                fileInfo: {
+                    imageId,
+                    imageName: file.name,
+                    description: file.meta.description,
+                    isPrivate: file.isPrivate,
                 }
             })
         });
         await this.checkStatusCode(res, 200)
 
-        const { imageId } = await res.json()
 
         return { success: true, imageId }
     }

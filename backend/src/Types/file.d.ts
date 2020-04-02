@@ -4,13 +4,6 @@ export interface MetaData {
     description?: string
 }
 
-export interface UploadedFile {
-    buffer: Buffer,
-    meta: MetaData,
-    name: string,
-    isPrivate: boolean
-}
-
 export interface FullFileInfo {
     ownerHash: string,
     collectionId?: string,

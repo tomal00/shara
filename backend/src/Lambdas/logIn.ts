@@ -50,7 +50,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
         return withCors({
             headers: {
-                'Set-Cookie': `sessionId=${sessionId}; Secure; HttpOnly; Max-Age=2147483647`
+                'Set-Cookie': `sessionId=${sessionId}; Secure; SameSite=None; HttpOnly; Max-Age=2147483647`
             },
             statusCode: 200,
             body: JSON.stringify({ message: 'success' })

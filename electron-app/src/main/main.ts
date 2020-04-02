@@ -20,7 +20,7 @@ function createMainWindow(): void {
         width: 400,
         webPreferences: {
             webSecurity: false,
-            devTools: process.env.NODE_ENV === 'production' ? false : true,
+            devTools: process.env.NODE_ENV !== 'development' ? false : true,
             nodeIntegration: true
         },
         autoHideMenuBar: true,
@@ -28,7 +28,7 @@ function createMainWindow(): void {
         icon: logoPath
     });
 
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV !== 'development') {
         mainWindow.removeMenu()
     }
 
@@ -51,7 +51,11 @@ function createMainWindow(): void {
 }
 
 async function updateTray() {
-    const trayImg = nativeImage.createFromPath(path.join(__dirname, '/../public/logo.png'))
+    const trayImg = nativeImage.createFromPath(
+        process.env.NODE_ENV !== 'development' ?
+            path.join(__dirname, '/../public/logo.png') :
+            logoPath
+    )
 
     if (!tray) {
         tray = new Tray(trayImg)
@@ -80,7 +84,7 @@ async function updateTray() {
                         const res = await uploadFile({
                             name: `Screenshot-${(new Date()).toLocaleString()}`,
                             isPrivate: false,
-                            fileArray: [...new Uint8Array(img)],
+                            fileArray: img,
                             meta: {
                                 size: img.byteLength,
                                 mime: 'image/jpeg',

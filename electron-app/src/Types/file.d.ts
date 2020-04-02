@@ -5,7 +5,7 @@ export interface MetaData {
 }
 
 export interface File {
-    fileArray: number[],
+    fileArray: ArrayBuffer,
     meta: MetaData,
     name: string,
     isPrivate: boolean

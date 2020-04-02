@@ -85,21 +85,55 @@ export const updateAccountInfo = async ({ name }: { name: string }): ApiResponse
 }
 
 export const uploadFile = async (file: File): ApiResponse<{ imageUrl: string }> => {
-    const res = await fetchWithCookie(`${apiUrl}/uploadFile`, {
+    const uploadRequestRes = await fetchWithCookie(`${apiUrl}/requestFileUpload`, {
+        method: 'POST',
+        body: JSON.stringify({ mime: file.meta.mime })
+    });
+
+    const formattedRes = await buildResponse(uploadRequestRes, (body) => ({
+        imageId: body.imageId,
+        postUrl: body.postUrl
+    }))
+
+    if (!formattedRes.success || !formattedRes.data) {
+        return {
+            success: false,
+            message: formattedRes.message,
+            data: { imageUrl: '' }
+        }
+    }
+
+    const uploadRes = await fetch(formattedRes.data.postUrl, {
+        method: 'PUT',
+        body: file.fileArray,
+        headers: {
+            'Content-Type': file.meta.mime
+        }
+    })
+
+    if (!uploadRes.ok) {
+        return {
+            success: false,
+            message: 'Failed to upload the image',
+            data: { imageUrl: '' }
+        }
+    }
+
+    const res = await fetchWithCookie(`${apiUrl}/registerImage`, {
         method: 'POST',
         body: JSON.stringify({
-            file: {
-                name: file.name,
-                meta: file.meta,
+            fileInfo: {
+                imageId: formattedRes.data.imageId,
+                imageName: file.name,
+                description: file.meta.description,
                 isPrivate: file.isPrivate,
-                uInt8Array: file.fileArray
             }
         })
     })
 
-    return buildResponse(res, (body) => ({
-        imageUrl: `${websiteUrl}/image/${body.imageId}`
-    }))
+    const imageUrl = `${websiteUrl}/image/${formattedRes.data.imageId}`
+
+    return buildResponse(res, () => ({ imageUrl }))
 }
 
 export const changeAvatar = async (file: File): ApiResponse<null> => {

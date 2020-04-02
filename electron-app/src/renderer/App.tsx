@@ -96,6 +96,11 @@ export default () => {
 
         if (!file) return
 
+        if (!file.meta.mime.match(/image/)) {
+            setNotification({ message: 'The file is not of an image type', type: 'error' })
+            return
+        }
+
         const res = await api.uploadFile(file)
 
         if (!res.success || !res.data) {

@@ -16,14 +16,14 @@ export const selectFilePathFromExplorer = async (): Promise<null | string> => {
 }
 
 export const ImportFile = (filePath: string): File => {
-    const uInt8Arr = [...new Uint8Array(fs.readFileSync(filePath))]
+    const arr = fs.readFileSync(filePath)
     const name = path.basename(filePath)
     const mime = mimeTypes.lookup(name) || ''
 
     return {
         name: name.replace(mime, ''),
         isPrivate: false,
-        fileArray: uInt8Arr,
+        fileArray: arr,
         meta: {
             size: fs.statSync(filePath).size,
             mime,

@@ -131,12 +131,22 @@ functions:
             origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
 
-  uploadFile:
-    handler: src/Lambdas/uploadFile.handler
+  registerImage:
+    handler: src/Lambdas/registerImage.handler
     events:
       - http:
           method: post
-          path: uploadFile
+          path: registerImage
+          cors:
+            origin: '${self:custom.config.websiteUrl}'
+            allowCredentials: true
+
+  requestFileUpload:
+    handler: src/Lambdas/requestFileUpload.handler
+    events:
+      - http:
+          method: post
+          path: requestFileUpload
           cors:
             origin: '${self:custom.config.websiteUrl}'
             allowCredentials: true
