@@ -17,8 +17,8 @@ const CollectionName = styled.div`
     text-overflow: ellipsis;
     white-space: nowrap;
     box-sizing: content-box;
-    padding: 5px 20px 5px 10px;
-    width: calc(100% - 30px);
+    padding: 5px 30px 5px 10px;
+    width: calc(100% - 40px);
     transition: border-color 0.2s ease-out, color 0.2s ease-out;
     border-bottom: 2px solid transparent;
     
