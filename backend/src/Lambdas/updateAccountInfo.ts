@@ -4,9 +4,9 @@ import '@babel/polyfill';
 import { getCookies, verifySession, getAccountInfo, mapDataTypesToAttrValues, withCors, getDynamo } from '../helpers'
 import { config as awsConfig } from 'aws-sdk';
 import due from 'dynamo-update-expression'
-import { accountsTableName } from '../../config.json'
+import { accountsTableName, awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const dynamo = getDynamo()
@@ -25,6 +25,14 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
         const { name } = JSON.parse(event.body)
         const info = { name }
         const currentAccountInfo = await getAccountInfo(ownerHash)
+
+        if (currentAccountInfo.name == name) {
+            return withCors({
+                statusCode: 200,
+                body: JSON.stringify({ message: "Success" })
+            })
+        }
+
         const {
             UpdateExpression,
             ExpressionAttributeNames,

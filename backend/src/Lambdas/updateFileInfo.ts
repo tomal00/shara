@@ -4,9 +4,9 @@ import '@babel/polyfill';
 import { config as awsConfig } from 'aws-sdk';
 import { getDynamo, getCookies, verifySession, mapDataTypesToAttrValues, getFileInfo, extractProperties, withCors } from '../helpers'
 import due from 'dynamo-update-expression'
-import { imagesTableName } from '../../config.json'
+import { imagesTableName, awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const dynamo = getDynamo()

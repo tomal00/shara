@@ -3,10 +3,10 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { config as awsConfig } from 'aws-sdk';
 import { withCors, accountExists, getDynamo } from '../helpers'
-import { sessionsTableName } from '../../config.json'
+import { sessionsTableName, awsRegion } from '../../config.json'
 import { createHash } from 'crypto';
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     try {

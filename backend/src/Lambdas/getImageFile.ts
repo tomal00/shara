@@ -4,8 +4,9 @@ import '@babel/polyfill';
 import { getFileInfo, withCors, getCookies, verifySession } from '../helpers'
 import { config as awsConfig, S3 } from 'aws-sdk';
 import { S3fileBucketName } from '../../config.json'
+import { awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const { imageId } = event.pathParameters

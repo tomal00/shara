@@ -4,9 +4,9 @@ import { createHash } from 'crypto';
 import { config as awsConfig } from 'aws-sdk';
 import '@babel/polyfill';
 import { withCors, getDynamo } from '../helpers'
-import { accountsTableName, sessionsTableName } from '../../config.json'
+import { accountsTableName, sessionsTableName, awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (_, _context) => {
     const accountHash = createHash('sha512')

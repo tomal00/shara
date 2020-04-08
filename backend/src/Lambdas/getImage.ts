@@ -3,8 +3,9 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { withCors, getFileInfo, extractProperties, getCookies, verifySession } from '../helpers'
 import { config as awsConfig } from 'aws-sdk';
+import { awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const { imageId } = event.queryStringParameters || {}

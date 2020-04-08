@@ -3,9 +3,9 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { getCookies, verifySession, getAccountInfo, withCors } from '../helpers'
 import { config as awsConfig, S3 } from 'aws-sdk';
-import { S3fileBucketName } from '../../config.json'
+import { S3fileBucketName, awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const sessionId = getCookies(event).sessionId

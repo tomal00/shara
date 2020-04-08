@@ -3,21 +3,34 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { getCookies, verifySession, withCors } from '../helpers'
 import { config as awsConfig } from 'aws-sdk';
+import { awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const sessionId = getCookies(event).sessionId
     const accountHash = await verifySession(sessionId)
 
     try {
-        return withCors({
-            statusCode: 200,
-            body: JSON.stringify({
-                accountHash,
-                isValid: !!accountHash
+        if (!!accountHash) {
+            return withCors({
+                statusCode: 200,
+                body: JSON.stringify({
+                    accountHash,
+                    isValid: true
+                })
             })
-        })
+        }
+        else {
+            return withCors({
+                statusCode: 401,
+                body: JSON.stringify({
+                    message: 'Invalid session',
+                    data: sessionId,
+                    isValid: false
+                })
+            })
+        }
     }
     catch (e) {
         return withCors({

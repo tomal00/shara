@@ -3,9 +3,9 @@ import 'source-map-support/register';
 import '@babel/polyfill';
 import { S3, config as awsConfig } from 'aws-sdk';
 import { getDynamo, getCookies, verifySession, withCors } from '../helpers'
-import { imagesTableName, S3fileBucketName } from '../../config.json'
+import { imagesTableName, S3fileBucketName, awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const dynamo = getDynamo()

@@ -4,9 +4,9 @@ import '@babel/polyfill';
 import { getCookies, verifySession, withCors, extractProperties, getDynamo } from '../helpers'
 import { config as awsConfig } from 'aws-sdk';
 import { CollectionInfo } from '../Types/collection'
-import { collectionsTableName } from '../../config.json'
+import { collectionsTableName, awsRegion } from '../../config.json'
 
-awsConfig.update({ region: 'eu-central-1' });
+awsConfig.update({ region: awsRegion });
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
     const sessionId = getCookies(event).sessionId

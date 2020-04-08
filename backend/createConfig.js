@@ -2,6 +2,7 @@ const c = require('colors/safe')
 const fs = require('fs')
 
 const template = {
+    awsRegion: '',
     websiteUrl: '',
     S3fileBucketName: '',
     accountsTableName: '',
