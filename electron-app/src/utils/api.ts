@@ -15,7 +15,9 @@ const fetchWithCookie = async (url: RequestInfo, init?: RequestInit): Promise<Re
     let requestInit = init
 
     if (!isRenderer) {
-        const cookies = await session.defaultSession.cookies.get({})
+        const cookies = await session.defaultSession.cookies.get({
+            url: apiUrl
+        })
         const cookie = cookies.find(c => c.name === 'sessionId')
 
         if (cookie) {

@@ -61,7 +61,15 @@ async function updateTray() {
         tray = new Tray(trayImg)
     }
 
-    const res = await verifySession()
+    let res = null
+
+    try {
+        res = await verifySession()
+    }
+    catch (e) {
+        console.error(e)
+    }
+
     const menu = Menu.buildFromTemplate([
         {
             label: 'Open shara',
@@ -75,7 +83,7 @@ async function updateTray() {
                 }
             }
         },
-        res.data && {
+        res && res.data && {
             label: 'Take a screenshot',
             type: "normal",
             click: () => {
