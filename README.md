@@ -27,7 +27,7 @@ The back-end utilizes various services provided by [AWS](https://aws.amazon.com/
 2. Set every property except "domain" in config.json. Set the propery "websiteUrl" to "```https://127.0.0.1:[PORT - default 8080]```"
 3. run `sls deploy` to deploy necessary resources
 4. run `npm run dev`
-5. The terminal will output all available api endpoints. This will be required when [locally deploying the web application](##Web-app-deployment) and [desktop application](##Desktop-app-deployment).
+5. The terminal will output all available api endpoints. This will be required when [locally deploying the web application](#Web-app-deployment) and [desktop application](#Desktop-app-deployment).
 
 # **Web application**
 
