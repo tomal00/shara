@@ -1,10 +1,10 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import AccountCard from 'Components/account/AccountCard'
-import LogInCard from 'Components/account/LogInCard'
 import { AppContext } from 'Root/AppContext'
 import { StateSetter } from 'Types/etc'
 import Loading from 'Components/Loading'
+import AccountMenu from 'Containers/AccountMenu'
+import LogInMenu from 'Containers/LogIn'
 
 const Wrapper = styled.div`
     min-height: calc(100% - 100px);
@@ -27,8 +27,8 @@ export default () => {
             }
             {
                 !!accountHash ?
-                    <AccountCard onLoad={() => setIsLoaded(true)} /> :
-                    <LogInCard />
+                    <AccountMenu onLoad={() => setIsLoaded(true)} /> :
+                    <LogInMenu />
             }
         </Wrapper>
     )

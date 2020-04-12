@@ -166,7 +166,7 @@ export class Api {
         imageId: string,
         newName: string,
         newDescription: string,
-        newCollectionId: string,
+        newCollectionId: string | undefined,
         isPrivate: boolean
     ): Promise<{ success: boolean }> => {
         let res = await fetch(`${this.apiUrl}/updateFileInfo`, {

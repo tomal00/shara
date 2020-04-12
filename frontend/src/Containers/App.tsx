@@ -9,11 +9,11 @@ import { hot } from 'react-hot-loader/root';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
 
 import Topbar from 'Components/topbar'
-import Library from 'Components/library'
+import Library from 'Containers/Library'
 import Account from 'Components/account'
 import About from 'Components/about'
-import Upload from 'Components/upload'
-import Image from 'Components/image'
+import Upload from 'Containers/Upload'
+import Image from 'Containers/Image'
 import Footer from 'Components/footer'
 import Download from 'Components/download'
 import { lightTheme } from 'Root/Themes/DefaultTheme'
@@ -22,16 +22,18 @@ import { Api } from 'Root/api'
 import * as NotificationSystem from 'react-notification-system';
 import { NotificationSetter } from 'Types/etc'
 
-const App = hot(({ className, api, accountHash }: { className?: string, api: Api, accountHash?: string }) => {
+const App = hot(({ className, api, accountHash }: { className?: string, api: Api, accountHash: string | null }) => {
     const notificationSystem: React.Ref<NotificationSystem.System> = React.useRef(null)
     const addNotification: NotificationSetter = React.useCallback(({ notification, clearPrevious }) => {
+        if (!notificationSystem.current) return
+
         if (clearPrevious) {
             notificationSystem.current.clearNotifications()
         }
         notificationSystem.current.addNotification(notification)
     }, [])
     React.useEffect(() => {
-        if (!JSON.parse(localStorage.getItem('cookies'))) {
+        if (!JSON.parse(localStorage.getItem('cookies') || '')) {
             addNotification({
                 clearPrevious: false, notification: {
                     level: 'info',

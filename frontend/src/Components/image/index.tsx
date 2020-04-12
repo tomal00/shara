@@ -1,10 +1,8 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { NameInput, Description, Dropdown, StyledTooltip } from 'Components/Common'
-import { useParams, useHistory } from 'react-router-dom'
-import { AppContext } from 'Root/AppContext'
 import { Image as ImageType } from 'Types/file'
-import { useCancelable, useWidth } from 'Root/hooks'
+import { useWidth } from 'Root/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collection } from 'Types/collection'
 import Loading from 'Components/Loading'
@@ -132,65 +130,25 @@ const DeleteIconTooltip = styled(StyledTooltip)`
     }
 `
 
-interface ImageState {
-    image: ImageType,
-    imageName: string,
-    imageDescription: string,
-    collections: Collection[]
-}
-
-interface UnmergedState {
+interface ImageProps {
     image?: ImageType,
-    imageName?: string,
-    imageDescription?: string,
-    collections?: Collection[]
+    collections?: Collection[],
+    imageDescription: string,
+    imageName: string,
+    onChangeName: (value: string) => void,
+    onUpdateName: () => void,
+    onToggleAccess: () => void,
+    onDelete: () => void,
+    onUpdateCollection: (collection: Collection) => void,
+    onChangeDescription: (value: string) => void,
+    onUpdateDescription: () => void,
 }
 
-export default () => {
-    const { imageId } = useParams()
-    const history = useHistory()
-    const { api, addNotification } = React.useContext(AppContext)
-    const [state, setState] = React.useReducer(
-        (state: ImageState, newState: UnmergedState): ImageState => ({ ...state, ...newState }),
-        { image: null, imageName: '', imageDescription: '', collections: null }
-    )
-    const { image, imageName, imageDescription, collections } = state
+export default ({
+    image, collections, imageDescription, imageName, onChangeName, onUpdateName,
+    onToggleAccess, onDelete, onUpdateCollection, onChangeDescription, onUpdateDescription
+}: ImageProps) => {
     const width = useWidth()
-    const { createCancelable } = useCancelable()
-
-    React.useEffect(() => {
-        createCancelable(api.getImage(imageId))
-            .promise
-            .then(({ image }) => {
-                setState({ image, imageName: image.name, imageDescription: image.description || '' })
-
-                return image.isOwner
-            })
-            .catch(err => {
-                if (err.isCanceled) return
-
-                history.push('/account')
-                addNotification({
-                    clearPrevious: true,
-                    notification: {
-                        level: 'error',
-                        title: 'Unable to show image',
-                        message: 'This image is either private or doesn\'t exist',
-                        autoDismiss: 10
-                    }
-                })
-            })
-            .then((shouldFetchCollections) => {
-                if (shouldFetchCollections) {
-                    return createCancelable(api.getCollections()).promise
-                }
-                return null
-            })
-            .then((res) => {
-                res && setState({ collections: res.collections })
-            })
-            .catch(err => { if (!err.isCanceled) console.error(err) })
-    }, [imageId])
 
     if (!image || (image.isOwner && !collections)) {
         return <Wrapper>
@@ -203,19 +161,8 @@ export default () => {
             <StyledNameInput
                 readOnly={!image.isOwner}
                 value={imageName}
-                onChange={(e) => setState({ imageName: e.target.value })}
-                onBlur={() => {
-                    if (imageName == image.name || !image.isOwner) return
-                    if (!imageName) {
-                        setState({ imageName: image.name })
-                        return
-                    }
-
-                    api.updateImageInfo(image.id, imageName, image.description, image.collectionId, image.isPrivate)
-                        .catch(err => console.error(err))
-
-                    setState({ image: { ...image, name: imageName } })
-                }} />
+                onChange={(e) => onChangeName(e.target.value)}
+                onBlur={onUpdateName} />
             {image.isOwner && <React.Fragment>
                 <div
                     data-for='access-controls-tooltip'
@@ -223,18 +170,7 @@ export default () => {
                     style={{ minWidth: 32.5, textAlign: 'left' }}>
                     <StyledLockIcon
                         icon={image.isPrivate ? 'lock' : 'lock-open'}
-                        onClick={() => {
-                            createCancelable(api.updateImageInfo(image.id, image.name, image.description, image.collectionId, !image.isPrivate))
-                                .promise
-                                .then(({ success }) => {
-                                    if (success) {
-                                        setState({ image: { ...image, isPrivate: !image.isPrivate } })
-                                    }
-                                })
-                                .catch(err => {
-                                    if (!err.isCanceled) console.error(err)
-                                })
-                        }}
+                        onClick={onToggleAccess}
                     />
                 </div>
                 <div
@@ -242,18 +178,7 @@ export default () => {
                     data-tip={`Click to delete the image`}>
                     <StyledDeleteIcon
                         icon='trash-alt'
-                        onClick={() => {
-                            createCancelable(api.deleteFile(image.id))
-                                .promise
-                                .then(({ success }) => {
-                                    if (success) {
-                                        history.push('/library')
-                                    }
-                                })
-                                .catch(err => {
-                                    if (!err.isCanceled) console.error(err)
-                                })
-                        }} />
+                        onClick={onDelete} />
                 </div>
                 <DeleteIconTooltip tooltipProps={{ id: 'delete-icon-tooltip', effect: 'solid' }} />
                 <StyledTooltip tooltipProps={{ id: 'access-controls-tooltip', effect: 'solid', multiline: true }} />
@@ -261,7 +186,7 @@ export default () => {
         </NameWrapper>
     ) : null
 
-    const dropdownNode = image && image.isOwner ? (
+    const dropdownNode = image && image.isOwner && collections ? (
         <StyledDropdown
             placeholder='No collection'
             emptyDropdownText='You have no collections'
@@ -270,19 +195,16 @@ export default () => {
                 image.collectionId ?
                     (() => {
                         const collection = collections.find((c) => c.id === image.collectionId)
-                        if (!collection) return null
+                        if (!collection) return undefined
                         else return {
                             name: collection.name,
                             value: collection,
                             key: collection.id
                         }
                     })()
-                    : null
+                    : undefined
             }
-            onSelect={({ value }) => {
-                api.updateImageInfo(image.id, image.name, image.description, value.id, image.isPrivate)
-                    .catch(err => console.error(err))
-            }} />
+            onSelect={(item) => onUpdateCollection(item.value as Collection)} />
     ) : null
 
     const descriptionNode = !!image ? (<StyledDescription
@@ -291,16 +213,9 @@ export default () => {
         value={imageDescription}
         readOnly={!image.isOwner}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setState({ imageDescription: e.target.value })
+            onChangeDescription(e.target.value)
         }}
-        onBlur={() => {
-            if (image.description == imageDescription || !image.isOwner) return
-
-            api.updateImageInfo(image.id, image.name, imageDescription, image.collectionId, image.isPrivate)
-                .catch(err => console.error(err))
-
-            setState({ image: { ...image, description: imageDescription } })
-        }} />) : null
+        onBlur={onUpdateDescription} />) : null
 
     return (
         <Wrapper>

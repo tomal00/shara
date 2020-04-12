@@ -110,8 +110,8 @@ const StyledIcon = styled(FontAwesomeIcon)`
 
 interface SideBarProps {
     collections: Collection[],
-    selectedCollection: Collection,
-    onSelectCollection: (id: string) => void,
+    selectedCollection: Collection | null,
+    onSelectCollection: (id: string | null) => void,
     onCreateCollection: () => void,
     onDeleteCollection: (id: string) => void,
     isReduced: boolean

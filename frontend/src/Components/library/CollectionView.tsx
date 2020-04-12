@@ -60,7 +60,7 @@ const InfoText = styled.div<{ isReduced: boolean }>`
 `
 
 interface CollectionViewProps {
-    selectedCollection: Collection,
+    selectedCollection: Collection | null,
     images: Image[],
     onChangeCollectionName: (name: string, collectionId: string) => void,
     isReduced: boolean

@@ -1,12 +1,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { Button, Input, NameInput, StyledTooltip } from 'Components/Common'
-import { AppContext } from 'Root/AppContext'
-import { StateSetter } from 'Types/etc'
-import { useCancelable } from 'Root/hooks'
-import { selectFileFromExplorer } from 'Root/files'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { copyToClipboard } from 'Root/helpers'
 
 const defaultAvatar = require("Assets/default-avatar.png").default
 
@@ -110,114 +105,45 @@ const StyledButton = styled(Button)`
     grid-column: span 2;
 `
 
-interface AccountCardState {
+interface AccountCardProps {
+    avatarUrl: string,
+    accountHash: string,
     name: string,
-    avatarUrl?: string
+    onChangeName: (newName: string) => void,
+    onUpdateName: () => void,
+    onUpdateAvatar: () => void,
+    onCopyHash: () => void,
+    onLogOut: () => void
 }
 
-export default ({ onLoad }: { onLoad: () => void }) => {
-    const { accountHash, api, setAccountHash, addNotification, logOut } = React.useContext(AppContext)
-    const [state, setState]: [AccountCardState, StateSetter<AccountCardState>] = React.useState({ name: '' })
-    const { name, avatarUrl } = state
-    const { createCancelable } = useCancelable()
-
-    React.useEffect(() => {
-        createCancelable(api.getAccountInfo())
-            .promise
-            .then((res) => {
-                setState({ ...state, name: res.name, avatarUrl: res.avatarUrl });
-                onLoad()
-            })
-            .catch(err => {
-                if (!err.isCanceled) {
-                    console.error(err)
-                    if (err.statusCode === 401) { logOut() }
-                }
-            })
-    }, [accountHash])
+export default ({
+    avatarUrl, accountHash, name, onChangeName, onUpdateName, onUpdateAvatar, onCopyHash, onLogOut
+}: AccountCardProps) => {
 
     return <AccountCard>
         <StyledNameInput
             placeholder='Nickname'
             value={name}
-            onChange={(e) => setState({ ...state, name: e.target.value })}
-            onBlur={() => {
-                api.updateAccountInfo({ name })
-                    .catch(err => {
-                        if (!err.isCanceled) {
-                            console.error(err)
-                            if (err.statusCode === 401) { logOut() }
-                        }
-                    })
-            }} />
+            onChange={(e) => onChangeName(e.target.value)}
+            onBlur={onUpdateName} />
         <Avatar
             data-for='avatar-tooltip'
             data-tip='Change avatar'
             avatarUrl={avatarUrl ? avatarUrl : defaultAvatar}
-            onClick={async (e) => {
-                e.persist()
-
-                try {
-                    const file = await selectFileFromExplorer()
-                    if (file && file.type.match(/image/g)) {
-                        createCancelable(api.uploadAvatar(file).then(api.getAccountInfo))
-                            .promise
-                            .then((res) => {
-                                setState({ ...state, name: res.name, avatarUrl: res.avatarUrl });
-                            })
-                            .catch(err => {
-                                if (!err.isCanceled) {
-                                    console.error(err)
-                                    if (err.statusCode === 401) { logOut() }
-                                }
-                            })
-
-                    }
-                    else {
-                        addNotification({
-                            clearPrevious: true,
-                            notification: {
-                                level: 'error',
-                                title: 'Invalid type of file',
-                                message: 'Please, select a file of image type',
-                                autoDismiss: 10
-                            }
-                        })
-                    }
-                }
-                catch (e) {
-                    console.error(e)
-                }
-            }} />
+            onClick={onUpdateAvatar} />
         <StyledTooltip tooltipProps={{ id: 'avatar-tooltip', effect: 'solid', place: 'right' }} />
         <HashWrapper>
             <CustomInput value={accountHash} readOnly />
             <span
                 data-for='copy-tooltip'
                 data-tip='Copy to clipboard'>
-                <StyledIcon icon='copy' onClick={() => {
-                    copyToClipboard(accountHash)
-                    addNotification({
-                        clearPrevious: true,
-                        notification: {
-                            level: 'info',
-                            title: 'Copied',
-                            message: 'Your account\'s hash has been copied to clipboard ',
-                            autoDismiss: 10
-                        }
-                    })
-                }} />
+                <StyledIcon icon='copy' onClick={onCopyHash} />
             </span>
             <StyledTooltip isPrimaryColor tooltipProps={{ id: 'copy-tooltip', effect: 'solid' }} />
         </HashWrapper>
         <StyledButton
-            onClick={() => {
-                api.logOut()
-                setAccountHash(null)
-            }}>
+            onClick={onLogOut}>
             Logout
         </StyledButton>
-        {/*<CustomInput placeholder='Enter e-mail address here...' />
-        <Button>Send hash</Button>*/}
     </AccountCard>
 }

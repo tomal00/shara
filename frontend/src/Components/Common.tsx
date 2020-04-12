@@ -26,7 +26,11 @@ export const StyledTooltip = styled(({ className, tooltipProps = {} }: { classNa
     font-size: 14px!important;
 
     &::after {
-        border-${p => p.tooltipProps.place ? p.tooltipProps.place : 'top'}-color: ${p => p.isPrimaryColor ? p.theme.colors.secondary.base : p.theme.colors.primary.base}!important;
+        border-${
+    p => p.tooltipProps && p.tooltipProps.place ? p.tooltipProps.place : 'top'
+    }-color: ${
+    p => p.isPrimaryColor ? p.theme.colors.secondary.base : p.theme.colors.primary.base
+    }!important;
     }
 `
 
@@ -125,14 +129,14 @@ export const NameInput = styled.input`
 `
 
 export const ExpandableTextArea = (props: any) => {
-    const textAreaRef = useRef(null)
+    const textAreaRef = useRef<Element>(null)
     useEffect(() => {
-        autosize(textAreaRef.current)
+        if (textAreaRef.current) autosize(textAreaRef.current)
 
-        return () => autosize.destroy(textAreaRef.current)
+        return () => { textAreaRef.current && autosize.destroy(textAreaRef.current) }
     }, [])
     useEffect(() => {
-        autosize.update(textAreaRef.current)
+        if (textAreaRef.current) autosize.update(textAreaRef.current)
     }, [props.value])
 
     return <textarea {...props} ref={textAreaRef} />
@@ -254,7 +258,7 @@ interface DropdownItemType {
 }
 
 interface DropdownState {
-    selectedItem: DropdownItemType,
+    selectedItem?: DropdownItemType,
     isExpanded: boolean
 }
 
@@ -274,7 +278,7 @@ export const Dropdown = (
     }: {
         placeholder: string,
         items: DropdownItemType[],
-        initiallySelectedItem?: DropdownItemType
+        initiallySelectedItem?: DropdownItemType,
         onSelect: (item: DropdownItemType) => void,
         emptyDropdownText: string,
         className?: string
@@ -293,7 +297,7 @@ export const Dropdown = (
             className={!initiallySelectedItem ? 'with-placeholder' : ''} >
             <span onClick={() => setState({ isExpanded: !isExpanded })}>
                 {selectedItem ? selectedItem.name : placeholder}
-                <DropdownIcon icon='chevron-down' rotation={isExpanded ? 180 as RotateProp : undefined as RotateProp} />
+                <DropdownIcon icon='chevron-down' rotation={isExpanded ? 180 as RotateProp : undefined} />
             </span>
         </DropdownTitle>
         {

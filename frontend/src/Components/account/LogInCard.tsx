@@ -1,9 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { Input, Button } from 'Components/Common'
-import { AppContext } from 'Root/AppContext'
-import { StateSetter } from 'Types/etc'
-import { useCancelable } from 'Root/hooks'
 
 const LogInCard = styled.div`
     padding: 50px 70px;
@@ -56,10 +53,13 @@ const Title = styled.div`
     text-align: center;
 `
 
-export default () => {
-    const { api, setAccountHash } = React.useContext(AppContext)
-    const [hash, setHash]: [string, StateSetter<string>] = React.useState('')
-    const { createCancelable } = useCancelable()
+interface LogInCardProps {
+    onLogIn: (hash: string) => void,
+    onRegister: () => void
+}
+
+export default ({ onLogIn, onRegister }: LogInCardProps) => {
+    const [hash, setHash] = React.useState<string>('')
 
     return <LogInCard>
         <Title>Not logged in</Title>
@@ -72,31 +72,10 @@ export default () => {
             onChange={(e) => setHash(e.target.value)}
             placeholder='account hash' />
         <LogInButton
-            onClick={() => {
-                createCancelable(api.logIn(hash))
-                    .promise
-                    .then(({ success }) => {
-                        if (success) setAccountHash(hash)
-                        else alert('Incorrect hash!')
-                    })
-                    .catch((err) => {
-                        if (!err.isCanceled) alert('Incorrect hash!')
-                    })
-            }}>
+            onClick={() => onLogIn(hash)}>
             Log in
         </LogInButton>
-        <RegisterButton onClick={() => {
-            createCancelable(api.createAccount())
-                .promise
-                .then(({ accountHash }) => {
-                    setAccountHash(accountHash)
-                })
-                .catch((err) => {
-                    if (!err.isCanceled) {
-                        console.error(err)
-                    }
-                })
-        }}>
+        <RegisterButton onClick={onRegister}>
             Generate a new account
         </RegisterButton>
     </LogInCard>

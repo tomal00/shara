@@ -3,10 +3,7 @@ import styled from 'styled-components'
 import UploadView from 'Components/upload/UploadView'
 import FileView from 'Components/upload/FileView'
 import { UploadedFile } from 'Types/file'
-import { AppContext } from 'Root/AppContext'
-import { useCancelable } from 'Root/hooks'
-import { StateSetter } from 'Types/etc'
-import { useHistory, Redirect } from 'react-router-dom'
+import { NotificationSetter } from 'Types/etc'
 
 const Wrapper = styled.div`
     min-height: calc(100% - 50px);
@@ -18,40 +15,23 @@ const Wrapper = styled.div`
     background: ${p => p.theme.colors.grey.light};
 `
 
-export default () => {
-    const { api, accountHash, addNotification, logOut } = React.useContext(AppContext)
+interface UploadProps {
+    file: UploadedFile | null,
+    onUpload: (file: UploadedFile) => void,
+    onCancel: () => void,
+    onSelectFile: (file: UploadedFile) => void,
+    addNotification: NotificationSetter
+}
 
-    if (!accountHash) {
-        return <Redirect to='/account' />
-    }
-
-    const { createCancelable } = useCancelable()
-    const [file, setFile]: [UploadedFile, StateSetter<File>] = React.useState(null)
-    const history = useHistory()
-
+export default ({ file, onCancel, onUpload, onSelectFile, addNotification }: UploadProps) => {
     return <Wrapper>
         {file ?
             (<FileView
                 file={file}
-                onCancel={() => setFile(null)}
-                onUpload={(file: UploadedFile) => {
-                    createCancelable(api.uploadFile(file))
-                        .promise
-                        .then(({ success, imageId }) => {
-                            if (success) {
-                                setFile(null)
-                                history.push(`/image/${imageId}`)
-                            }
-                        })
-                        .catch(err => {
-                            if (!err.isCanceled) {
-                                console.error(err)
-                                if (err.statusCode === 401) { logOut() }
-                            }
-                        })
-                }} />)
+                onCancel={onCancel}
+                onUpload={onUpload} />)
             : (<UploadView
-                onSelectFile={setFile}
+                onSelectFile={onSelectFile}
                 addNotification={addNotification} />)}
     </Wrapper>
 }

@@ -3,9 +3,9 @@ import { Api } from 'Root/api'
 import { NotificationSetter } from 'Types/etc'
 
 interface InitialContext {
-    api?: Api,
-    accountHash?: string,
-    setAccountHash: (hash: string) => void,
+    api: Api,
+    accountHash: string | null,
+    setAccountHash: (hash: string | null) => void,
     logOut: () => void,
     addNotification: NotificationSetter
 }
@@ -13,7 +13,9 @@ interface InitialContext {
 const InitialContext: InitialContext = {
     setAccountHash: () => { },
     addNotification: () => { },
-    logOut: () => { }
+    logOut: () => { },
+    accountHash: null,
+    api: {} as Api
 }
 
 export const AppContext = React.createContext(InitialContext)
@@ -27,10 +29,10 @@ export const Provider = (
     }: {
         children: React.ReactNode,
         api: Api,
-        accountHash?: string,
+        accountHash: string | null,
         addNotification: NotificationSetter,
     }) => {
-    const [hash, setAccountHash] = React.useState(accountHash)
+    const [hash, setAccountHash] = React.useState<string | null>(accountHash)
     const logOut = () => {
         setAccountHash('')
         addNotification({
@@ -46,7 +48,7 @@ export const Provider = (
 
     return <AppContext.Provider value={{
         api,
-        accountHash: hash,
+        accountHash: hash || null,
         setAccountHash,
         addNotification,
         logOut

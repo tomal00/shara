@@ -2,7 +2,7 @@ import * as ReactDOM from 'react-dom'
 import * as React from 'react'
 import 'normalize.css'
 import { Api } from 'Root/api'
-import App from 'Components/App'
+import App from 'Containers/App'
 import icons from 'Root/icons'
 import { createBrowserHistory } from 'history';
 import { apiUrl } from '../config.json'
@@ -26,7 +26,7 @@ api.verifySession()
     .catch(e => { })
     .finally(() => {
         ReactDOM.render(
-            <App api={api} accountHash={accountHash} />,
+            <App api={api} accountHash={accountHash || null} />,
             document.getElementById('root')
         )
     })

@@ -115,7 +115,9 @@ export default ({ file, onCancel, onUpload }: FileViewProps) => {
     const [isPrivate, setPrivate]: [boolean, StateSetter<boolean>] = useState(file.isPrivate)
     const accessTogglerWrapperRef: React.Ref<HTMLDivElement> = useRef(null)
 
-    useDidUpdate(() => ReactTooltip.show(accessTogglerWrapperRef.current), [isPrivate])
+    useDidUpdate(() => {
+        if (accessTogglerWrapperRef.current) ReactTooltip.show(accessTogglerWrapperRef.current)
+    }, [isPrivate])
 
     return <ViewWrapper>
         <div>

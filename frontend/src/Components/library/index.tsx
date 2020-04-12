@@ -2,11 +2,9 @@ import * as React from 'react'
 import styled from 'styled-components'
 import CollectionView from 'Root/Components/library/CollectionView'
 import SideBar from 'Components/library/SideBar'
-import { AppContext } from 'Root/AppContext'
 import { Collection } from 'Types/collection'
-import { useCancelable, useWidth } from 'Root/hooks'
+import { useWidth } from 'Root/hooks'
 import { Image } from 'Types/file'
-import { Redirect } from 'react-router-dom'
 import Loading from 'Components/Loading'
 
 const Wrapper = styled.div`
@@ -18,66 +16,22 @@ const Wrapper = styled.div`
     background: ${p => p.theme.colors.grey.light};
 `
 
-interface State {
-    selectedCollectionId: string,
-    collections: Collection[],
-    images: Image[]
+interface LibraryProps {
+    selectedCollection: Collection | null,
+    collections: Collection[] | null,
+    images: Image[] | null,
+    onSelectCollection: (id: string | null) => void,
+    onCreateCollection: () => void,
+    onDeleteCollection: (id: string) => void,
+    onUpdateCollectionName: (name: string, id: string) => void
 }
 
-interface UnmergedState {
-    selectedCollectionId?: string,
-    collections?: Collection[],
-    images?: Image[]
-}
-
-export default () => {
-    const { api, accountHash, logOut } = React.useContext(AppContext)
+export default ({
+    selectedCollection, collections, images, onSelectCollection, onCreateCollection,
+    onDeleteCollection, onUpdateCollectionName
+}: LibraryProps) => {
     const width = useWidth()
     const isReduced = width < 512
-
-    if (!accountHash) {
-        return <Redirect to='/account' />
-    }
-
-    //const [state, setState]: [State, StateSetter<State>] = React.useState({ selectedCollectionId: null, collections: null, images: null })
-    const [state, setState] = React.useReducer(
-        (state: State, newState: UnmergedState): State => ({ ...state, ...newState }),
-        { selectedCollectionId: null, collections: null, images: null }
-    )
-    const { selectedCollectionId, collections, images } = state
-    const selectedCollection = collections && collections.find(c => c.id === selectedCollectionId)
-    const { createCancelable } = useCancelable()
-
-    React.useEffect(() => {
-        createCancelable(api.getCollections())
-            .promise
-            .then(({ success, collections }) => {
-                if (success) setState({ collections })
-            })
-            .catch(err => {
-                if (!err.isCanceled) {
-                    console.error(err)
-                    if (err.statusCode === 401) { logOut() }
-                }
-            })
-
-        createCancelable(api.getImages())
-            .promise
-            .then(({ success, images }) => {
-                if (success) {
-                    setState({ images })
-                }
-            })
-            .catch(err => {
-                if (!err.isCanceled) {
-                    console.error(err)
-                    if (err.statusCode === 401) { logOut() }
-                }
-            })
-    }, [])
-
-    const currentCollectionImages = selectedCollection ?
-        images.filter(i => i.collectionId === selectedCollectionId) : images
 
     if (!images || !collections) {
         return <Wrapper>
@@ -85,55 +39,25 @@ export default () => {
         </Wrapper>
     }
 
+    const currentCollectionImages = selectedCollection ?
+        images.filter(i => i.collectionId === selectedCollection.id) : images
+
+
     return (
         <Wrapper>
             {<SideBar
                 isReduced={isReduced}
                 collections={collections}
                 selectedCollection={selectedCollection}
-                onSelectCollection={(id: string) => setState({ selectedCollectionId: id })}
-                onCreateCollection={() => {
-                    createCancelable(api.createCollection('New collection').then(api.getCollections))
-                        .promise
-                        .then(({ success, collections }) => {
-                            if (success) setState({ collections })
-                        })
-                        .catch(err => {
-                            if (!err.isCanceled) {
-                                console.error(err)
-                                if (err.statusCode === 401) { logOut() }
-                            }
-                        })
-                }}
-                onDeleteCollection={(id: string) => {
-                    createCancelable(api.deleteCollection(id).then(api.getCollections))
-                        .promise
-                        .then(({ success, collections }) => {
-                            if (success) setState({ collections })
-                        })
-                        .catch(err => {
-                            if (!err.isCanceled) {
-                                console.error(err)
-                                if (err.statusCode === 401) { logOut() }
-                            }
-                        })
-                }} />}
+                onSelectCollection={(id: string | null) => onSelectCollection(id)}
+                onCreateCollection={onCreateCollection}
+                onDeleteCollection={(id: string) => onDeleteCollection(id)} />}
             {<CollectionView
                 isReduced={isReduced}
                 selectedCollection={selectedCollection}
                 images={currentCollectionImages}
                 onChangeCollectionName={(newName, collectionId) => {
-                    createCancelable(api.renameCollection(newName, collectionId).then(api.getCollections))
-                        .promise
-                        .then(({ success, collections }) => {
-                            if (success) setState({ collections })
-                        })
-                        .catch(err => {
-                            if (!err.isCanceled) {
-                                console.error(err)
-                                if (err.statusCode === 401) { logOut() }
-                            }
-                        })
+                    onUpdateCollectionName(newName, collectionId)
                 }} />}
         </Wrapper>
     )
