@@ -19,7 +19,7 @@ interface UnmergedState {
 }
 
 export default () => {
-    const { api, accountHash, logOut } = React.useContext(AppContext)
+    const { api, accountHash, logOut, openPrompt } = React.useContext(AppContext)
 
     if (!accountHash) {
         return <Redirect to='/account' />
@@ -63,7 +63,17 @@ export default () => {
 
     const handleSelectCollection = (id: string | null): void => setState({ selectedCollectionId: id })
     const handleCreateCollection = (): void => {
-        createCancelable(api.createCollection('New collection').then(api.getCollections))
+        createCancelable(
+            openPrompt({
+                type: 'input',
+                title: 'Create a new collection',
+                inputPlaceholder: 'Enter the collection\'s name',
+                stornoText: 'Cancel',
+                confirmText: 'Create'
+            })
+                .then((val: string) => api.createCollection(val))
+                .then(api.getCollections)
+        )
             .promise
             .then(({ success, collections }) => {
                 if (success) setState({ collections })
@@ -76,7 +86,19 @@ export default () => {
             })
     }
     const handleDeleteCollection = (id: string): void => {
-        createCancelable(api.deleteCollection(id).then(api.getCollections))
+        const collection = collections?.find(c => c.id === id)
+
+        createCancelable(
+            openPrompt({
+                type: 'confirm',
+                title: 'Delete collection',
+                text: `Do you really want to delete the "${collection?.name}" collection? This action is irreversible.`,
+                stornoText: 'Cancel',
+                confirmText: 'Delete'
+            })
+                .then(() => api.deleteCollection(id))
+                .then(api.getCollections)
+        )
             .promise
             .then(({ success, collections }) => {
                 if (success) setState({ collections })

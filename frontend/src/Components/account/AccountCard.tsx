@@ -11,7 +11,6 @@ const AccountCard = styled.div`
     box-sizing: border-box;
     height: fit-content;
     border-radius: ${p => p.theme.borderRadius}px;
-    background: ${p => p.theme.colors.secondary.base};
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: 25px 120px 43px auto;
@@ -125,6 +124,7 @@ export default ({
             placeholder='Nickname'
             value={name}
             onChange={(e) => onChangeName(e.target.value)}
+            maxLength={128}
             onBlur={onUpdateName} />
         <Avatar
             data-for='avatar-tooltip'

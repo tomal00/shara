@@ -16,11 +16,12 @@ import Upload from 'Containers/Upload'
 import Image from 'Containers/Image'
 import Footer from 'Components/footer'
 import Download from 'Components/download'
+import Prompt, { Props as PromptProps } from 'Root/Components/Prompt'
 import { lightTheme } from 'Root/Themes/DefaultTheme'
 import { Provider as ContextProvider } from 'Root/AppContext'
 import { Api } from 'Root/api'
 import * as NotificationSystem from 'react-notification-system';
-import { NotificationSetter } from 'Types/etc'
+import { NotificationSetter, PromptData } from 'Types/etc'
 
 const App = hot(({ className, api, accountHash }: { className?: string, api: Api, accountHash: string | null }) => {
     const notificationSystem: React.Ref<NotificationSystem.System> = React.useRef(null)
@@ -32,6 +33,21 @@ const App = hot(({ className, api, accountHash }: { className?: string, api: Api
         }
         notificationSystem.current.addNotification(notification)
     }, [])
+    const [prompt, setPrompt] = React.useState<PromptProps | null>(null)
+    const openPrompt = (data: PromptData) => new Promise<void | string>((res, rej) => {
+        setPrompt({
+            promptData: data,
+            onResolve: (val?: string) => {
+                setPrompt(null)
+                res(val)
+            },
+            onReject: () => {
+                setPrompt(null)
+                rej({ isCanceled: true })
+            }
+        })
+    })
+
     React.useEffect(() => {
         if (!JSON.parse(localStorage.getItem('cookies') || '')) {
             addNotification({
@@ -52,9 +68,17 @@ const App = hot(({ className, api, accountHash }: { className?: string, api: Api
     }, [])
 
     return (
-        <ContextProvider addNotification={addNotification} api={api} accountHash={accountHash}>
+        <ContextProvider
+            addNotification={addNotification}
+            api={api}
+            accountHash={accountHash}
+            prompt={prompt ? prompt.promptData : null}
+            openPrompt={openPrompt}>
             <ThemeProvider theme={lightTheme}>
                 <div className={className}>
+                    {
+                        prompt && <Prompt {...prompt} />
+                    }
                     <NotificationSystem ref={notificationSystem} />
                     <BrowserRouter>
                         <Topbar />

@@ -6,3 +6,13 @@ export type NotificationSetter = ({ clearPrevious, notification }: {
     clearPrevious: boolean,
     notification: NotificationSystem.Notification
 }) => void
+
+
+export type PromptData = {
+    type: 'confirm' | 'input',
+    title: string,
+    text?: string,
+    inputPlaceholder?: string,
+    stornoText: string,
+    confirmText: string
+}

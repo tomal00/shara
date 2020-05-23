@@ -56,6 +56,7 @@ export default ({ onLogOut, currentAccount, onChangeName, onUploadFile, onChange
             <NameInput
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                maxLength={128}
                 placeholder='Nickname'
                 onBlur={() => {
                     if (name) {

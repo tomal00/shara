@@ -70,6 +70,7 @@ export default ({ onLogIn, onRegister }: LogInCardProps) => {
         <StyledInput
             value={hash}
             onChange={(e) => setHash(e.target.value)}
+            maxLength={128}
             placeholder='account hash' />
         <LogInButton
             onClick={() => onLogIn(hash)}>

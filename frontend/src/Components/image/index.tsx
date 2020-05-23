@@ -162,6 +162,7 @@ export default ({
                 readOnly={!image.isOwner}
                 value={imageName}
                 onChange={(e) => onChangeName(e.target.value)}
+                maxLength={128}
                 onBlur={onUpdateName} />
             {image.isOwner && <React.Fragment>
                 <div

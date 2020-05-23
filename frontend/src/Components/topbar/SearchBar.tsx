@@ -156,6 +156,7 @@ export default () => {
                 onBlur={() => setState({ isInputFocused: false })}
                 placeholder='search through your images...'
                 value={inputValue}
+                maxLength={128}
                 onKeyDown={(e) => {
                     if (e.keyCode === 13 && inputValue) {
                         api.searchForImage(inputValue)

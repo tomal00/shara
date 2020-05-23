@@ -79,6 +79,7 @@ export default React.memo(({ selectedCollection, images, onChangeCollectionName,
             <StyledNameInput
                 value={collectionName}
                 onChange={(e) => setCollectionName(e.target.value)}
+                maxLength={128}
                 readOnly={!selectedCollection}
                 onBlur={() => {
                     if (!selectedCollection) return

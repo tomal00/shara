@@ -23,7 +23,7 @@ interface UnmergedState {
 export default () => {
     const { imageId } = useParams()
     const history = useHistory()
-    const { api, addNotification } = React.useContext(AppContext)
+    const { api, addNotification, openPrompt } = React.useContext(AppContext)
     const { createCancelable } = useCancelable()
 
     const [state, setState] = React.useReducer<React.Reducer<ImageState, UnmergedState>>(
@@ -107,7 +107,16 @@ export default () => {
     const handleDelete = (): void => {
         if (!image) return
 
-        createCancelable(api.deleteFile(image.id))
+        createCancelable(
+            openPrompt({
+                type: 'confirm',
+                title: 'Delete image',
+                text: `Do you really want to delete the image? This action is irreversible.`,
+                stornoText: 'Cancel',
+                confirmText: 'Delete'
+            })
+                .then(() => api.deleteFile(image.id))
+        )
             .promise
             .then(({ success }) => {
                 if (success) {
