@@ -20,10 +20,10 @@ const Wrapper = styled.div`
         to { opacity: 1; }
     }
     
-    animation: fade-in 0.2s;
+    animation: fade-in 0.1s;
 
     &.will-unmount {
-        transition: opacity 0.2s;
+        transition: opacity 0.1s;
         opacity: 0;
     }
 
@@ -110,16 +110,18 @@ export default ({ className, promptData, onResolve, onReject }: Props) => {
             }
             <Buttons>
                 <StyledButton className='active' onClick={() => {
+                    if (willUnmount) return
+
                     setWillUnmount(true)
-                    setTimeout(() => onReject(), 500)
+                    setTimeout(() => onReject(), 150)
                 }}>
                     {stornoText}
                 </StyledButton>
                 <StyledButton className={canConfirm ? 'active' : ''} onClick={() => {
-                    if (!canConfirm) return
+                    if (!canConfirm || willUnmount) return
 
                     setWillUnmount(true)
-                    setTimeout(() => onResolve(type === 'input' ? inputValue : undefined), 500)
+                    setTimeout(() => onResolve(type === 'input' ? inputValue : undefined), 150)
                 }}>
                     {confirmText}
                 </StyledButton>
