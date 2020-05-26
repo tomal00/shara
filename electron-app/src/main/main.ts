@@ -127,11 +127,9 @@ async function updateTray() {
     tray.setContextMenu(menu)
 
     if (res && res.data) {
-        console.log('will register')
         globalShortcut.register('CommandOrControl+Alt+P', screenshot)
     }
     else if (globalShortcut.isRegistered('CommandOrControl+Alt+P')) {
-        console.log('will unregister')
         globalShortcut.unregister('CommandOrControl+Alt+P')
     }
 }
