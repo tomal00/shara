@@ -1,18 +1,41 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, ipcMain, Tray, Menu, shell, dialog, MenuItem, MenuItemConstructorOptions, nativeImage } from 'electron';
+import { app, BrowserWindow, ipcMain, Tray, Menu, shell, dialog, MenuItem, MenuItemConstructorOptions, nativeImage, globalShortcut } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { selectFilePathFromExplorer } from 'Utils/files'
 import { uploadFile, verifySession } from 'Utils/api'
 
-const screenshot = require('screenshot-desktop')
+const screenshotDesktop = require('screenshot-desktop')
 
 let mainWindow: Electron.BrowserWindow | null;
 let tray: Tray
 
 const logoPath: string = require('Public/logo.png')
+
+const screenshot = () => {
+    screenshotDesktop()
+        .then(async (img: Buffer) => {
+            const res = await uploadFile({
+                name: `Screenshot-${(new Date()).toLocaleString()}`,
+                isPrivate: false,
+                fileArray: img,
+                meta: {
+                    size: img.byteLength,
+                    mime: 'image/jpeg',
+                    description: ''
+                }
+            })
+
+            if (res.success && res.data) {
+                shell.openExternal(res.data.imageUrl)
+            }
+        })
+        .catch((e: Error) => {
+            dialog.showErrorBox('Error', e.message)
+        })
+}
 
 function createMainWindow(): void {
     mainWindow = new BrowserWindow({
@@ -86,28 +109,7 @@ async function updateTray() {
         res && res.data && {
             label: 'Take a screenshot',
             type: "normal",
-            click: () => {
-                screenshot()
-                    .then(async (img: Buffer) => {
-                        const res = await uploadFile({
-                            name: `Screenshot-${(new Date()).toLocaleString()}`,
-                            isPrivate: false,
-                            fileArray: img,
-                            meta: {
-                                size: img.byteLength,
-                                mime: 'image/jpeg',
-                                description: ''
-                            }
-                        })
-
-                        if (res.success && res.data) {
-                            shell.openExternal(res.data.imageUrl)
-                        }
-                    })
-                    .catch((e: Error) => {
-                        dialog.showErrorBox('Error', e.message)
-                    })
-            }
+            click: screenshot
         },
         {
             label: 'Quit',
@@ -123,6 +125,15 @@ async function updateTray() {
 
     tray.setToolTip('Shara')
     tray.setContextMenu(menu)
+
+    if (res && res.data) {
+        console.log('will register')
+        globalShortcut.register('CommandOrControl+Alt+P', screenshot)
+    }
+    else if (globalShortcut.isRegistered('CommandOrControl+Alt+P')) {
+        console.log('will unregister')
+        globalShortcut.unregister('CommandOrControl+Alt+P')
+    }
 }
 
 function init(): void {

@@ -58,7 +58,7 @@ The web application is the user's main interface for using this service. In orde
 
 # **Desktop application**
 
-The desktop application allows the user to upload images, change account's name or avatar and take screenshots, which are immediately uploaded. It utilizes the [Electron framework](https://www.electronjs.org/). In order to use the application the user must first log in to an account and then one can either upload an image via button in the menu or take a screenshot via option in the **tray** menu.
+The desktop application allows the user to upload images, change account's name or avatar and take screenshots, which are immediately uploaded. It utilizes the [Electron framework](https://www.electronjs.org/). In order to use the application the user must first log in to an account and then one can either upload an image via button in the menu or take a screenshot via option in the tray menu or via keyboard shortcut (Command or CTRL + ALT + P).
 
 #### App menu
 ![menu](readme-images/desktop-menu.png)

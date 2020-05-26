@@ -10,8 +10,8 @@
     "test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
     "createConfig": "node createConfig.js",
     "build:linux": "electron-builder build -l",
-    "build:win32": "electron-builder build -w --x64",
-    "build:win64": "electron-builder build -w --ia32"
+    "build:win64": "electron-builder build -w --x64",
+    "build:win32": "electron-builder build -w --ia32"
   },
   "build": {
     "directories": {
