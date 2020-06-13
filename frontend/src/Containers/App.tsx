@@ -49,7 +49,7 @@ const App = hot(({ className, api, accountHash }: { className?: string, api: Api
     })
 
     React.useEffect(() => {
-        if (!JSON.parse(localStorage.getItem('cookies') || '')) {
+        if (!JSON.parse(localStorage.getItem('cookies') || 'null')) {
             addNotification({
                 clearPrevious: false, notification: {
                     level: 'info',

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --open --config ./webpack-config/webpack.dev.js",
+    "dev": "webpack-dev-server --port 8083 --open --config ./webpack-config/webpack.dev.js",
     "build": "webpack --config ./webpack-config/webpack.prod.js",
     "createConfig": "node createConfig.js"
   },

@@ -24,7 +24,7 @@ The back-end utilizes various services provided by [AWS](https://aws.amazon.com/
 
 ### **Locally** (kinda)
 1. Create a "tls" folder in the root of the cloned repository, create and place a self-signed tls certificate and CA's private key in there and name them "cert.pem" and "key.pem".
-2. Set every property except "domain" in config.json. Set the propery "websiteUrl" to "```https://127.0.0.1:[PORT - default 8080]```"
+2. Set every property except "domain" in config.json. Set the property "websiteUrl" to "```https://127.0.0.1:[PORT - default 8083]```"
 3. run `sls deploy` to deploy necessary resources
 4. run `npm run dev`
 5. The terminal will output all available api endpoints. This will be required when [locally deploying the web application](#Web-app-deployment) and [desktop application](#Desktop-app-deployment).
@@ -78,6 +78,6 @@ The desktop application allows the user to upload images, change account's name 
 
 1. [Locally deploy the backend](#backend-deployment)
 2. [Locally deploy the web application](#Web-app-deployment)
-3. in config.json set the "apiUrl" property to the base url of the api (default `https://localhost:3000/dev`) and websiteUrl to the url of the website (default `https://127.0.0.1:8080`)
+3. in config.json set the "apiUrl" property to the base url of the api (default `https://localhost:3000/dev`) and websiteUrl to the url of the website (default `https://127.0.0.1:8083`)
 4. run `npm run dev`
 5. in another terminal run `npm run start`

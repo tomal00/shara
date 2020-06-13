@@ -8,6 +8,7 @@ const template = {
     accountsTableName: '',
     imagesTableName: '',
     collectionsTableName: '',
+    sessionsTableName: '',
     domain: {
         name: '',
         basePath: ''
