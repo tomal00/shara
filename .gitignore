@@ -10,6 +10,8 @@ electron-app/config.json
 backend/.env
 tls
 
+.DS_Store
+
 # package directories
 backend/node_modules
 backend/jspm_packages
