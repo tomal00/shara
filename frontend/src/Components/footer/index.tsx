@@ -38,7 +38,7 @@ const Icon = styled(FontAwesomeIcon)`
 export default () => {
 
     return <FooterWrapper>
-        <span>2020, Created by Tomáš Malec</span>
+        <span>Created by Tomáš Malec</span>
         <References>
             <StyledAnchor target='_blank' href={encodeURI('https://github.com/tomal00/shara')} >
                 <Icon icon={['fab', 'github']} />
