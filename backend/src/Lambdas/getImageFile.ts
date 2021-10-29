@@ -4,7 +4,7 @@ import '@babel/polyfill';
 import { getFileInfo, withCors, getCookies, verifySession } from '../helpers'
 import { config as awsConfig, S3 } from 'aws-sdk';
 import { S3fileBucketName } from '../../config.json'
-import { awsRegion } from '../../config.json'
+import { awsRegion, websiteUrl } from '../../config.json'
 
 awsConfig.update({ region: awsRegion });
 
@@ -35,7 +35,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
             body: JSON.stringify({ message: 'success' }),
             headers: {
                 location: url,
-                origin: 'https://shara.pictures'
+                origin: websiteUrl
             },
         });
     }

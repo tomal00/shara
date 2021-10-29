@@ -1,7 +1,7 @@
 {
   "name": "shara-desktop",
   "version": "1.0.0",
-  "description": "A desktop application for taking and uploading screenshots to shara.pictures.",
+  "description": "A desktop application for taking and uploading screenshots.",
   "main": "./dist/main.bundle.js",
   "scripts": {
     "start": "electron ./dist/main.bundle.js",
@@ -49,7 +49,6 @@
     ],
     "buildVersion": "1.0.0"
   },
-  "homepage": "https://www.shara.pictures",
   "author": {
     "email": "tomas.malec00@gmail.com",
     "name": "Tomáš Malec"
