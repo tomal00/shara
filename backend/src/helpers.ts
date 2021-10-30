@@ -18,9 +18,9 @@ export const getDynamo = (): DynamoDB => {
 }
 
 export const getCookies = ({ headers }: APIGatewayProxyEvent): any => {
-    if (!headers.Cookie) return {}
+    if (!headers.cookie) return {}
 
-    const cookiesArr = headers.Cookie.replace(/ /g, '').split(';')
+    const cookiesArr = headers.cookie.replace(/ /g, '').split(';')
     const cookies = {}
 
     for (let c of cookiesArr) {

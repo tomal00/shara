@@ -2,10 +2,8 @@
 frontend/node_modules
 frontend/config.json
 frontend/dist
-frontend/package-lock.json
 electron-app/node_modules
 backend/config.json
-backend/package-lock.json
 electron-app/config.json
 backend/.env
 tls
@@ -25,7 +23,6 @@ backend/.webpack
 soon-2-b-logo.png
 
 
-electron-app/package-lock.json
 electron-app/.vscode/
 electron-app/dist
 electron-app/node_modules
